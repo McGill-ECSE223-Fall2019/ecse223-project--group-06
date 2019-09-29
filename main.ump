@@ -19,6 +19,7 @@ class Player{
     
   1..1 Pawn; 
   1..10 Wall;
+  1..1 Clock;
 }
 class Pawn{
   Boolean color;
