@@ -4,21 +4,21 @@ class Quoridor{
 class Game{
   String winner;
   Boolean gameover;
-  Boolean turn
+  Boolean turn;
 
-  1 -- 1 Clock
+  1 -- 1 Clock;
   1 -- 2 Player
-  1 -- 1 Board
+  1 -- 1 Board;
 }
 class Clock{
   timeplayer1;
   timeplayer2;  
 }
 class Player{
-  unique String username
+  unique String username;
     
-  1..1 Pawn 
-  1..10 Wall
+  1..1 Pawn; 
+  1..10 Wall;
 }
 class Pawn{
   Boolean color;
@@ -30,8 +30,8 @@ class Wall{
 class Board{
   Integer size;
   
-  1..20 Wall
-  1..81 Tile
+  1..20 Wall;
+  1..81 Tile;
 }
 class Tile{
   
