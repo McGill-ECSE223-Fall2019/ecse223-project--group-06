@@ -1,0 +1,44 @@
+namespace ca.mcgill.ecse223.quoridor.model;
+
+class Quoridor{ 
+    1 -- * Game;
+}
+class Game{
+  String winner;
+  Boolean gameOver;
+  Boolean turn;
+
+  1 -- 1 Clock;
+  1 -- 2 Player;
+  1 -- 1 Board;
+  1 -- 1 PositionFile;
+}
+class Clock{
+  int timePlayer1;
+  int timePlayer2;  
+}
+class Player{
+  unique String username;
+    
+  1 -- 1 Pawn; 
+  1 -- 0..10 Wall;
+}
+class Pawn{
+  Boolean color;
+  String pawnPosition;
+}
+class Wall{
+  String wallPosition;
+}
+class Board{
+  Integer size;
+  
+  1 -- 0..20 Wall;
+  1 -- 81 Tile;
+}
+class Tile{
+  String tilePosition;
+}
+class PositionFile{
+}
+  
