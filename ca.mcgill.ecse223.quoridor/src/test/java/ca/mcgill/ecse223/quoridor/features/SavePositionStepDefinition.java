@@ -18,6 +18,7 @@ import io.cucumber.java.en.When;
  */
 public class SavePositionStepDefinition {
 	Quoridor quoridor;
+	
 	@Given("The game is running")
 	public void theGameIsRunning() {
 		//USER INPUT (fill in for cucumber)
@@ -49,7 +50,7 @@ public class SavePositionStepDefinition {
 	
 	@Then("A file with {string} shall be created in the filesystem")
 	public void aFileWithNameShallBeCreated(String fileName) {
-		SavePosition.createFile(fileName);
+		SavePosition.createFile(fileName); //Will throw error if it doesn't work
 	}
 	
 	
@@ -86,6 +87,7 @@ public class SavePositionStepDefinition {
 	}
 	@Then("File {string} shall not be changed in the filesystem")
 	public void fileWithNameShallNotBeUpdatedInSystem(String fileName) {
-		
+		//This is literally a step mapping to 'you will do nothing'
+		//Hopefully I can do that right
 	}
 }

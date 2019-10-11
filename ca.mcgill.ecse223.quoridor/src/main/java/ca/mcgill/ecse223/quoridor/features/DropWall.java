@@ -25,28 +25,18 @@ public class DropWall {
 		throw new java.lang.UnsupportedOperationException();
 	}
 	
-	/** Register Move
-	 * Updates the game to include a new wall move with given specifications
-	 * @param dir - Direction of placed wall
-	 * @param row - row wall was placed at (defined by northwest)
-	 * @param col - column wall was placed at (defined by northwest)
+	/** Move Is Registered
+	 * Query method to check if a wall move was properly registered
+	 * @param dir - Direction of wall to check
+	 * @param row - row of wall to check (defined by northwest)
+	 * @param col - column of wall to check (defined by northwest)
 	 */
-	public static void registerMove(Game game, Direction dir, int row, int col) {
+	public static boolean moveIsRegistered(Game game, Direction dir, int row, int col) {
 		throw new java.lang.UnsupportedOperationException();
 	}
-	
-	/** End Move
-	 * A clean up method to call after registering a move
-	 * Resets things like wallMoveCandidate, MoveMode
-	 * @param game - the game of which the current players move is ended
-	 */
-	public static void endMove(Game game) {
-		throw new java.lang.UnsupportedOperationException();
-	}
-	
 	
 	/** Check Wall Position Validity
-	 *  Checks whether a candidate wall intersects with a placed wall or cuts off the player entirely
+	 *  Queries whether a candidate wall intersects with a placed wall or cuts off the player entirely
 	 * @param checkMove - the WallMove to validate
 	 * @param gameMoves - a list of all the moves made in the game (position of the walls)
 	 * @return whether the wall is in a valid position
