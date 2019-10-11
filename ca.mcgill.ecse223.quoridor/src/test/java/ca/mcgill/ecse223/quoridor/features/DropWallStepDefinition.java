@@ -19,7 +19,11 @@ import io.cucumber.java.en.When;
 
 
 
-
+/** Drop Wall Step Definition File
+ * 
+ * @author yajal
+ *
+ */
 public class DropWallStepDefinition {
 	Quoridor quoridor;
 	
@@ -42,6 +46,9 @@ public class DropWallStepDefinition {
 		
 	@And("The following walls exist:")
 	public void theFollowingWallsExist(DataTable table) {
+		//I made this method literally just place all the given walls
+		
+		
 		//We don't have any classes with constructors fitting input perfectly
 		List<List<String>> walls = table.asLists();
 		
@@ -71,17 +78,18 @@ public class DropWallStepDefinition {
 			//switch to the next player
 			SwitchCurrentPlayer.switchPlayer(quoridor.getCurrentGame());
 		}
+
 	}
 	
 	@And("I have a wall in my hand over the board")
 	public void iHaveAWallOverTheBoard() {
-		//grab might just take the game...
+		//grab might just take the game... guess I'll find out
 		GrabWall.grab(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
 	}
 	
 	
 	
-	@Given("The wall move candidate with {string} at position ({int}, {int}) is valid")
+	@Given("The wall move candidate with {string} at position {int}, {int} is valid")
 	public void theWallMoveCandidateWithDirAtPosIsValid(String dir, int row, int col) throws InvalidInputException {
 		//Get a string- make a dir
 		//Also, previous given's ensure we have a wall move candidate slot taken
@@ -94,7 +102,7 @@ public class DropWallStepDefinition {
 		//Might want to update this to just take a game
 		if(!DropWall.wallIsValid(quoridor.getCurrentGame().getWallMoveCandidate(), 
 							quoridor.getCurrentGame().getMoves())  ) {
-			throw new PendingException();
+			Assert.fail();
 		}
 	}
 	
@@ -104,27 +112,20 @@ public class DropWallStepDefinition {
 	}
 	
 	
-	@Then("I shall not have a wall in my hand") 
+	@Then("A wall move shall be registered with {string} at position {int}, {int}")
+	public void aWallMoveIsRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
+		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
+		DropWall.registerMove(quoridor.getCurrentGame(), direction, row, col);
+	}
+	
+	@And("I shall not have a wall in my hand") 
 	public void iDoNotHaveAWallInMyHand() {
+		//Do I need to do this with controller? Maybe GrabWall has a wallInHand method? Create one if not before turn in
 		Assert.assertFalse("A wall is still in hand after dropping", quoridor.getCurrentGame().hasWallMoveCandidate());
 	}
 	
-	//Oops! I'm supposed to register a move done, not make sure it is lol
-	@But("A wall move shall be registered with {string} at position ({int}, {int})")
-	public void aWallMoveIsRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
-		Direction direction = direct.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		//Checks last move
-		int index = quoridor.getCurrentGame().getMoves().size() - 1;
-		Move check = quoridor.getCurrentGame().getMoves().get(index);
-		if( check instanceof WallMove) {
-			WallMove move = (WallMove) check;
-			boolean directionSame = direction == move.getWallDirection();
-			boolean rowSame = move.getTargetTile().getRow() == row;
-			boolean columnSame = move.getTargetTile().getColumn() == col;
-			Assert.assertTrue(directionSame && rowSame && columnSame);
-		}
-		Assert.fail();
-	}
+	
+	
 	
 	@And("My move shall be completed")
 	public void myMoveIsCompleted() {
@@ -138,13 +139,13 @@ public class DropWallStepDefinition {
 	
 	@And("It shall not be my turn to move")
 	public void itIsNotMyTurnToMove() {
-		//I'm a bit confused... Isn't asserting my move is over and 
+		//See above confusion
 		Assert.assertTrue(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove()
 				          != quoridor.getCurrentGame().getWhitePlayer());
 	}
 	
 	
-	@Given("The wall move candidate with {string} at position ({row}, {column}) is invalid")
+	@Given("The wall move candidate with {string} at position {int}, {int} is invalid")
 	public void theWallMoveCandidateWithDirAtPosIsInvalid(String dir, int row, int col) throws InvalidInputException {
 		Direction direction = direct.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 		RotateWall.rotate(direction, quoridor.getCurrentGame());
@@ -156,7 +157,7 @@ public class DropWallStepDefinition {
 		//Might want to update this to just take a game
 		if(DropWall.wallIsValid(quoridor.getCurrentGame().getWallMoveCandidate(), 
 								quoridor.getCurrentGame().getMoves())) {
-			throw new PendingException();
+			Assert.fail();
 		}
 	}
 	
@@ -164,9 +165,12 @@ public class DropWallStepDefinition {
 	@Then("I shall be notified that my wall move is invalid")
 	public void iShallBeNotifiedThatMyWallMoveIsInvalid() {
 		//The boolean it returns IS your notification. Rather not do try/catch stuff
-		Assert.assertFalse(DropWall.dropWall(quoridor.getCurrentGame()));
+		//Assert.assertFalse(DropWall.dropWall(quoridor.getCurrentGame()));
+		//GUI stuff
+		throw new PendingException();
 	}
 	
+	//Here's where I get confused... Drop wall method takes care of all of this...
 	@And("I shall have a wall in my hand over the board")
 	public void iShallHaveAWallInMyHandOverTheBoard() {
 		Assert.assertNotNull(quoridor.getCurrentGame().getWallMoveCandidate());
@@ -177,8 +181,9 @@ public class DropWallStepDefinition {
 		Assert.assertTrue(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove()
 				       == quoridor.getCurrentGame().getWhitePlayer());
 	}
+	//THE PROBLEM WAS THE GHERKIN FILE THIS WHOLE TIME. (<row>,<col>) MAKES IT OPTIONAL....
 	
-	@But("No wall move shall be registered with {string} at position ({int}, {int})")
+	@But("No wall move shall be registered with {string} at position {int}, {int}")
 	public void noWallMoveShallBeRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 		//Checks last move
@@ -194,21 +199,3 @@ public class DropWallStepDefinition {
 		Assert.fail();
 	}
 }
-
-
-/*
-Scenario Outline: Invalid wall placement
-  Given The wall move candidate with <dir> at position (<row>, <col>) is invalid
-  When I release the wall in my hand
-  Then I shall be notified that my wall move is invalid
-  And I have a wall in my hand over the board
-  And It is my turn to move
-	But No wall move is registered with <dir> at position (<row>, <col>)
-	
-  Examples: 
-    | dir        | row | col |
-    | vertical 	 |   1 |   1 |
-    | horizontal |   1 |   2 |
-	  | horizontal |   7 |   4 |
-    | vertical 	 |   6 |   6 |
-    */

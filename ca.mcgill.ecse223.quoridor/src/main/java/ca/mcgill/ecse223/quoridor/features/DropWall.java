@@ -2,6 +2,7 @@ package ca.mcgill.ecse223.quoridor.features;
 
 import java.util.List;
 
+import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
@@ -21,11 +22,18 @@ public class DropWall {
 	 * @return whether or not the wall successfully dropped
 	 */
 	public static boolean dropWall(Game game) {
-		//In here I'll use check move, then if that is alright, update
-		//The game to have a new wall.
 		throw new java.lang.UnsupportedOperationException();
 	}
 	
+	/** Register Move
+	 * Updates the game to include a new wall move with given specifications
+	 * @param dir - Direction of placed wall
+	 * @param row - row wall was placed at (defined by northwest)
+	 * @param col - column wall was placed at (defined by northwest)
+	 */
+	public static void registerMove(Game game, Direction dir, int row, int col) {
+		throw new java.lang.UnsupportedOperationException();
+	}
 	
 	
 	/** Check Wall Position Validity

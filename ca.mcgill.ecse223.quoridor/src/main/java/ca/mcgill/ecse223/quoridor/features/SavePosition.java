@@ -1,10 +1,8 @@
 package ca.mcgill.ecse223.quoridor.features;
 
 import java.io.BufferedWriter;
-import java.util.List;
 
 import ca.mcgill.ecse223.quoridor.model.Game;
-import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.Move;
 
 
@@ -24,6 +22,23 @@ public class SavePosition {
 	public static boolean savePosition(Game currentGame, String filePath) {
 		throw new java.lang.UnsupportedOperationException();
 	}
+	
+	/** Query method to check if a file is exists within the file system
+	 * @param filepath - the file (including the full path) to check for
+	 * @return boolean - whether the file was found
+	 */
+	public static boolean containsFile(String filepath) {
+		throw new java.lang.UnsupportedOperationException();
+	}
+	
+	/** Modifier method to create a save file within the file system
+	 * @param filepath - the file (including the full path) to create
+	 * @return boolean - whether an error occurred
+	 */
+	public static boolean createFile(String filepath) {
+		throw new java.lang.UnsupportedOperationException();
+	}
+	
 	
 	/** Private helper method encapsulating writing player moves into the save file
 	 * 	Takes an initialized writer and with a move- writes it with specified syntax
