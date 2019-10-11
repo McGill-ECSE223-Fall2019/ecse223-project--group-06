@@ -2,6 +2,7 @@ package ca.mcgill.ecse223.quoridor.features;
 
 import java.sql.Time;
 import java.util.List;
+import java.util.Timer;
 
 import org.junit.Assert;
 
@@ -65,8 +66,18 @@ public class DropWallStepDefinition {
 						  quoridor.getCurrentGame());	
 			DropWall.dropWall(quoridor.getCurrentGame());
 			
-			//switch to the next player
-			SwitchCurrentPlayer.switchPlayer(quoridor.getCurrentGame());
+			if(i % 2 == 0) {
+				//Starts w/ white moves first, so if even it's white's move
+				//switch to the next player
+				//You could probably just pass players or even the game... but it's not my method
+				//oml it uses timer instead of time too... And Timer acts like a stopwatch!!!
+				//TODO: ask them to fix that
+				//Switchplayer.makeTurn(quoridor.getCurrentGame().getWhitePlayer().getRemainingTime(), quoridor.getCurrentGame().getBlackPlayer().getRemainingTime(), quoridor.getCurrentGame().getWhitePlayer(), quoridor.getCurrentGame().getBlackPlayer());
+				Switchplayer.makeTurn(new Timer(), new Timer(), quoridor.getCurrentGame().getWhitePlayer(), quoridor.getCurrentGame().getBlackPlayer());
+			} else {
+				Switchplayer.makeTurn(new Timer(), new Timer(), quoridor.getCurrentGame().getBlackPlayer(), quoridor.getCurrentGame().getWhitePlayer());
+			}
+			
 		}
 	}
 	
@@ -76,7 +87,7 @@ public class DropWallStepDefinition {
 		if(! ( quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove()
 				== quoridor.getCurrentGame().getWhitePlayer()  )            ) {
 			//switch to the next player
-			SwitchCurrentPlayer.switchPlayer(quoridor.getCurrentGame());
+			Switchplayer.makeTurn(new Timer(), new Timer(), quoridor.getCurrentGame().getBlackPlayer(), quoridor.getCurrentGame().getWhitePlayer());
 		}
 
 	}
@@ -129,25 +140,29 @@ public class DropWallStepDefinition {
 	
 	@And("My move shall be completed")
 	public void myMoveIsCompleted() {
+		//Ok I think it wants me to make dropwall method to complete turn
+		//Then switch turn in next
+		DropWall.endMove(quoridor.getCurrentGame());
+		//Could add a check to see if this worked later. OR just make endMove throw an error if it didn't
+		
+		
 		//What does it want me to check here? This step and the next seem the same
 		//And I already made sure move was added last method
 		//Best I could think of, checks to see if ther is no more candidate wall move
-		Assert.assertNull(quoridor.getCurrentGame().getWallMoveCandidate());
-		SwitchCurrentPlayer.switchPlayer(quoridor);
-		
+		//Assert.assertNull(quoridor.getCurrentGame().getWallMoveCandidate());
+	
 	}
 	
 	@And("It shall not be my turn to move")
 	public void itIsNotMyTurnToMove() {
-		//See above confusion
-		Assert.assertTrue(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove()
-				          != quoridor.getCurrentGame().getWhitePlayer());
+		Switchplayer.makeTurn(new Timer(), new Timer(), quoridor.getCurrentGame().getWhitePlayer(), quoridor.getCurrentGame().getBlackPlayer());
 	}
 	
 	
 	@Given("The wall move candidate with {string} at position {int}, {int} is invalid")
 	public void theWallMoveCandidateWithDirAtPosIsInvalid(String dir, int row, int col) throws InvalidInputException {
-		Direction direction = direct.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
+		//Background ensures I have a wall in hand
+		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 		RotateWall.rotate(direction, quoridor.getCurrentGame());
 		MoveWall.move(row, 
 				  col, 
@@ -157,7 +172,7 @@ public class DropWallStepDefinition {
 		//Might want to update this to just take a game
 		if(DropWall.wallIsValid(quoridor.getCurrentGame().getWallMoveCandidate(), 
 								quoridor.getCurrentGame().getMoves())) {
-			Assert.fail();
+			Assert.fail(); //If you reached here, the parameters being passed in are wrong
 		}
 	}
 	
