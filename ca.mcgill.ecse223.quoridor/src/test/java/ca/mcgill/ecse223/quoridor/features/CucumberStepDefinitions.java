@@ -1,5 +1,6 @@
 package ca.mcgill.ecse223.quoridor.features;
 
+import static org.junit.Assert.assertEquals;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +116,165 @@ public class CucumberStepDefinitions {
 	 * are implemented
 	 * 
 	 */
+
+//***********************************************
+//Start a new game
+// **********************************************
+@when("A new game is being initialized")
+public void a_new_game_is_being_initialized(){
+	QuoridorController.startGame();
+	throw new cucumber.api.PendingException();
+}
+
+@And("White player chooses a username")
+public void white_player_chooses_a_username(){
+     QuoridorApplication.getQuoridor().setName()	
+     throw new cucumber.api.PendingException();
+}
+
+@And("Black player chooses a username")
+public void black_player_chooses_a_username(){
+     QuoridorApplication.getQuoridor().setName()	
+     throw new cucumber.api.PendingException();
+}
+
+@Then("Total thinking time is set")
+public void total_thinking_time_is_set(Int inta, Int intb){
+     QuoridorController.setTotaltime(int,int);	
+     throw new cucumber.api.PendingException();
+}
+
+@Then("The game shall become ready to start")
+public void the_game_shall_become_ready_to_start(){
+	assertEquals(true, QuoridorApplication.getQuoridor().getGameStatus())
+	throw new cucumber.api.PendingException();
+}
+
+@Given("The game is ready to start")
+public void the_game_is_ready_to_start() {
+ QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.Running);
+}
+@When("I start the clock")
+public void I_start_the_clock() {
+ Quoridorcontroller.runwhiteclock();
+ 
+}
+@Then("the game shall be running") 
+public void the_game_shall_be_running(){
+ Assert.assertEquals(GameStatus.Running,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
+}
+@And("The board shall be initialized")
+public void the_board_shall_be_initialized() {
+ Assert.assertEquals(QuoridorApplication.getQuoridor().setBoard(board),true);
+}
+
+//***********************************************
+// Load Position
+// **********************************************
+	@When("I initiate to load a saved game {string}")
+	public void i_initiate_to_load_a_saved_game(String string) {
+		QuoridorController.loadGame(string);
+	    throw new cucumber.api.PendingException();
+	}
+
+	@And("The position to load is valid")
+	public void the_position_to_load_is_valid() {
+	    assertEquals(true, QuoridorController.validatePosition());
+	    throw new cucumber.api.PendingException();
+	}
+
+
+    @Then("It shall be {string}'s turn")
+	public void it_shall_be_s_turn(String string) {
+		String currentcolor;
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
+			curcolor = "black";
+		}else {
+			curcolor = "white";
+		}
+		assertEquals(string, curcolor);
+	    throw new cucumber.api.PendingException();
+	}
+
+    @Then("{string} shall be at {int}:{int}")
+	public void shall_be_at(String string, Integer intx, Integer inty) {
+		Integer row;
+		Integer col;
+		if(string == "black") {
+			row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow();
+			col = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn();
+		}else {
+			row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow();
+			col = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn();
+		}
+		assertEquals(row, intx);
+		assertEquals(col, inty);
+	    throw new cucumber.api.PendingException();
+	}
+
+    @Then("{string} shall have a vertical wall at {int}:{int}")
+	public void shall_have_a_vertical_wall_at(String string, Integer intx, Integer inty) {
+		Integer col;
+		Integer row;
+		Direction wallDirection;
+		if(string == "black") {
+			wallDirection = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getWall(0).getMove().getWallDirection();
+			col = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsOnBoard(0).getMove().getTargetTile().getColumn();
+			row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsOnBoard(0).getMove().getTargetTile().getRow();
+		}else {
+			wallDirection = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0).getMove().getWallDirection();
+			col = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard(0).getMove().getTargetTile().getColumn();
+			row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard(0).getMove().getTargetTile().getRow();
+		}
+		assertEquals(Direction.Vertical, wallDirection);
+		assertEquals(row, intx);
+		assertEquals(col, inty);
+	    throw new cucumber.api.PendingException();
+	}
+
+    @Then("{string} shall have a horizontal wall at {int}:{int}")
+	public void shall_have_a_horizontal_wall_at(String string, Integer intx, Integer inty) {
+		Integer col;
+		Integer row;
+		Direction wallDirection;
+		if(string == "black") {
+			wallDirection = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getWall(0).getMove().getWallDirection();
+			col = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsOnBoard(0).getMove().getTargetTile().getColumn();
+			row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsOnBoard(0).getMove().getTargetTile().getRow();
+		}else {
+			wallDirection = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0).getMove().getWallDirection();
+			col = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard(0).getMove().getTargetTile().getColumn();
+			row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard(0).getMove().getTargetTile().getRow();
+		}
+		assertEquals(Direction.Horizontal, wallDirection);
+		assertEquals(row, intx);
+		assertEquals(col, inty);
+	    throw new cucumber.api.PendingException();
+	}
+
+
+    @Then("Both players shall have {int} in their stacks")
+	public void both_players_shall_have_in_their_stacks(Integer intx) {
+	    Integer blackwall = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getWalls().size();
+	    Integer whitewall = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWalls().size();
+	    assertEquals(blackwall, intx);
+	    assertEquals(whitewall, intx);
+	    throw new cucumber.api.PendingException();
+	}
+
+	@When("The position to load is invalid")
+	public void the_position_to_load_is_invalid() {
+		assertEquals(false, QuoridorController.validatePosition());
+	    throw new cucumber.api.PendingException();
+	}
+
+	@Then("The load shall return an error") 
+	public void the_load_shall_return_an_error() {
+	    assertEquals("Failed loading game", QuoridorController.getLoadResult());
+	    throw new cucumber.api.PendingException();
+	}
+
+
 
 	// ***********************************************
 	// Clean up
