@@ -130,50 +130,77 @@ public class CucumberStepDefinitions {
 // **********************************************
 /**
 *Feature:Start a new game 
+*@Author Hongshuo Zhou
 */
 @when("A new game is being initialized")
 public void a_new_game_is_being_initialized(){
 	QuoridorController.startGame();
 	throw new cucumber.api.PendingException();
 }
-
+/**
+*Feature:Start a new game 
+*@Author Hongshuo Zhou
+*/
 @And("White player chooses a username")
 public void white_player_chooses_a_username(){
      QuoridorApplication.getQuoridor().setName()	
      throw new cucumber.api.PendingException();
 }
-
+/**
+*Feature:Start a new game 
+*@Author Hongshuo Zhou
+*/
 @And("Black player chooses a username")
 public void black_player_chooses_a_username(){
      QuoridorApplication.getQuoridor().setName()	
      throw new cucumber.api.PendingException();
 }
-
+/**
+*Feature:Start a new game 
+*@Author Hongshuo Zhou
+*/
 @Then("Total thinking time is set")
 public void total_thinking_time_is_set(Int inta, Int intb){
      QuoridorController.setTotaltime(int,int);	
      throw new cucumber.api.PendingException();
 }
-
+/**
+*Feature:Start a new game 
+*@Author Hongshuo Zhou
+*/
 @Then("The game shall become ready to start")
 public void the_game_shall_become_ready_to_start(){
 	assertEquals(true, QuoridorApplication.getQuoridor().getGameStatus())
 	throw new cucumber.api.PendingException();
 }
-
+/**
+*Feature:Start a new game 
+*@Author Hongshuo Zhou
+*/
 @Given("The game is ready to start")
 public void the_game_is_ready_to_start() {
  QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.Running);
 }
+/**
+*Feature:Start a new game 
+*@Author Hongshuo Zhou
+*/
 @When("I start the clock")
 public void I_start_the_clock() {
  Quoridorcontroller.runwhiteclock();
- 
 }
+/**
+*Feature:Start a new game 
+*@Author Hongshuo Zhou
+*/
 @Then("the game shall be running") 
 public void the_game_shall_be_running(){
  Assert.assertEquals(GameStatus.Running,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
 }
+/**
+*Feature:Start a new game 
+*@Author Hongshuo Zhou
+*/
 @And("The board shall be initialized")
 public void the_board_shall_be_initialized() {
  Assert.assertEquals(QuoridorApplication.getQuoridor().setBoard(board),true);
@@ -182,20 +209,29 @@ public void the_board_shall_be_initialized() {
 //***********************************************
 // Load Position
 // **********************************************
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
 	@When("I initiate to load a saved game {string}")
 	public void i_initiate_to_load_a_saved_game(String string) {
 		QuoridorController.loadGame(string);
 	    throw new cucumber.api.PendingException();
 	}
-
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
 	@And("The position to load is valid")
 	public void the_position_to_load_is_valid() {
 	    assertEquals(true, QuoridorController.validatePosition());
 	    throw new cucumber.api.PendingException();
 	}
-
-
-    @Then("It shall be {string}'s turn")
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
+	@Then("It shall be {string}'s turn")
 	public void it_shall_be_s_turn(String string) {
 		String currentcolor;
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
@@ -206,8 +242,11 @@ public void the_board_shall_be_initialized() {
 		assertEquals(string, curcolor);
 	    throw new cucumber.api.PendingException();
 	}
-
-    @Then("{string} shall be at {int}:{int}")
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
+	@Then("{string} shall be at {int}:{int}")
 	public void shall_be_at(String string, Integer intx, Integer inty) {
 		Integer row;
 		Integer col;
@@ -222,8 +261,11 @@ public void the_board_shall_be_initialized() {
 		assertEquals(col, inty);
 	    throw new cucumber.api.PendingException();
 	}
-
-    @Then("{string} shall have a vertical wall at {int}:{int}")
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
+   	@Then("{string} shall have a vertical wall at {int}:{int}")
 	public void shall_have_a_vertical_wall_at(String string, Integer intx, Integer inty) {
 		Integer col;
 		Integer row;
@@ -242,8 +284,11 @@ public void the_board_shall_be_initialized() {
 		assertEquals(col, inty);
 	    throw new cucumber.api.PendingException();
 	}
-
-    @Then("{string} shall have a horizontal wall at {int}:{int}")
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
+   	@Then("{string} shall have a horizontal wall at {int}:{int}")
 	public void shall_have_a_horizontal_wall_at(String string, Integer intx, Integer inty) {
 		Integer col;
 		Integer row;
@@ -263,8 +308,11 @@ public void the_board_shall_be_initialized() {
 	    throw new cucumber.api.PendingException();
 	}
 
-
-    @Then("Both players shall have {int} in their stacks")
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
+    	@Then("Both players shall have {int} in their stacks")
 	public void both_players_shall_have_in_their_stacks(Integer intx) {
 	    Integer blackwall = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getWalls().size();
 	    Integer whitewall = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWalls().size();
@@ -272,13 +320,19 @@ public void the_board_shall_be_initialized() {
 	    assertEquals(whitewall, intx);
 	    throw new cucumber.api.PendingException();
 	}
-
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
 	@When("The position to load is invalid")
 	public void the_position_to_load_is_invalid() {
 		assertEquals(false, QuoridorController.validatePosition());
 	    throw new cucumber.api.PendingException();
 	}
-
+	/**
+	*Feature: Load Position
+	*@Author Hongshuo Zhou
+	*/
 	@Then("The load shall return an error") 
 	public void the_load_shall_return_an_error() {
 	    assertEquals("Failed loading game", QuoridorController.getLoadResult());
@@ -287,7 +341,7 @@ public void the_board_shall_be_initialized() {
 
 	/**
 	 * Feature :Set Total thinking time
-	 * take minutes and second as input to set 
+	 * @Author Xiangyu Li
 	 * @param minute
 	 * @param second
 	 */
@@ -297,6 +351,13 @@ public void the_board_shall_be_initialized() {
 		Quoridorcontroller.setTotaltime(minute, second);
 		throw new cucumber.api.PendingException();
 	}
+	
+	/**
+	 * Feature :Set Total thinking time
+	 * @Author Xiangyu Li
+	 * @param minute
+	 * @param second
+	 */
 	
 	@Then("Both players shall have {int}:{int} remaining time left")
 	public void both_players_shall_have_remaining_time_left(int minute,int second) {
@@ -308,8 +369,8 @@ public void the_board_shall_be_initialized() {
 	
 	/**
 	 * Feature :Switch current player
-	 * @param minute
-	 * @param second
+	 * Xiangyu Li
+	 * @param color
 	 */
 	@Given("The player to move is {String}")
 	public void Playertomove(String color) {
@@ -321,6 +382,11 @@ public void the_board_shall_be_initialized() {
 			throw new cucumber.api.PendingException();
 	}
 	
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
 	@And("The clock of {string} is running")
 	public void the_clock_of_black_is_running(String color) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -331,7 +397,11 @@ public void the_board_shall_be_initialized() {
 			Quoridorcontroller.runwhiteclock();
 		throw new cucumber.api.PendingException();
 	}
-
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
 	@And("The clock of {string} is stopped")
 	public void the_clock_of_white_is_stopped(String color) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -343,7 +413,11 @@ public void the_board_shall_be_initialized() {
 		
 		throw new cucumber.api.PendingException();
 	}
-
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
 	@When("Player {string} completes his move")
 	public void player_blackplayer_completes_his_move(String color) {
 		if(color=="black") {
@@ -354,7 +428,11 @@ public void the_board_shall_be_initialized() {
 		}
 		throw new cucumber.api.PendingException();
 	}
-	
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
 	@Then("The user interface is showing it is {string}'s turn")
 	public void the_user_interface_is_showing_it_is_white_s_turn(String color) {
 	    // Write code here that turns the phrase above into concrete actions
@@ -366,9 +444,13 @@ public void the_board_shall_be_initialized() {
 		}
 		throw new cucumber.api.PendingException();
 	}
-
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
 	@And ("The clock of {string} is stopped")
-	public void the_clock_of_black_is_stopped(String color)throws InterruptedException {
+	public void the_clock_of_black_is_stopped(String color) {
 		if(color=="black") {
 			Quoridorcontroller.stopblackclock();
 		}
@@ -376,7 +458,11 @@ public void the_board_shall_be_initialized() {
 			Quoridorcontroller.stopwhiteclock();
 		throw new cucumber.api.PendingException();
 	}
-
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
 	@And ("The clock of {string} is running")
 	public void the_clock_of_white_is_running(String color) {
 		if(color=="white") {
@@ -386,7 +472,11 @@ public void the_board_shall_be_initialized() {
 			Quoridorcontroller.runblackclock();
 		throw new cucumber.api.PendingException();
 	}
-
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
 	@And("The next Player to move shall be {string}")
 	public void the_player_to_move_is_secondplayer(String color) {
 		Player player;
