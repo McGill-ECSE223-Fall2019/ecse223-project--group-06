@@ -128,6 +128,9 @@ public class CucumberStepDefinitions {
 //***********************************************
 //Start a new game
 // **********************************************
+/**
+*Feature:Start a new game 
+*/
 @when("A new game is being initialized")
 public void a_new_game_is_being_initialized(){
 	QuoridorController.startGame();
