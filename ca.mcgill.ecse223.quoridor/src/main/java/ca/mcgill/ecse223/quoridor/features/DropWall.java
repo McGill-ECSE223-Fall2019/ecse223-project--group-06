@@ -4,6 +4,7 @@ import java.util.List;
 
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
+import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 
@@ -39,9 +40,10 @@ public class DropWall {
 	 *  Queries whether a candidate wall intersects with a placed wall or cuts off the player entirely
 	 * @param checkMove - the WallMove to validate
 	 * @param gameMoves - a list of all the moves made in the game (position of the walls)
+	 * @param gamePosition - used to see the position of the players on the board, the current position
 	 * @return whether the wall is in a valid position
 	 */
-	public static boolean wallIsValid(WallMove checkMove, List<Move> gameMoves) {
+	public static boolean wallIsValid(WallMove checkMove, List<Move> gameMoves, GamePosition position) {
 		//In here I'll loop through the games moves and if they're walls
 		//Determine wether they intersect with check move or... 
 		//Somehow wether checkmove still leaves a path open
