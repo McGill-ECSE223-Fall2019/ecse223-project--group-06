@@ -130,44 +130,49 @@ public class CucumberStepDefinitions {
 	 * 
 	 */
 	
-	//GrabWall and MoveWall stepdefinitions
+	///////////////////////////////////////////////////////////////////////////////////
+	/**
+	 * GrabWall and MoveWall stepdefinitions
+	 * @author aidanwilliams
+	 */
+	
 	QuoridorController QuoridorController;
 
 	
 	//Scenario 1
 			@Given("I have more walls on stock")
-			public void iHaveWalls() {
+			public void iHaveMoreWallsOnStock() {
 				Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasWalls());
 				throw new cucumber.api.PendingException();
 			}
 			
 			@When("I try to grab a wall from my stock")
-			public void tryGrabWall() {
+			public void iTryToGrabAWallFromMyStock() {
 				QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWalls().size()-1));
 				throw new cucumber.api.PendingException();
 			}
 			
 			@Then("A wall move candidate shall be created at initial position")
-			public void isWallMoveCreated() {
+			public void aWallMoveCandidateShallBeCreatedAtInitialPosition() {
 				WallMove aWallMove = QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWalls().size()-1));
 				throw new cucumber.api.PendingException();
 			}
 			
 			@And("I shall have a wall in my hand over the board")
-			public void iHaveAWall() {
+			public void iShallHaveAWallInMyHandOverTheBoard() {
 				// GUI-related feature -- TODO for later
 				throw new cucumber.api.PendingException();
 			}
 			
 			@And("The wall in my hand shall disappear from my stock")
-			public void wallNotInStock() {
+			public void theWallInMyHandShallDisappearFromMyStock() {
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().removeWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWalls().size()-1));
 				throw new cucumber.api.PendingException();
 			}
 			
 		//Scenario 2
 			@Given("I have no more walls on stock")
-			public void noMoreWalls() {
+			public void iHaveNoMoreWallsOnStock() {
 				for(Wall wall : QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWalls())
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().removeWall(wall);
 				throw new cucumber.api.PendingException();
@@ -175,19 +180,19 @@ public class CucumberStepDefinitions {
 			
 			
 			@Then("I shall be notified that I have no more walls")
-			public void notifyNoMoreWalls() {
+			public void iShallBeNotifiedThatIHaveNoMoreWalls() {
 				// GUI-related feature -- TODO for later
 				throw new cucumber.api.PendingException();
 			}
 			
 			@And("I shall have no walls in my hand")
-			public void noWallsInHand() {
+			public void iShallHaveNoWallsInMyHand() {
 				Assert.assertFalse(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasWalls());
 				throw new cucumber.api.PendingException();
 			}
 		//Scenario Outline: Move Wall over the board
 			@Given("A wall move candidate exists with \"<dir>\" at position (<row>, <col>)")
-			public void wallMoveCandidateExists(String dir, int row, int col) {
+			public void aWallMoveCandidateExistsWith(String dir, int row, int col) {
 				if(dir.equals("vertical"))
 					aWallMove.setWallDirection(Direction.Vertical);
 				else
@@ -245,6 +250,9 @@ public class CucumberStepDefinitions {
 				throw new cucumber.api.PendingException();
 			}
 
+			////////////////////////////////////////////////////////////////////////////
+			
+			
 	// ***********************************************
 	// Clean up
 	// ***********************************************
