@@ -130,7 +130,8 @@ public class CucumberStepDefinitions {
 	public void theWallMoveCandidateWithDirAtPosIsValid(String dir, int row, int col) throws InvalidInputException {
 		//Get a string- make a dir
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
+		//Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
+		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
 		Quoridorcontroller.move(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , move.findTile(row, col));
 		//Fail if invalid wall given
 		if(!Quoridorcontroller.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
@@ -167,6 +168,7 @@ public class CucumberStepDefinitions {
 	@And("It shall not be my turn to move")
 	public void itIsNotMyTurnToMove() {
 		//Or maybe I'm supposed to change it last step and check it this one? 
+		//TODO ask why time is passed as timer
 		Switchplayer.makeTurn(new Timer(), new Timer(), QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
 		Assert.assertTrue( !QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())     );
@@ -176,7 +178,7 @@ public class CucumberStepDefinitions {
 	public void theWallMoveCandidateWithDirAtPosIsInvalid(String dir, int row, int col) throws InvalidInputException {
 		//Background ensures I have a wall in hand
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
+		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
 		Quoridorcontroller.move(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , Quoridorcontroller.findTile(row, col));
 		//Check
 		if(Quoridorcontroller.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
