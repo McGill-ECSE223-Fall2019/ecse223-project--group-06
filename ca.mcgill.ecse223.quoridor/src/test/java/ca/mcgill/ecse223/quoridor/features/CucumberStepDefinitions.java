@@ -218,7 +218,7 @@ public class CucumberStepDefinitions {
 
 	@Then("The position shall be {string}")
 	public void thePositionShallBe(String string) {
-	     
+	    
 	    throw new cucumber.api.PendingException();
 	}
 	
