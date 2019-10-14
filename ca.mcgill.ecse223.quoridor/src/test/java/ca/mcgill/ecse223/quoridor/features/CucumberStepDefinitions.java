@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 
-import ca.mcgill.ecse223.quoridor.controller.*;
+import ca.mcgill.ecse223.quoridor.Controller.*;
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
@@ -136,7 +136,7 @@ public class CucumberStepDefinitions {
 	 * @author aidanwilliams
 	 */
 	
-	QuoridorController QuoridorController;
+	Quoridorcontroller QuoridorController;
 
 	
 	//Scenario 1
