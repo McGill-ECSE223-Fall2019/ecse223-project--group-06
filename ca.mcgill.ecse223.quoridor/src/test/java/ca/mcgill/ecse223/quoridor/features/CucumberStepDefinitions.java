@@ -338,7 +338,9 @@ public void the_board_shall_be_initialized() {
 	    assertEquals("Failed loading game", QuoridorController.getLoadResult());
 	    throw new cucumber.api.PendingException();
 	}
-
+	//***********************************************
+	//Set total thinking time
+	// **********************************************
 	/**
 	 * Feature :Set Total thinking time
 	 * @Author Xiangyu Li
