@@ -7,6 +7,7 @@ public class Quoridorcontroller {
 	}
 	/**
 	 * Set current player to complete its move 
+	 * Feature:Switch player
 	 * @author Xiangyu Li
 	 * @param player
 	 */
@@ -15,6 +16,7 @@ public class Quoridorcontroller {
 	}
 	/**
 	 * Set total thinking time for each player
+	 * Feature: Set total thinking time
 	 * @param minute
 	 * @param second
 	 */
@@ -22,37 +24,42 @@ public class Quoridorcontroller {
 		throw new UnsupportedOperationException();
 	}
 	/**
-	* @author Xiangyu Li
-	* Stop black player's clock
-	*/
+	 * @author Xiangyu Li
+	 * Feature:Set total thinking time
+	 *Stop black player's clock
+	 */
 	public static void stopblackclock() {
 		throw new UnsupportedOperationException();	
 	}
 	/**
-	* @author Xiangyu Li
-	* Run white player's clock
-	*/
+	 * @author Xiangyu Li
+	 * Feature:Set total thinking time
+	 * Run white player's clock
+	 */
 	public static void runwhiteclock() {
 		throw new UnsupportedOperationException();
 	}
 	/**
-	* @author Xiangyu Li
-	* Stop white player's clock
-	*/
+	 * @author Xiangyu Li
+	 * Feature: Set total thinking time
+	 * Stop white player's clock
+	 */
 	public static void stopwhiteclock() {
 		throw new UnsupportedOperationException();	
 	}
 	/**
-	* @author Xiangyu Li
-	* Run black player's clock
-	*/
+	 * @author Xiangyu Li
+	 * Featrue:Set total thinking time
+	 * Run black player's clock
+	 */
 	public static void runblackclock() {
 		throw new UnsupportedOperationException();
 	}
 	/**
-	* @author Hongshuo Zhou
-	* Stop white player's clock
-	*/
+	 * @author Hongshuo Zhou
+	 * Feature: Start a new game
+	 * Stop white player's clock
+	 */
 	public static void startGame() {
    		throw new java.lang.UnsupportedOperationException();
 	}
@@ -66,12 +73,17 @@ public class Quoridorcontroller {
 	public static void loadGame(String filename) {
   	  	throw new java.lang.UnsupportedOperationException();
 	}
-	
-	public static boolean validatePosition() {
-    		throw new java.lang.UnsupportedOperationException();
-	}
+    /** load position Feature
+	 * @author Hongshuo Zhou 
+	 * @return the load result
+	 */
 	public static boolean getLoadResult() {
 		throw new java.lang.UnsupportedOperationException();
 	}
 
+	
+	public static boolean validatePosition() {
+    		throw new java.lang.UnsupportedOperationException();
+	}
+	
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.QuoridorController.Quoridorcontroller;
+import ca.mcgill.ecse223.quoridor.Controller.Quoridorcontroller;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
