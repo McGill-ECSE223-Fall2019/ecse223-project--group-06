@@ -3,8 +3,6 @@ package ca.mcgill.ecse223.quoridor.features;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Time;
-import java.time.Clock;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +16,6 @@ import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
-import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
@@ -132,9 +129,9 @@ public class CucumberStepDefinitions {
 *Feature:Start a new game 
 *@Author Hongshuo Zhou
 */
-@when("A new game is being initialized")
+@When("A new game is being initialized")
 public void a_new_game_is_being_initialized(){
-	QuoridorController.startGame();
+	Quoridorcontroller.startGame();
 	throw new cucumber.api.PendingException();
 }
 /**
@@ -143,7 +140,7 @@ public void a_new_game_is_being_initialized(){
 */
 @And("White player chooses a username")
 public void white_player_chooses_a_username(){
-     QuoridorApplication.getQuoridor().setName()	
+     QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();	
      throw new cucumber.api.PendingException();
 }
 /**
@@ -152,7 +149,7 @@ public void white_player_chooses_a_username(){
 */
 @And("Black player chooses a username")
 public void black_player_chooses_a_username(){
-     QuoridorApplication.getQuoridor().setName()	
+     QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
      throw new cucumber.api.PendingException();
 }
 /**
@@ -160,8 +157,8 @@ public void black_player_chooses_a_username(){
 *@Author Hongshuo Zhou
 */
 @Then("Total thinking time is set")
-public void total_thinking_time_is_set(Int inta, Int intb){
-     QuoridorController.setTotaltime(int,int);	
+public void total_thinking_time_is_set(int inta, int intb){
+     Quoridorcontroller.setTotaltime(inta,intb);	
      throw new cucumber.api.PendingException();
 }
 /**
@@ -170,7 +167,7 @@ public void total_thinking_time_is_set(Int inta, Int intb){
 */
 @Then("The game shall become ready to start")
 public void the_game_shall_become_ready_to_start(){
-	assertEquals(true, QuoridorApplication.getQuoridor().getGameStatus())
+	assertEquals(true, QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
 	throw new cucumber.api.PendingException();
 }
 /**
@@ -215,7 +212,7 @@ public void the_board_shall_be_initialized() {
 	*/
 	@When("I initiate to load a saved game {string}")
 	public void i_initiate_to_load_a_saved_game(String string) {
-		QuoridorController.loadGame(string);
+		Quoridorcontroller.loadGame(string);
 	    throw new cucumber.api.PendingException();
 	}
 	/**
@@ -224,7 +221,7 @@ public void the_board_shall_be_initialized() {
 	*/
 	@And("The position to load is valid")
 	public void the_position_to_load_is_valid() {
-	    assertEquals(true, QuoridorController.validatePosition());
+	    assertEquals(true, Quoridorcontroller.validatePosition());
 	    throw new cucumber.api.PendingException();
 	}
 	/**
@@ -235,11 +232,11 @@ public void the_board_shall_be_initialized() {
 	public void it_shall_be_s_turn(String string) {
 		String currentcolor;
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
-			curcolor = "black";
+			currentcolor = "black";
 		}else {
-			curcolor = "white";
+			currentcolor = "white";
 		}
-		assertEquals(string, curcolor);
+		assertEquals(string, currentcolor);
 	    throw new cucumber.api.PendingException();
 	}
 	/**
@@ -326,7 +323,7 @@ public void the_board_shall_be_initialized() {
 	*/
 	@When("The position to load is invalid")
 	public void the_position_to_load_is_invalid() {
-		assertEquals(false, QuoridorController.validatePosition());
+		assertEquals(false, Quoridorcontroller.validatePosition());
 	    throw new cucumber.api.PendingException();
 	}
 	/**
@@ -335,7 +332,7 @@ public void the_board_shall_be_initialized() {
 	*/
 	@Then("The load shall return an error") 
 	public void the_load_shall_return_an_error() {
-	    assertEquals("Failed loading game", QuoridorController.getLoadResult());
+	    assertEquals("Failed loading game", Quoridorcontroller.getLoadResult());
 	    throw new cucumber.api.PendingException();
 	}
 	//***********************************************

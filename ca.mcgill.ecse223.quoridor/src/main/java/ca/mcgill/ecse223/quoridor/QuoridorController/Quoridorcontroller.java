@@ -67,8 +67,11 @@ public class Quoridorcontroller {
   	  	throw new java.lang.UnsupportedOperationException();
 	}
 	
-	public static void validatePosition() {
+	public static boolean validatePosition() {
     		throw new java.lang.UnsupportedOperationException();
+	}
+	public static boolean getLoadResult() {
+		throw new java.lang.UnsupportedOperationException();
 	}
 
 }
