@@ -1,5 +1,15 @@
 package ca.mcgill.ecse223.quoridor.features;
 
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+package ca.mcgill.ecse223.quoridor.features;
+
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Time;
@@ -23,8 +33,10 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
+import cucumber.api.PendingException;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.But;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -616,6 +628,164 @@ public void the_board_shall_be_initialized() {
 	}
 
 	////////////////////////////////////////////////////////////////////////////
+
+  
+  /** Drop Wall Step Definition File
+	 * @author Yanis Jallouli
+	 */
+	// ***********************************************
+	// Drop Wall definitions
+	// ***********************************************
+	//Scenario 1
+	@Given("The wall move candidate with {string} at position {int}, {int} is valid")
+	public void theWallMoveCandidateWithDirAtPosIsValid(String dir, int row, int col) throws InvalidInputException {
+		//Get a string- make a dir
+		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
+		//Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
+		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
+		Quoridorcontroller.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , Quoridorcontroller.findTile(row, col));
+		//Fail if invalid wall given
+		List<WallMove> moveList;
+		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
+			if(move instanceof WallMove) moveList.add((WallMove) move);
+		}
+		
+		if(!Quoridorcontroller.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
+				moveList, 
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
+			Assert.fail();
+		}
+	}
+	
+	@When("I release the wall in my hand") 
+	public void iReleaseTheWallInMyHand(){
+		Quoridorcontroller.dropWall(QuoridorApplication.getQuoridor().getCurrentGame());
+	}
+	
+	@Then("A wall move shall be registered with {string} at position {int}, {int}")
+	public void aWallMoveIsRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
+		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
+		Assert.assertTrue("Move wasn't registered after dropping", Quoridorcontroller.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
+	}
+	
+	@And("I shall not have a wall in my hand") 
+	public void iShallNotHaveAWallInMyHand() {
+		//Ensures the candidate wallmove is null. Might be a grab wall feature, but this is easy
+		Assert.assertFalse(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate());
+	}
+
+	@And("My move shall be completed")
+	public void myMoveIsCompleted() {
+		throw new PendingException(); //I'm assuming this is a User confirming move
+	}
+	
+	@And("It shall not be my turn to move")
+	public void itIsNotMyTurnToMove() {
+		//Or maybe I'm supposed to change it last step and check it this one? 
+		Quoridorcontroller.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
+		Assert.assertTrue( !QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())     );
+	}
+	//SCENARIO 2
+	@Given("The wall move candidate with {string} at position {int}, {int} is invalid")
+	public void theWallMoveCandidateWithDirAtPosIsInvalid(String dir, int row, int col) throws InvalidInputException {
+		//Background ensures I have a wall in hand
+		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
+		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
+		Quoridorcontroller.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , Quoridorcontroller.findTile(row, col));
+		//Check
+		List<WallMove> moveList;
+		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
+			if(move instanceof WallMove) moveList.add((WallMove) move);
+		}
+		
+		if(Quoridorcontroller.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
+				moveList, 
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
+			Assert.fail(); //If you reached here, the parameters being passed in are wrong
+		}
+	}
+	
+	
+	@Then("I shall be notified that my wall move is invalid")
+	public void iShallBeNotifiedThatMyWallMoveIsInvalid() {
+		throw new PendingException(); //GUI stuff
+	}
+	
+	@And("I shall have a wall in my hand over the board")
+	public void iShallHaveAWallInMyHandOverTheBoard() {
+		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate());
+	}
+	
+	@And("It shall be my turn to move")
+	public void itShallBeMyTurnToMove() {
+		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())   );
+	}
+	
+	//THE PROBLEM WAS THE GHERKIN FILE THIS WHOLE TIME. (<row>,<col>) MAKES IT OPTIONAL
+	
+	@But("No wall move shall be registered with {string} at position {int}, {int}")
+	public void noWallMoveShallBeRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
+		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
+		Assert.assertFalse(Quoridorcontroller.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
+	}
+	
+	
+	/** Save Position Step Definition File
+	 * @author Yanis Jallouli
+	 */
+	// ***********************************************
+	// Save Position definitions
+	// ***********************************************
+	//Scenario 1
+	@Given("No file {string} exists in the filesystem")
+	public void noFileExistsInTheSystem(String fileName) {
+		//I can't find anything on using givens as control flow
+		Assert.assertFalse(Quoridorcontroller.containsFile(fileName));
+	}
+	
+	@When("The user initiates to save the game with name {string}")
+	public void theUserInitiatesToSaveTheGameWithName(String fileName) {
+		//GUI related
+		throw new PendingException();
+	}
+	
+	@Then("A file with {string} shall be created in the filesystem")
+	public void aFileWithNameShallBeCreated(String fileName) {
+		Quoridorcontroller.createFile(QuoridorApplication.getQuoridor().getCurrentGame(), fileName); 
+		Assert.assertTrue(Quoridorcontroller.containsFile(fileName));
+	}
+	//Scenario 2
+	@Given("File {string} exists in the filesystem")
+	public void fileNameExistsInSystem(String fileName) {
+		//This is confusing me. We have one for it doesn't exist so it
+		//seems like an if thing. Should I assert it's true? or make it true somehow?
+		Assert.assertTrue(Quoridorcontroller.containsFile(fileName));
+	}
+	
+	@And("The user confirms to overwrite existing file")
+	public void theUserConfirmsToOverwrite() {
+		//GUI related
+		throw new PendingException();
+	}
+	@Then("File with {string} shall be updated in the filesystem")
+	public void fileWithNameShallBeUpdatedInSystem(String fileName) {
+		Quoridorcontroller.savePosition(QuoridorApplication.getQuoridor().getCurrentGame(), fileName);
+		Assert.assertTrue(Quoridorcontroller.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
+	}
+
+	@And("The user cancels to overwrite existing file")
+	public void theUserCancelsToOverwrite() {
+		//GUI related
+		throw new PendingException();
+	}
+	@Then("File {string} shall not be changed in the filesystem")
+	public void fileWithNameShallNotBeUpdatedInSystem(String fileName) {
+		Assert.assertFalse(Quoridorcontroller.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
+	}
 
 
 	// ***********************************************
