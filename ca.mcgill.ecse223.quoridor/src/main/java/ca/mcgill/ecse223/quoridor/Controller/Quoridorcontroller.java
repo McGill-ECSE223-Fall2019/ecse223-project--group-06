@@ -100,7 +100,7 @@ public class Quoridorcontroller {
 	 * @return whether or not the wall successfully moved
 	 */
 
-	public boolean moveWall(WallMove curMove, Tile targetTile) {
+	public static boolean moveWall(WallMove curMove, Tile targetTile) {
 
 		// take in a WallMove created in GrabWall feature and put the wall in the
 		// targetTile
@@ -124,7 +124,7 @@ public class Quoridorcontroller {
 	 * @param c
 	 * @return tile at location
 	 */
-	public Tile findTile(int r, int c) {
+	public static Tile findTile(int r, int c) {
 		// use row and col to find the tile we want
 
 		throw new java.lang.UnsupportedOperationException();
@@ -140,7 +140,7 @@ public class Quoridorcontroller {
 	 * @return
 	 */
 
-	public WallMove grabWall(Wall aWall) {
+	public static WallMove grabWall(Wall aWall) {
 		// will take in a wall and create a wall move object with some default values
 
 		throw new java.lang.UnsupportedOperationException();
@@ -152,7 +152,7 @@ public class Quoridorcontroller {
 	 * @param aWallMove
 	 * @return boolean
 	 */
-	public boolean isSide(WallMove aWallMove) {
+	public static boolean isSide(WallMove aWallMove) {
 		throw new java.lang.UnsupportedOperationException();
 	}
 }
