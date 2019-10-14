@@ -349,7 +349,6 @@ public void the_board_shall_be_initialized() {
 	@When("{int}:{int} is set as the thinking time")
 	public void is_set_as_the_thinking_time(int minute,int second) {
 		Quoridorcontroller.setTotaltime(minute, second);
-		throw new cucumber.api.PendingException();
 	}
 	
 	/**
@@ -364,8 +363,11 @@ public void the_board_shall_be_initialized() {
 		long remaintime=(minute*60+second)*1000;
 		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime());
 		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime());
-		throw new cucumber.api.PendingException();
 	}
+	
+	//*************************************************
+	//Switch Player
+	//*************************************************
 	
 	/**
 	 * Feature :Switch current player
@@ -379,8 +381,7 @@ public void the_board_shall_be_initialized() {
 		}
 		else 
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
-			throw new cucumber.api.PendingException();
-	}
+		}
 	
 	/**
 	 * Feature :Switch current player
@@ -395,7 +396,6 @@ public void the_board_shall_be_initialized() {
 		}
 		else
 			Quoridorcontroller.runwhiteclock();
-		throw new cucumber.api.PendingException();
 	}
 	/**
 	 * Feature :Switch current player
@@ -410,8 +410,6 @@ public void the_board_shall_be_initialized() {
 		}
 		else
 			Quoridorcontroller.stopblackclock();
-		
-		throw new cucumber.api.PendingException();
 	}
 	/**
 	 * Feature :Switch current player
@@ -426,7 +424,6 @@ public void the_board_shall_be_initialized() {
 		else {
 		Quoridorcontroller.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());	
 		}
-		throw new cucumber.api.PendingException();
 	}
 	/**
 	 * Feature :Switch current player
@@ -442,7 +439,6 @@ public void the_board_shall_be_initialized() {
 		if(color=="white") {
 			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(),currentPlayer);
 		}
-		throw new cucumber.api.PendingException();
 	}
 	/**
 	 * Feature :Switch current player
@@ -456,7 +452,6 @@ public void the_board_shall_be_initialized() {
 		}
 		else
 			Quoridorcontroller.stopwhiteclock();
-		throw new cucumber.api.PendingException();
 	}
 	/**
 	 * Feature :Switch current player
@@ -470,7 +465,6 @@ public void the_board_shall_be_initialized() {
 		}
 		else
 			Quoridorcontroller.runblackclock();
-		throw new cucumber.api.PendingException();
 	}
 	/**
 	 * Feature :Switch current player
@@ -488,7 +482,6 @@ public void the_board_shall_be_initialized() {
 			player=QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
 			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove(),player);
 		}
-		throw new cucumber.api.PendingException();
 	}
 
 
