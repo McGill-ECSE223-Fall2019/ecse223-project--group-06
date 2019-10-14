@@ -9,7 +9,7 @@ import java.util.Timer;
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.Controller.Quoridorcontroller;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -133,14 +133,14 @@ public class CucumberStepDefinitions {
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 		//Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
 		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
-		QuoridorController.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , QuoridorController.findTile(row, col));
+		Quoridorcontroller.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , Quoridorcontroller.findTile(row, col));
 		//Fail if invalid wall given
 		List<WallMove> moveList;
 		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
 			if(move instanceof WallMove) moveList.add((WallMove) move);
 		}
 		
-		if(!QuoridorController.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
+		if(!Quoridorcontroller.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
 				moveList, 
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
@@ -150,13 +150,13 @@ public class CucumberStepDefinitions {
 	
 	@When("I release the wall in my hand") 
 	public void iReleaseTheWallInMyHand(){
-		QuoridorController.dropWall(QuoridorApplication.getQuoridor().getCurrentGame());
+		Quoridorcontroller.dropWall(QuoridorApplication.getQuoridor().getCurrentGame());
 	}
 	
 	@Then("A wall move shall be registered with {string} at position {int}, {int}")
 	public void aWallMoveIsRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		Assert.assertTrue("Move wasn't registered after dropping", QuoridorController.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
+		Assert.assertTrue("Move wasn't registered after dropping", Quoridorcontroller.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
 	}
 	
 	@And("I shall not have a wall in my hand") 
@@ -175,7 +175,7 @@ public class CucumberStepDefinitions {
 	public void itIsNotMyTurnToMove() {
 		//Or maybe I'm supposed to change it last step and check it this one? 
 		//TODO ask why time is passed as timer
-		QuoridorController.makeTurn(new Timer(), new Timer(), QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
+		Quoridorcontroller.makeTurn(new Timer(), new Timer(), QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
 		Assert.assertTrue( !QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())     );
 	}
@@ -185,14 +185,14 @@ public class CucumberStepDefinitions {
 		//Background ensures I have a wall in hand
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
-		QuoridorController.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , QuoridorController.findTile(row, col));
+		Quoridorcontroller.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , Quoridorcontroller.findTile(row, col));
 		//Check
 		List<WallMove> moveList;
 		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
 			if(move instanceof WallMove) moveList.add((WallMove) move);
 		}
 		
-		if(QuoridorController.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
+		if(Quoridorcontroller.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
 				moveList, 
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
@@ -222,7 +222,7 @@ public class CucumberStepDefinitions {
 	@But("No wall move shall be registered with {string} at position {int}, {int}")
 	public void noWallMoveShallBeRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		Assert.assertFalse(QuoridorController.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
+		Assert.assertFalse(Quoridorcontroller.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
 	}
 	
 	
@@ -236,7 +236,7 @@ public class CucumberStepDefinitions {
 	@Given("No file {string} exists in the filesystem")
 	public void noFileExistsInTheSystem(String fileName) {
 		//I can't find anything on using givens as control flow
-		Assert.assertFalse(QuoridorController.containsFile(fileName));
+		Assert.assertFalse(Quoridorcontroller.containsFile(fileName));
 	}
 	
 	@When("The user initiates to save the game with name {string}")
@@ -247,15 +247,15 @@ public class CucumberStepDefinitions {
 	
 	@Then("A file with {string} shall be created in the filesystem")
 	public void aFileWithNameShallBeCreated(String fileName) {
-		QuoridorController.createFile(QuoridorApplication.getQuoridor().getCurrentGame(), fileName); 
-		Assert.assertTrue(QuoridorController.containsFile(fileName));
+		Quoridorcontroller.createFile(QuoridorApplication.getQuoridor().getCurrentGame(), fileName); 
+		Assert.assertTrue(Quoridorcontroller.containsFile(fileName));
 	}
 	//Scenario 2
 	@Given("File {string} exists in the filesystem")
 	public void fileNameExistsInSystem(String fileName) {
 		//This is confusing me. We have one for it doesn't exist so it
 		//seems like an if thing. Should I assert it's true? or make it true somehow?
-		Assert.assertTrue(QuoridorController.containsFile(fileName));
+		Assert.assertTrue(Quoridorcontroller.containsFile(fileName));
 	}
 	
 	@And("The user confirms to overwrite existing file")
@@ -265,8 +265,8 @@ public class CucumberStepDefinitions {
 	}
 	@Then("File with {string} shall be updated in the filesystem")
 	public void fileWithNameShallBeUpdatedInSystem(String fileName) {
-		QuoridorController.savePosition(QuoridorApplication.getQuoridor().getCurrentGame(), fileName);
-		Assert.assertTrue(QuoridorController.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
+		Quoridorcontroller.savePosition(QuoridorApplication.getQuoridor().getCurrentGame(), fileName);
+		Assert.assertTrue(Quoridorcontroller.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
 	}
 
 	@And("The user cancels to overwrite existing file")
@@ -276,7 +276,7 @@ public class CucumberStepDefinitions {
 	}
 	@Then("File {string} shall not be changed in the filesystem")
 	public void fileWithNameShallNotBeUpdatedInSystem(String fileName) {
-		Assert.assertFalse(QuoridorController.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
+		Assert.assertFalse(Quoridorcontroller.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
 	}
 
 	// ***********************************************
