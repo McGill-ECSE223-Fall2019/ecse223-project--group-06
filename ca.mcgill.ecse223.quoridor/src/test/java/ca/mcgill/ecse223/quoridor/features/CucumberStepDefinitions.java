@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -25,8 +26,18 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-public class CucumberStepDefinitions {
+import static org.junit.Assert.assertEquals;
 
+public class CucumberStepDefinitions {
+	
+	
+	
+	private Quoridor quoridor;
+	private Board board;
+	private Player player1;
+	private Player player2;
+	private Player currentPlayer;
+	private Game game;
 	// ***********************************************
 	// Background step definitions
 	// ***********************************************
@@ -125,55 +136,65 @@ public class CucumberStepDefinitions {
 	
 	@Given("A new game is initializing")
 	public void aNewGameIsInitializing() {
-	    // Write code here that turns the phrase above into concrete actions
+		QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
+		assertEquals(true, GameStatus.Initializing);
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIs(String string) {
-	    // Write code here that turns the phrase above into concrete actions
+		if(string.equals("black")) {
+			
+		}
+		
+		QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+		
+		
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Given("There is existing user {string}")
 	public void thereIsExistingUser(String string) {
-	    // Write code here that turns the phrase above into concrete actions
+	    List<User> existingUsers = new ArrayList<>();
+	    for(int i = 0; i < existingUsers.size(); i++) {
+	    	assertEquals(string, existingUsers.get(i));
+	    }
 	    throw new cucumber.api.PendingException();
 	}
 
 	@When("The player selects existing {string}")
 	public void thePlayerSelectsExisting(String string) {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Given("There is no existing user {string}")
 	public void thereIsNoExistingUser(String string) {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
 
 	@When("The player provides new user name: {string}")
 	public void thePlayerProvidesNewUserName(String string) {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The player shall be warned that {string} already exists")
 	public void thePlayerShallBeWarnedThatAlreadyExists(String string) {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("Next player to set user name shall be {string}")
 	public void nextPlayerToSetUserNameShallBe(String string) {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
 	
@@ -184,39 +205,43 @@ public class CucumberStepDefinitions {
 	
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void aGamePositionIsSuppliedWithPawnCoordinate(Integer int1, Integer int2) {
-	    // Write code here that turns the phrase above into concrete actions
-		
+	    
 		
 	    throw new cucumber.api.PendingException();
 	}
 
 	@When("Validation of the position is initiated")
 	public void validationOfThePositionIsInitiated() {
-	    // Write code here that turns the phrase above into concrete actions
+	    
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The position shall be {string}")
 	public void thePositionShallBe(String string) {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
+	
+	
+	
+	
+	
 
 	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
 	public void aGamePositionIsSuppliedWithWallCoordinate(Integer int1, Integer int2, String string) {
-	    // Write code here that turns the phrase above into concrete actions
+	    
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The position shall be valid")
 	public void thePositionShallBeValid() {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The position shall be invalid")
 	public void thePositionShallBeInvalid() {
-	    // Write code here that turns the phrase above into concrete actions
+	     
 	    throw new cucumber.api.PendingException();
 	}
 	
