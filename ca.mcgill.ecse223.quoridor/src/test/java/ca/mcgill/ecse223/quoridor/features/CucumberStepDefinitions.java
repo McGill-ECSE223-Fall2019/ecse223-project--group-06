@@ -235,13 +235,13 @@ public class CucumberStepDefinitions {
 
 	@Then("The position shall be valid")
 	public void thePositionShallBeValid() {
-	     
+	    assertEquals(true, QuoridorController.validatePosition());
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The position shall be invalid")
 	public void thePositionShallBeInvalid() {
-	     
+		assertEquals(false, QuoridorController.validatePosition());
 	    throw new cucumber.api.PendingException();
 	}
 	
