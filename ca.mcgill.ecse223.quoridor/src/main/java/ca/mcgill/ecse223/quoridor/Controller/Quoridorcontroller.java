@@ -1,4 +1,4 @@
-package ca.mcgill.ecse223.quoridor.QuoridorController;
+package ca.mcgill.ecse223.quoridor.Controller;
 
 import ca.mcgill.ecse223.quoridor.model.Player;
 
