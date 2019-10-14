@@ -143,34 +143,69 @@ public class CucumberStepDefinitions {
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIs(String string) {
-		if(string.equals("black")) {
-			
+		if(!string.equals("black") && !string.equals("white")) {
+			throw new IllegalArgumentException();
 		}
-		
-		QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
-		
-		
+		else {
+			if(string.equals("black")) {
+				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+			}
+			if(string.equals("white")) {
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+			}
+		}
+				
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Given("There is existing user {string}")
 	public void thereIsExistingUser(String string) {
-	    List<User> existingUsers = new ArrayList<>();
+	    List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
 	    for(int i = 0; i < existingUsers.size(); i++) {
-	    	assertEquals(string, existingUsers.get(i));
+	    	assertEquals(string, existingUsers.get(i).getName());
 	    }
 	    throw new cucumber.api.PendingException();
 	}
 
 	@When("The player selects existing {string}")
 	public void thePlayerSelectsExisting(String string) {
-	     
+		List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
+		User existingUser = null;
+	    for(int i = 0; i < existingUsers.size(); i++) {
+	    	if(string.equals(existingUsers.get(i).getName())) {
+	    		existingUser = existingUsers.get(i);
+	    	}
+	    }
+	    
+	    
+	    
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
+			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setUser(existingUser);		
+		}
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
+			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setUser(existingUser);	
+		}
+	    
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
-	     
+		int indexOfChosenUsername = 0;
+		List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
+	    for(int i = 0; i < existingUsers.size(); i++) {
+	    	if(string2.equals(existingUsers.get(i).getName())) {
+	    		indexOfChosenUsername = i;
+	    	}
+	    }
+		
+		if(string.equals("black")) {
+			QuoridorApplication.getQuoridor().getUser(indexOfChosenUsername);	
+		}
+		if(string.equals("white")) {
+			QuoridorApplication.getQuoridor().getUser(indexOfChosenUsername);
+		}
+	    
 	    throw new cucumber.api.PendingException();
 	}
 
@@ -205,6 +240,25 @@ public class CucumberStepDefinitions {
 	
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void aGamePositionIsSuppliedWithPawnCoordinate(Integer int1, Integer int2) {
+		if(int1 <= 1 || int2 <= 1) {
+			System.out.println("Invalid coordinates given. Values must be between 1 and 9.");
+		}
+		else {			
+			Integer row;
+			Integer column;
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
+				row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow();
+				column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn();
+				assertEquals(row, int1);
+				assertEquals(column, int2);
+			}
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
+				row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow();
+				column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn();
+				assertEquals(row, int1);
+				assertEquals(column, int2);
+			}
+		}
 	    
 		
 	    throw new cucumber.api.PendingException();
@@ -212,13 +266,27 @@ public class CucumberStepDefinitions {
 
 	@When("Validation of the position is initiated")
 	public void validationOfThePositionIsInitiated() {
-	    
+	    QuoridorController.validatePosition();
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The position shall be {string}")
 	public void thePositionShallBe(String string) {
-	    
+		if(string.equals("ok")) {
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
+				
+				//PlayerPosition aNewBlackPosition = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), );
+				//QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setBlackPosition(aNewBlackPosition))
+				
+				
+			}
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
+				
+			}
+		}
+		if(string.equals("error")) {
+			
+		}
 	    throw new cucumber.api.PendingException();
 	}
 	
