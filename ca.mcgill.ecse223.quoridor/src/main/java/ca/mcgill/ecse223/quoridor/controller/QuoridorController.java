@@ -1,4 +1,4 @@
-package ca.mcgill.ecse223.quoridor.QuoridorController;
+package ca.mcgill.ecse223.quoridor.controller;
 
 import java.io.BufferedWriter;
 
@@ -6,7 +6,7 @@ import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Move;
 
-public class Quoridorcontroller {
+public class QuoridorController {
 	
 	/** Drop Wall 
 	 * Updates game position with candidate wall move 
