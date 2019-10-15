@@ -263,20 +263,11 @@ public class CucumberStepDefinitions {
 
 	@Then("The position shall be {string}")
 	public void thePositionShallBe(String string) {
-		if(string.equals("ok")) {
-			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
-				
-				//PlayerPosition aNewBlackPosition = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), );
-				//QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setBlackPosition(aNewBlackPosition))
-				
-				
-			}
-			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
-				
-			}
+		if(QuoridorController.validatePosition()) {
+			string = "ok";
 		}
-		if(string.equals("error")) {
-			
+		else {
+			string = "error";
 		}
 	    throw new cucumber.api.PendingException();
 	}
