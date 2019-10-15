@@ -849,6 +849,210 @@ public void the_board_shall_be_initialized() {
 	    throw new cucumber.api.PendingException();
 	}
 	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Feature: #2 Provide or select user name
+	//Name: Keanu, Natchev
+	//ID#: 260804586
+
+	@Given("A new game is initializing")
+	public void aNewGameIsInitializing() {
+		QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
+		assertEquals(true, GameStatus.Initializing);
+		throw new cucumber.api.PendingException();
+	}
+
+	@Given("Next player to set user name is {string}")
+	public void nextPlayerToSetUserNameIs(String string) {
+		if(!(string == "black") && !(string == "white")) {
+			throw new IllegalArgumentException();
+		}
+		else {
+			if(string == "black") {
+				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+			}
+			if(string == "white") {
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+			}
+		}
+
+		throw new cucumber.api.PendingException();
+	}
+
+	@Given("There is existing user {string}")
+	public void thereIsExistingUser(String string) {
+		List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
+		for(int i = 0; i < existingUsers.size(); i++) {
+			assertEquals(string, existingUsers.get(i).getName());
+		}
+		throw new cucumber.api.PendingException();
+	}
+
+	@When("The player selects existing {string}")
+	public void thePlayerSelectsExisting(String string) {
+		assertEquals(true, Quoridorcontroller.ExistingUserName(string));
+		throw new cucumber.api.PendingException();
+	}
+
+	@Then("The name of player {string} in the new game shall be {string}")
+	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
+		if(string == "black") {
+			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().setName(string2);
+
+		}
+		if(string == "white") {
+			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().setName(string2);
+		}
+
+		throw new cucumber.api.PendingException();
+	}
+
+	@Given("There is no existing user {string}")
+	public void thereIsNoExistingUser(String string) {
+		assertEquals(false, Quoridorcontroller.ExistingUserName(string));
+		throw new cucumber.api.PendingException();
+	}
+
+	@When("The player provides new user name: {string}")
+	public void thePlayerProvidesNewUserName(String string) {
+		QuoridorApplication.getQuoridor().addUser(string);
+		throw new cucumber.api.PendingException();
+	}
+
+	@Then("The player shall be warned that {string} already exists")
+	public void thePlayerShallBeWarnedThatAlreadyExists(String string) {
+		if(Quoridorcontroller.ExistingUserName(string)) {
+			System.out.println("The user with the name: " + string + "already exists.");
+		}
+		throw new cucumber.api.PendingException();
+	}
+
+	@Then("Next player to set user name shall be {string}")
+	public void nextPlayerToSetUserNameShallBe(String string) {
+		if(!string.equals("black") && !string.equals("white")) {
+			throw new IllegalArgumentException();
+		}
+		else {
+			if(string.equals("black")) {
+				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+			}
+			if(string.equals("white")) {
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+			}
+		}
+		throw new cucumber.api.PendingException();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//Feature: #11 Validate position
+	//Name: Keanu, Natchev
+	//ID#: 260804586
+
+	@Given("A game position is supplied with pawn coordinate {int}:{int}")
+	public void aGamePositionIsSuppliedWithPawnCoordinate(Integer int1, Integer int2) {
+		if(int1 < 1 || int1 > 9 || int2 < 1 || int2 > 9) {
+			System.out.println("Invalid coordinates given. Values must be between 1 and 9.");
+		}
+		else {			
+			Integer row;
+			Integer column;
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
+				row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow();
+				column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn();
+				assertEquals(row, int1);
+				assertEquals(column, int2);
+			}
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
+				row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow();
+				column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn();
+				assertEquals(row, int1);
+				assertEquals(column, int2);
+			}
+		}
+
+
+		throw new cucumber.api.PendingException();
+	}
+
+	@When("Validation of the position is initiated")
+	public void validationOfThePositionIsInitiated() {
+		Quoridorcontroller.validatePosition();
+		throw new cucumber.api.PendingException();
+	}
+
+	@Then("The position shall be {string}")
+	public void thePositionShallBe(String string) {
+		if(Quoridorcontroller.validatePosition()) {
+			string = "ok";
+		}
+		else {
+			string = "error";
+		}
+		throw new cucumber.api.PendingException();
+	}
+
+	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
+	public void aGamePositionIsSuppliedWithWallCoordinate(Integer int1, Integer int2, String string) {		
+		Direction directionGiven = null;
+
+		if(string == "vertical") {
+			directionGiven = Direction.Vertical;					
+		}
+		if(string == "horizontal") {
+			directionGiven = Direction.Horizontal;
+		}
+
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
+			List<Wall> blackWalls =  QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsOnBoard();
+			Integer row;
+			Integer column;
+			Direction direction;
+			for(int i = 0; i < blackWalls.size(); i++) {
+
+				row = blackWalls.get(i).getMove().getTargetTile().getRow();
+				column = blackWalls.get(i).getMove().getTargetTile().getColumn();
+				direction = blackWalls.get(i).getMove().getWallDirection();
+				assertEquals(int1, row);
+				assertEquals(int2, column);
+				assertEquals(directionGiven, direction);
+			}
+		}
+
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
+			List<Wall> whiteWalls =  QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard();
+			Integer row;
+			Integer column;
+			Direction direction;
+			for(int i = 0; i < whiteWalls.size(); i++) {
+
+				row = whiteWalls.get(i).getMove().getTargetTile().getRow();
+				column = whiteWalls.get(i).getMove().getTargetTile().getColumn();
+				direction = whiteWalls.get(i).getMove().getWallDirection();
+				assertEquals(int1, row);
+				assertEquals(int2, column);
+				assertEquals(directionGiven, direction);
+			}
+		}
+
+
+		throw new cucumber.api.PendingException();
+	}
+
+	@Then("The position shall be valid")
+	public void thePositionShallBeValid() {
+		assertEquals(true, Quoridorcontroller.validPosition());
+		throw new cucumber.api.PendingException();
+	}
+
+	@Then("The position shall be invalid")
+	public void thePositionShallBeInvalid() {
+		assertEquals(false, Quoridorcontroller.validPosition());
+		throw new cucumber.api.PendingException();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	
 
 	// ***********************************************
 	// Clean up

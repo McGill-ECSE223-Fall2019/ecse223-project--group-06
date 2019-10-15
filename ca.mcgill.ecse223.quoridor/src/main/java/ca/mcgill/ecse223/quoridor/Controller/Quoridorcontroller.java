@@ -228,6 +228,33 @@ public class Quoridorcontroller {
 		throw new java.lang.UnsupportedOperationException();
 	}
 	
+	///////////////////////////////////////////////////////////////////////////
+	/*
+	 * @author Keanu Natchev
+	 * Checks whether or not the position is valid
+	 */
+		
+	public static boolean validPosition() {
+		throw new java.lang.UnsupportedOperationException();
+	}
+	
+	/*
+	 * @author Keanu Natchev
+	 * @param userName - the username that needs to be checked
+	 * Checks whether or not there is a user with the same name as the input
+	 */
+
+	public static boolean ExistingUserName(String userName) {
+		throw new java.lang.UnsupportedOperationException();
+	}
+
+	///////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	
+	
 	/** Initialize Board feature
 	 * @author Matteo Nunez
 	 * @param board - board object that is going to be initialize
