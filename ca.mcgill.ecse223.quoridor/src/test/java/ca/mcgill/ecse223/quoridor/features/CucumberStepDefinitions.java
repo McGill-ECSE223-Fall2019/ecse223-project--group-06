@@ -169,20 +169,18 @@ public class CucumberStepDefinitions {
 
 	@When("The player selects existing {string}")
 	public void thePlayerSelectsExisting(String string) {
-		
-		
-	    
+		assertEquals(true, QuoridorController.ExistingUserName(string));
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
-	
 		if(string == "black") {
-			QuoridorApplication.getQuoridor().getUser(5);
+			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().setName(string2);
+			
 		}
 		if(string == "white") {
-			QuoridorApplication.getQuoridor().getUser(5);
+			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().setName(string2);
 		}
 	    
 	    throw new cucumber.api.PendingException();
