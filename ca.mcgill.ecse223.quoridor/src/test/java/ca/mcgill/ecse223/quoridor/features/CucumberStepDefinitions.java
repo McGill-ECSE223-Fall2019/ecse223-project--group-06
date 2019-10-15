@@ -1,18 +1,9 @@
 package ca.mcgill.ecse223.quoridor.features;
 
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-package ca.mcgill.ecse223.quoridor.features;
-
-import static org.junit.Assert.assertEquals;
-
-import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +17,7 @@ import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
+import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
@@ -124,14 +116,6 @@ public class CucumberStepDefinitions {
 	// ***********************************************
 	// Scenario and scenario outline step definitions
 	// ***********************************************
-
-	/*
-	 * TODO Insert your missing step definitions here
-	 * 
-	 * Call the methods of the controller that will manipulate the model once they
-	 * are implemented
-	 * 
-	 */
 
 
 //***********************************************
@@ -630,7 +614,7 @@ public void the_board_shall_be_initialized() {
 	////////////////////////////////////////////////////////////////////////////
 
   
-  /** Drop Wall Step Definition File
+    /** Drop Wall Step Definition File
 	 * @author Yanis Jallouli
 	 */
 	// ***********************************************
@@ -639,13 +623,13 @@ public void the_board_shall_be_initialized() {
 	//Scenario 1
 	@Given("The wall move candidate with {string} at position {int}, {int} is valid")
 	public void theWallMoveCandidateWithDirAtPosIsValid(String dir, int row, int col) throws InvalidInputException {
-		//Get a string- make a dir
+		//Get a string- make a direction
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 		//Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
 		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
 		Quoridorcontroller.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , Quoridorcontroller.findTile(row, col));
 		//Fail if invalid wall given
-		List<WallMove> moveList;
+		List<WallMove> moveList = new ArrayList<WallMove>();
 		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
 			if(move instanceof WallMove) moveList.add((WallMove) move);
 		}
@@ -695,7 +679,7 @@ public void the_board_shall_be_initialized() {
 		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
 		Quoridorcontroller.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , Quoridorcontroller.findTile(row, col));
 		//Check
-		List<WallMove> moveList;
+		List<WallMove> moveList = new ArrayList<WallMove>();
 		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
 			if(move instanceof WallMove) moveList.add((WallMove) move);
 		}
@@ -713,11 +697,12 @@ public void the_board_shall_be_initialized() {
 	public void iShallBeNotifiedThatMyWallMoveIsInvalid() {
 		throw new PendingException(); //GUI stuff
 	}
-	
+	/*//Taken care of in grab/move wall
 	@And("I shall have a wall in my hand over the board")
 	public void iShallHaveAWallInMyHandOverTheBoard() {
 		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate());
 	}
+	*/
 	
 	@And("It shall be my turn to move")
 	public void itShallBeMyTurnToMove() {

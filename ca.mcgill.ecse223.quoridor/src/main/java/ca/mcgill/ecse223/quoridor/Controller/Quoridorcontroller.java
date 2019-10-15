@@ -1,5 +1,8 @@
 package ca.mcgill.ecse223.quoridor.Controller;
 
+import java.io.BufferedWriter;
+import java.util.List;
+
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Move;
@@ -8,9 +11,6 @@ import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
-
-
-import java.io.BufferedWriter;
 
 
 public class Quoridorcontroller {
@@ -162,8 +162,9 @@ public class Quoridorcontroller {
 	public static boolean isSide(WallMove aWallMove) {
 		throw new java.lang.UnsupportedOperationException();
 	}
+	////////////////////////////////////////////////////////////////
   
-  /** Drop Wall 
+    /** Drop Wall 
 	 * Updates game position with candidate wall move 
 	 * @param game - current game
 	 * @return whether or not the wall successfully dropped
@@ -183,8 +184,6 @@ public class Quoridorcontroller {
 	public static boolean moveIsRegistered(Game game, Direction dir, int row, int col) {
 		throw new java.lang.UnsupportedOperationException();
 	}
-	//wallIsValid covered by Aidan
-
 	
 	
 	/** Save Position Feature
