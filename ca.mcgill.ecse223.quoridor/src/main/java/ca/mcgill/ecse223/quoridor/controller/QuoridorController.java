@@ -16,6 +16,10 @@ public class QuoridorController {
 			throw new java.lang.UnsupportedOperationException();
 		}
 		
+		public static boolean ExistingUserName(String userName) {
+			throw new java.lang.UnsupportedOperationException();
+		}
+		
 		
 		
 		

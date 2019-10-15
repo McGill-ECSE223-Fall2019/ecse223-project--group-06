@@ -143,14 +143,14 @@ public class CucumberStepDefinitions {
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIs(String string) {
-		if(!string.equals("black") && !string.equals("white")) {
+		if(!(string == "black") && !(string == "white")) {
 			throw new IllegalArgumentException();
 		}
 		else {
-			if(string.equals("black")) {
+			if(string == "black") {
 				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
 			}
-			if(string.equals("white")) {
+			if(string == "white") {
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 			}
 		}
@@ -169,41 +169,20 @@ public class CucumberStepDefinitions {
 
 	@When("The player selects existing {string}")
 	public void thePlayerSelectsExisting(String string) {
-		List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
-		User existingUser = null;
-	    for(int i = 0; i < existingUsers.size(); i++) {
-	    	if(string.equals(existingUsers.get(i).getName())) {
-	    		existingUser = existingUsers.get(i);
-	    	}
-	    }
-	    
-	    
-	    
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
-			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setUser(existingUser);		
-		}
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
-			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setUser(existingUser);	
-		}
+		
+		
 	    
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
-		int indexOfChosenUsername = 0;
-		List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
-	    for(int i = 0; i < existingUsers.size(); i++) {
-	    	if(string2.equals(existingUsers.get(i).getName())) {
-	    		indexOfChosenUsername = i;
-	    	}
-	    }
-		
-		if(string.equals("black")) {
-			QuoridorApplication.getQuoridor().getUser(indexOfChosenUsername);	
+	
+		if(string == "black") {
+			QuoridorApplication.getQuoridor().getUser(5);
 		}
-		if(string.equals("white")) {
-			QuoridorApplication.getQuoridor().getUser(indexOfChosenUsername);
+		if(string == "white") {
+			QuoridorApplication.getQuoridor().getUser(5);
 		}
 	    
 	    throw new cucumber.api.PendingException();
@@ -211,25 +190,37 @@ public class CucumberStepDefinitions {
 
 	@Given("There is no existing user {string}")
 	public void thereIsNoExistingUser(String string) {
-	     
+	    assertEquals(false, QuoridorController.ExistingUserName(string));
 	    throw new cucumber.api.PendingException();
 	}
 
 	@When("The player provides new user name: {string}")
 	public void thePlayerProvidesNewUserName(String string) {
-	     
+	    QuoridorApplication.getQuoridor().addUser(string);
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("The player shall be warned that {string} already exists")
 	public void thePlayerShallBeWarnedThatAlreadyExists(String string) {
-	     
+	    if(QuoridorController.ExistingUserName(string)) {
+	    	System.out.println("The user with the name: " + string + "already exists.");
+	    }
 	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("Next player to set user name shall be {string}")
 	public void nextPlayerToSetUserNameShallBe(String string) {
-	     
+		if(!string.equals("black") && !string.equals("white")) {
+			throw new IllegalArgumentException();
+		}
+		else {
+			if(string.equals("black")) {
+				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+			}
+			if(string.equals("white")) {
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+			}
+		}
 	    throw new cucumber.api.PendingException();
 	}
 	
@@ -240,7 +231,7 @@ public class CucumberStepDefinitions {
 	
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void aGamePositionIsSuppliedWithPawnCoordinate(Integer int1, Integer int2) {
-		if(int1 <= 1 || int2 <= 1) {
+		if(int1 < 1 || int1 > 9 || int2 < 1 || int2 > 9) {
 			System.out.println("Invalid coordinates given. Values must be between 1 and 9.");
 		}
 		else {			
@@ -289,15 +280,51 @@ public class CucumberStepDefinitions {
 		}
 	    throw new cucumber.api.PendingException();
 	}
-	
-	
-	
-	
-	
 
 	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
-	public void aGamePositionIsSuppliedWithWallCoordinate(Integer int1, Integer int2, String string) {
-	    
+	public void aGamePositionIsSuppliedWithWallCoordinate(Integer int1, Integer int2, String string) {		
+		Direction directionGiven = null;
+
+		if(string == "vertical") {
+			directionGiven = Direction.Vertical;					
+		}
+		if(string == "horizontal") {
+			directionGiven = Direction.Horizontal;
+		}
+
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
+			List<Wall> blackWalls =  QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsOnBoard();
+			Integer row;
+			Integer column;
+			Direction direction;
+			for(int i = 0; i < blackWalls.size(); i++) {
+
+				row = blackWalls.get(i).getMove().getTargetTile().getRow();
+				column = blackWalls.get(i).getMove().getTargetTile().getColumn();
+				direction = blackWalls.get(i).getMove().getWallDirection();
+				assertEquals(int1, row);
+				assertEquals(int2, column);
+				assertEquals(directionGiven, direction);
+			}
+		}
+		
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
+			List<Wall> whiteWalls =  QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard();
+			Integer row;
+			Integer column;
+			Direction direction;
+			for(int i = 0; i < whiteWalls.size(); i++) {
+
+				row = whiteWalls.get(i).getMove().getTargetTile().getRow();
+				column = whiteWalls.get(i).getMove().getTargetTile().getColumn();
+				direction = whiteWalls.get(i).getMove().getWallDirection();
+				assertEquals(int1, row);
+				assertEquals(int2, column);
+				assertEquals(directionGiven, direction);
+			}
+		}
+
+
 	    throw new cucumber.api.PendingException();
 	}
 
