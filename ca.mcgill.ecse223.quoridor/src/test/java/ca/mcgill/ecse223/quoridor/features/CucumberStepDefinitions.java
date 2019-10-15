@@ -192,7 +192,7 @@ public void I_start_the_clock() {
 *Feature:Start a new game 
 *@Author Hongshuo Zhou
 */
-@Then("the game shall be running") 
+@Then("The game shall be running") 
 public void the_game_shall_be_running(){
  Assert.assertEquals(GameStatus.Running,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
 }
@@ -431,7 +431,7 @@ public void the_board_shall_be_initialized() {
 	 * Xiangyu Li
 	 * @param color
 	 */
-	@Then("The user interface is showing it is {string}'s turn")
+	@Then("The user interface shall be showing it is {string} turn")
 	public void the_user_interface_is_showing_it_is_white_s_turn(String color) {
 	    // Write code here that turns the phrase above into concrete actions
 		if(color=="black") {
@@ -441,13 +441,41 @@ public void the_board_shall_be_initialized() {
 			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(),currentPlayer);
 		}
 	}
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
+	@And("The clock of {string} shall be stopped")
+	public void the_clock_of_black_shall_be_stopped(String color) {
+		if(color=="black") {
+			Quoridorcontroller.stopblackclock();
+		}
+		else
+			Quoridorcontroller.stopwhiteclock();
+	}
+	
+	/**
+	 * Feature :Switch current player
+	 * Xiangyu Li
+	 * @param color
+	 */
+	@And("The clock of {string} shall be running")
+	public void the_clock_of_white_shall_be_running(String color) {
+		if(color=="white") {
+			Quoridorcontroller.runwhiteclock();
+		}
+		else
+			Quoridorcontroller.runblackclock();
+	}
+	
 
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
 	 * @param color
 	 */
-	@And("The next Player to move shall be {string}")
+	@And("The next player to move shall be {string}")
 	public void the_player_to_move_is_secondplayer(String color) {
 		Player player;
 		if(color=="white") {
@@ -528,7 +556,7 @@ public void the_board_shall_be_initialized() {
 	}
 
 	// Scenario Outline: Move Wall over the board
-	@Given("A wall move candidate exists with \"<dir>\" at position (<row>, <col>)")
+	@Given("A wall move candidate exists with {string} at position {int}, {int}")
 	public void aWallMoveCandidateExistsWith(String dir, int row, int col) {
 		if (dir.equals("vertical"))
 			aWallMove.setWallDirection(Direction.Vertical);
@@ -538,13 +566,13 @@ public void the_board_shall_be_initialized() {
 		throw new cucumber.api.PendingException();
 	}
 
-	@And("The wall candidate is not at the \"<side>\" edge of the board")
+	@And("The wall candidate is not at the {string} edge of the board")
 	public void notAtTheSide(String side) {
 		Assert.assertFalse(Quoridorcontroller.isSide(aWallMove));
 		throw new cucumber.api.PendingException();
 	}
 
-	@When("I try to move the wall \"<side>\"")
+	@When("I try to move the wall {string}")
 	public void tryToMoveWall(String side) {
 		if (side.equals("left"))
 			Quoridorcontroller.moveWall(aWallMove, Quoridorcontroller.findTile(aWallMove.getTargetTile().getRow(),
@@ -561,13 +589,13 @@ public void the_board_shall_be_initialized() {
 		throw new cucumber.api.PendingException();
 	}
 
-	@Then("The wall shall be moved over the board to position (<nrow>, <ncol>)")
+	@Then("The wall shall be moved over the board to position {int}, {int}")
 	public void validatePosition(int nrow, int ncol) {
 		Assert.assertTrue(aWallMove.getTargetTile().getRow() == nrow && aWallMove.getTargetTile().getColumn() == ncol);
 		throw new cucumber.api.PendingException();
 	}
 
-	@And("A wall move candidate shall exist with \"<dir>\" at position (<nrow>, <ncol>)")
+	@And("A wall move candidate shall exist with {string} at position {int}, {int}")
 	public void validateCandidate(String dir, int nrow, int ncol) {
 		if (dir.equals("vertical"))
 			Assert.assertTrue(aWallMove.getWallDirection().equals(Direction.Vertical)
@@ -580,7 +608,7 @@ public void the_board_shall_be_initialized() {
 
 	// Scenario Outline: Move wall at the edge of the board
 
-	@And("The wall candidate is at the \"<side>\" edge of the board")
+	@And("The wall candidate is at the {string} edge of the board")
 	public void atTheSide(String side) {
 		Assert.assertTrue(Quoridorcontroller.isSide(aWallMove));
 		throw new cucumber.api.PendingException();
@@ -601,6 +629,14 @@ public void the_board_shall_be_initialized() {
 	// ***********************************************
 	// Drop Wall definitions
 	// ***********************************************
+	
+	@And("I have a wall in my hand over the board")
+	public void iHaveAWallInHandOverBoard() {
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
+			Quoridorcontroller.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));
+		}
+	}
+	
 	//Scenario 1
 	@Given("The wall move candidate with {string} at position {int}, {int} is valid")
 	public void theWallMoveCandidateWithDirAtPosIsValid(String dir, int row, int col) throws InvalidInputException {
@@ -690,8 +726,6 @@ public void the_board_shall_be_initialized() {
 		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())   );
 	}
-	
-	//THE PROBLEM WAS THE GHERKIN FILE THIS WHOLE TIME. (<row>,<col>) MAKES IT OPTIONAL
 	
 	@But("No wall move shall be registered with {string} at position {int}, {int}")
 	public void noWallMoveShallBeRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
