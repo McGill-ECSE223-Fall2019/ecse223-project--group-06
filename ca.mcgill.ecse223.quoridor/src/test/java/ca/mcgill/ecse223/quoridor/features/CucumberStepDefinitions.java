@@ -50,6 +50,7 @@ public class CucumberStepDefinitions {
 
 	@Given("^The game is not running$")
 	public void theGameIsNotRunning() {
+		tearDown();
 		initQuoridorAndBoard();
 		createUsersAndPlayers("user1", "user2");
 	}
