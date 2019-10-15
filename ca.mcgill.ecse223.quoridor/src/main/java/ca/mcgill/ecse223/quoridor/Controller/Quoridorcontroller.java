@@ -3,6 +3,7 @@ package ca.mcgill.ecse223.quoridor.Controller;
 import java.io.BufferedWriter;
 import java.util.List;
 
+import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Move;
@@ -224,6 +225,22 @@ public class Quoridorcontroller {
 	 * @author Yanis Jallouli
 	 */
 	public static boolean createFile(Game currentGame, String filepath) {
+		throw new java.lang.UnsupportedOperationException();
+	}
+	
+	/** Initialize Board feature
+	 * @author Matteo Nunez
+	 * @param board - board object that is going to be initialize
+	 */
+	public static void initializeBoard(Board board) {
+		throw new java.lang.UnsupportedOperationException();
+	}
+	
+	/** Rotate Wall feature
+	 * @author Matteo Nunez
+	 * @param wall - wall object that is going to be rotated
+	 */
+	public static void rotateWall(Wall wall) {
 		throw new java.lang.UnsupportedOperationException();
 	}
 	
