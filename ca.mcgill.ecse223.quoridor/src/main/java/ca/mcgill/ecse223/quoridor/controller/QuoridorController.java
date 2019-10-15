@@ -20,9 +20,6 @@ public class QuoridorController {
 			throw new java.lang.UnsupportedOperationException();
 		}
 		
-		
-		
-		
 
 	/*
 	 * @author Keanu Natchev
