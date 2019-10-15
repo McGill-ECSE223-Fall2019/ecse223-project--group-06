@@ -250,12 +250,11 @@ public class Quoridorcontroller {
 
 	///////////////////////////////////////////////////////////////////////////
 	
-	
-	
-	
-	
-	
-	/** Initialize Board feature
+
+	/**
+	 * Feature 4. Initialize wall
+	 * This methods sets the board to its initial position and the player's stock of 
+	 * walls and clocks are counting down so that they can start playing the game
 	 * @author Matteo Nunez
 	 * @param board - board object that is going to be initialize
 	 */
@@ -263,7 +262,10 @@ public class Quoridorcontroller {
 		throw new java.lang.UnsupportedOperationException();
 	}
 	
-	/** Rotate Wall feature
+	/** 
+	 * Feature 5. Rotate Wall
+	 * This method rotates the grabbed wall by 90 degrees (from horizontal to 
+	 * vertical or vice versa) to adjust its designated target position
 	 * @author Matteo Nunez
 	 * @param wall - wall object that is going to be rotated
 	 */
