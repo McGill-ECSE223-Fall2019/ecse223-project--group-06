@@ -41,6 +41,7 @@ public class CucumberStepDefinitions {
 	private Player player2;
 	private Player currentPlayer;
 	private Game game;
+	private WallMove aWallMove;
 	
 
 	// ***********************************************
@@ -49,14 +50,17 @@ public class CucumberStepDefinitions {
 
 	@Given("^The game is not running$")
 	public void theGameIsNotRunning() {
+		tearDown();
 		initQuoridorAndBoard();
 		createUsersAndPlayers("user1", "user2");
 	}
 
 	@Given("^The game is running$")
 	public void theGameIsRunning() {
-		theGameIsNotRunning();
-		createAndStartGame();
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus() != GameStatus.Running) {
+			theGameIsNotRunning();
+			createAndStartGame();
+		}
 	}
 
 	@And("^It is my turn to move$")
@@ -369,7 +373,7 @@ public void the_board_shall_be_initialized() {
 	 * Xiangyu Li
 	 * @param color
 	 */
-	@Given("The player to move is {String}")
+	@Given("The player to move is {string}")
 	public void Playertomove(String color) {
 		if(color=="black") {
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
@@ -435,32 +439,7 @@ public void the_board_shall_be_initialized() {
 			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(),currentPlayer);
 		}
 	}
-	/**
-	 * Feature :Switch current player
-	 * Xiangyu Li
-	 * @param color
-	 */
-	@And ("The clock of {string} is stopped")
-	public void the_clock_of_black_is_stopped(String color) {
-		if(color=="black") {
-			Quoridorcontroller.stopblackclock();
-		}
-		else
-			Quoridorcontroller.stopwhiteclock();
-	}
-	/**
-	 * Feature :Switch current player
-	 * Xiangyu Li
-	 * @param color
-	 */
-	@And ("The clock of {string} is running")
-	public void the_clock_of_white_is_running(String color) {
-		if(color=="white") {
-			Quoridorcontroller.runwhiteclock();
-		}
-		else
-			Quoridorcontroller.runblackclock();
-	}
+
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
@@ -503,7 +482,7 @@ public void the_board_shall_be_initialized() {
 
 	@Then("A wall move candidate shall be created at initial position")
 	public void aWallMoveCandidateShallBeCreatedAtInitialPosition() {
-		WallMove aWallMove = Quoridorcontroller.grabWall(QuoridorApplication.getQuoridor().getCurrentGame()
+		aWallMove = Quoridorcontroller.grabWall(QuoridorApplication.getQuoridor().getCurrentGame()
 				.getCurrentPosition().getPlayerToMove().getWall(QuoridorApplication.getQuoridor().getCurrentGame()
 						.getCurrentPosition().getPlayerToMove().getWalls().size() - 1));
 		throw new cucumber.api.PendingException();
