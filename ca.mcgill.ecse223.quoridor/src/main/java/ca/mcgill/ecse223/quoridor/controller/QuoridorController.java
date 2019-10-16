@@ -1,4 +1,4 @@
-package ca.mcgill.ecse223.quoridor.Controller;
+package ca.mcgill.ecse223.quoridor.controller;
 
 import java.io.BufferedWriter;
 import java.util.List;
@@ -14,8 +14,8 @@ import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 
-public class Quoridorcontroller {
-	public Quoridorcontroller(){		
+public class QuoridorController {
+	public QuoridorController(){		
 	}
 	/**
 	 * Set current player to complete its move 
