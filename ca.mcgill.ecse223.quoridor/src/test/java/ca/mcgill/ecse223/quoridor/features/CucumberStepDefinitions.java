@@ -661,13 +661,13 @@ public void the_board_shall_be_initialized() {
 	
 	@When("I release the wall in my hand") 
 	public void iReleaseTheWallInMyHand(){
-		QuoridorController.dropWall(QuoridorApplication.getQuoridor().getCurrentGame());
+		QuoridorController.dropWall();
 	}
 	
 	@Then("A wall move shall be registered with {string} at position {int}, {int}")
 	public void aWallMoveIsRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		Assert.assertTrue("Move wasn't registered after dropping", QuoridorController.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
+		Assert.assertTrue("Move wasn't registered after dropping", QuoridorController.moveIsRegistered(direction, row, col));
 	}
 	
 	@And("I shall not have a wall in my hand") 
@@ -678,6 +678,7 @@ public void the_board_shall_be_initialized() {
 
 	@And("My move shall be completed")
 	public void myMoveIsCompleted() {
+		//TODO: GUI step?
 		throw new PendingException(); //I'm assuming this is a User confirming move
 	}
 	
@@ -730,7 +731,7 @@ public void the_board_shall_be_initialized() {
 	@But("No wall move shall be registered with {string} at position {int}, {int}")
 	public void noWallMoveShallBeRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		Assert.assertFalse(QuoridorController.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
+		Assert.assertFalse(QuoridorController.moveIsRegistered(direction, row, col));
 	}
 	
 	
@@ -749,13 +750,13 @@ public void the_board_shall_be_initialized() {
 	
 	@When("The user initiates to save the game with name {string}")
 	public void theUserInitiatesToSaveTheGameWithName(String fileName) {
-		//GUI related
+		//TODO: GUI Step
 		throw new PendingException();
 	}
 	
 	@Then("A file with {string} shall be created in the filesystem")
 	public void aFileWithNameShallBeCreated(String fileName) {
-		QuoridorController.createFile(QuoridorApplication.getQuoridor().getCurrentGame(), fileName); 
+		QuoridorController.createFile(fileName); 
 		Assert.assertTrue(QuoridorController.containsFile(fileName));
 	}
 	//Scenario 2
@@ -768,23 +769,23 @@ public void the_board_shall_be_initialized() {
 	
 	@And("The user confirms to overwrite existing file")
 	public void theUserConfirmsToOverwrite() {
-		//GUI related
+		//TODO: GUI step
 		throw new PendingException();
 	}
 	@Then("File with {string} shall be updated in the filesystem")
 	public void fileWithNameShallBeUpdatedInSystem(String fileName) {
-		QuoridorController.savePosition(QuoridorApplication.getQuoridor().getCurrentGame(), fileName);
-		Assert.assertTrue(QuoridorController.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
+		QuoridorController.savePosition(fileName);
+		Assert.assertTrue(QuoridorController.isUpdated(fileName));
 	}
 
 	@And("The user cancels to overwrite existing file")
 	public void theUserCancelsToOverwrite() {
-		//GUI related
+		//TODO: GUI Step
 		throw new PendingException();
 	}
 	@Then("File {string} shall not be changed in the filesystem")
 	public void fileWithNameShallNotBeUpdatedInSystem(String fileName) {
-		Assert.assertFalse(QuoridorController.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
+		Assert.assertFalse(QuoridorController.isUpdated(fileName));
 	}
 
 	/**
