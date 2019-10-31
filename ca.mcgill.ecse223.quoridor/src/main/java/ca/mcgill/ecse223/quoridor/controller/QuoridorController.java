@@ -1,9 +1,7 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,9 +21,12 @@ import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
+import ca.mcgill.ecse223.quoridor.view.QuoridorView;
 
 
 public class QuoridorController {
+	QuoridorView view;
+	
 	public QuoridorController(){		
 	}
 	/**
@@ -183,10 +184,10 @@ public class QuoridorController {
 	 */
 	public static boolean dropWall() {
 		//TODO: You forgot to set Move variables, like previous move or next move
+		//I set the move variables, though it woul be better if this were done intializing the move
 		//TODO: Check if you used move/round number. You probably used it wrong
 		Game current = QuoridorApplication.getQuoridor().getCurrentGame();
 		GamePosition curPos = current.getCurrentPosition();
-		//TODO: Find a way to copy curpos so I'm not adding a reference into curent.positions
 		
 		Wall curWall = current.getWallMoveCandidate().getWallPlaced();
 		
@@ -215,10 +216,34 @@ public class QuoridorController {
 			}
 			
 			//TODO: Add GUI update steps
-			current.addMove(current.getWallMoveCandidate()); //Add the move to game list
-			current.addPosition(curPos); 
-			//Alright complete needs to set MoveMode, PlayertoMove, create new GamePos (copy of current)
+			//Add the move to game list
+			current.getWallMoveCandidate().setPrevMove(current.getMove(current.getMoves().size() - 1));
+			current.addMove(current.getWallMoveCandidate());
+			
+			
+			//TODO: See if switch does this
+			//Updating the position- see if needed (might be done in switch)
+			
+			current.addPosition(curPos);  //Switch player will need to make a new curPos
+			GamePosition newPos;
+			if(curPos.getPlayerToMove().equals(current.getWhitePlayer())) {
+				newPos = new GamePosition(curPos.getId() + 1, 
+										  curPos.getWhitePosition(), curPos.getBlackPosition(), 
+							   		      current.getWhitePlayer(), 
+										  QuoridorApplication.getQuoridor().getCurrentGame() );
+			} else {
+				newPos = new GamePosition(curPos.getId() + 1, 
+						  curPos.getWhitePosition(), curPos.getBlackPosition(), 
+			   		      current.getWhitePlayer(), 
+						  QuoridorApplication.getQuoridor().getCurrentGame() );
+			}
+			current.setCurrentPosition(newPos);
+			
+			
+			
+			//Alright complete needs to set MoveMode, PlayertoMove
 			current.setWallMoveCandidate(null);
+			
 			completeMove(curPos.getPlayerToMove());
 			return true;
 			
@@ -257,7 +282,6 @@ public class QuoridorController {
 		//Then it wasn't registered
 		return false;
 	}
-	
 	
 	/** Save Position Feature
 	 * Public method to save current game into a given .txt file

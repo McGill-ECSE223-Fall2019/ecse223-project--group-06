@@ -13,6 +13,7 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.view.QuoridorView;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -37,6 +38,7 @@ import io.cucumber.java.en.When;
 
 public class CucumberStepDefinitions {
 
+	private QuoridorView view;
 	private Quoridor quoridor;
 	private Board board;
 	private Player player1;
