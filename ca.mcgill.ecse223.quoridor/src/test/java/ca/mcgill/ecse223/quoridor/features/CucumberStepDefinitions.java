@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
@@ -27,7 +30,9 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
+import ca.mcgill.ecse223.quoridor.view.QuoridorView;
 import cucumber.api.PendingException;
+import io.cucumber.core.api.Scenario;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -645,6 +650,7 @@ public void the_board_shall_be_initialized() {
 	
 	@And("I have a wall in my hand over the board")
 	public void iHaveAWallInHandOverBoard() {
+		//TODO: Get rid of null pointer?
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
 			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));
 		}
@@ -668,19 +674,19 @@ public void the_board_shall_be_initialized() {
 				moveList, 
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
-			Assert.fail();
+			Assert.fail(); //TODO: Fix this
 		}
 	}
 	
 	@When("I release the wall in my hand") 
 	public void iReleaseTheWallInMyHand(){
-		QuoridorController.dropWall(QuoridorApplication.getQuoridor().getCurrentGame());
+		QuoridorController.dropWall();
 	}
 	
 	@Then("A wall move shall be registered with {string} at position {int}, {int}")
 	public void aWallMoveIsRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		Assert.assertTrue("Move wasn't registered after dropping", QuoridorController.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
+		Assert.assertTrue("Move wasn't registered after dropping", QuoridorController.moveIsRegistered(direction, row, col));
 	}
 	
 	@And("I shall not have a wall in my hand") 
@@ -691,6 +697,7 @@ public void the_board_shall_be_initialized() {
 
 	@And("My move shall be completed")
 	public void myMoveIsCompleted() {
+		//TODO: GUI step?
 		throw new PendingException(); //I'm assuming this is a User confirming move
 	}
 	
@@ -743,7 +750,7 @@ public void the_board_shall_be_initialized() {
 	@But("No wall move shall be registered with {string} at position {int}, {int}")
 	public void noWallMoveShallBeRegisteredAtPosition(String dir, int row, int col) throws InvalidInputException {
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		Assert.assertFalse(QuoridorController.moveIsRegistered(QuoridorApplication.getQuoridor().getCurrentGame(), direction, row, col));
+		Assert.assertFalse(QuoridorController.moveIsRegistered(direction, row, col));
 	}
 	
 	
@@ -753,51 +760,63 @@ public void the_board_shall_be_initialized() {
 	// ***********************************************
 	// Save Position definitions
 	// ***********************************************
-	//Scenario 1
+	//Scenario 1- Save Position
 	@Given("No file {string} exists in the filesystem")
 	public void noFileExistsInTheSystem(String fileName) {
 		//I can't find anything on using givens as control flow
-		Assert.assertFalse(QuoridorController.containsFile(fileName));
+			if(QuoridorController.containsFile(fileName)) {
+				QuoridorController.deleteFile(fileName);
+			}	
+	}
+	@After
+	public void myAfterHook(Scenario scenario) {
+	    if (scenario.isFailed()) {
+	        System.out.println("***>> Scenario '" + scenario.getName() + "' failed at line(s) " + scenario.getLine() + " with status '" + scenario.getStatus() + "'");
+	    }
 	}
 	
 	@When("The user initiates to save the game with name {string}")
 	public void theUserInitiatesToSaveTheGameWithName(String fileName) {
-		//GUI related
-		throw new PendingException();
+		view.confirmSaveAction();
+		JTextField fill = (JTextField) view.confirmFrame.getContentPane().getComponent(1); //Get TextBox
+		fill.setText(fileName);
+		JButton save = (JButton) view.confirmFrame.getContentPane().getComponent(2);
+		save.doClick();
+		
 	}
 	
 	@Then("A file with {string} shall be created in the filesystem")
 	public void aFileWithNameShallBeCreated(String fileName) {
-		QuoridorController.createFile(QuoridorApplication.getQuoridor().getCurrentGame(), fileName); 
 		Assert.assertTrue(QuoridorController.containsFile(fileName));
 	}
-	//Scenario 2
+	
+	//Scenario 2- Save Position with existing file name
 	@Given("File {string} exists in the filesystem")
 	public void fileNameExistsInSystem(String fileName) {
-		//This is confusing me. We have one for it doesn't exist so it
-		//seems like an if thing. Should I assert it's true? or make it true somehow?
-		Assert.assertTrue(QuoridorController.containsFile(fileName));
+		if(!QuoridorController.containsFile(fileName)) {
+			QuoridorController.createFile(fileName);
+		}
 	}
 	
 	@And("The user confirms to overwrite existing file")
 	public void theUserConfirmsToOverwrite() {
-		//GUI related
-		throw new PendingException();
+		JButton yesBut = (JButton) view.confirmFrame.getContentPane().getComponent(1);
+		yesBut.doClick();
 	}
 	@Then("File with {string} shall be updated in the filesystem")
 	public void fileWithNameShallBeUpdatedInSystem(String fileName) {
-		QuoridorController.savePosition(QuoridorApplication.getQuoridor().getCurrentGame(), fileName);
-		Assert.assertTrue(QuoridorController.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
+		Assert.assertTrue(QuoridorController.isUpdated(fileName));
 	}
 
+	//Scenario 3- Save Position Cancelled
 	@And("The user cancels to overwrite existing file")
 	public void theUserCancelsToOverwrite() {
-		//GUI related
-		throw new PendingException();
+		JButton noBut = (JButton) view.confirmFrame.getContentPane().getComponent(2);
+		noBut.doClick();
 	}
 	@Then("File {string} shall not be changed in the filesystem")
 	public void fileWithNameShallNotBeUpdatedInSystem(String fileName) {
-		Assert.assertFalse(QuoridorController.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame(), fileName));
+		Assert.assertFalse(QuoridorController.isUpdated(fileName));
 	}
 
 	/**
