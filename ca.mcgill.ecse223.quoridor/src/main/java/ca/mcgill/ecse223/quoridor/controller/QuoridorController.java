@@ -283,6 +283,8 @@ public class QuoridorController {
 		return false;
 	}
 	
+	
+	
 	/** Save Position Feature
 	 * Public method to save current game into a given .txt file
 	 * @return Whether the method successfully saved
@@ -296,7 +298,7 @@ public class QuoridorController {
 		if(!containsFile(filePath)) {
 			createFile(filePath);
 		} else {
-			tmp.delete();
+			deleteFile(filePath);
 			createFile(filePath);
 		}
 		File fil = new File(filePath);
@@ -434,9 +436,9 @@ public class QuoridorController {
 	 * @author Yanis Jallouli
 	 */
 	public static boolean isUpdated(String filepath) {
-		if(!containsFile(filepath)) {
-			return false;
-		}
+		if(!containsFile(filepath)) return false;
+		
+		
 		File fil = new File(filepath);
 		int moveNumber;
 		
@@ -487,6 +489,13 @@ public class QuoridorController {
 			catch (IOException e) {e.printStackTrace();}
 		}
 		return false;
+	}
+	
+	//TODO: Make Javadoc
+	public static boolean deleteFile(String filePath) {
+		File file = new File(filePath);
+		if(!file.exists()) return false;
+		return file.delete();
 	}
 	
 	///////////////////////////////////////////////////////////////////////////

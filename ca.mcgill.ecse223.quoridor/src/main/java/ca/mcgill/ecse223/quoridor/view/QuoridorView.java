@@ -1,7 +1,6 @@
 package ca.mcgill.ecse223.quoridor.view;
 
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -40,16 +39,18 @@ public class QuoridorView extends JFrame {
 	private JLabel p2Time = new JLabel();
 	private JLabel p1Walls = new JLabel("Walls: 10");
 	private JLabel p2Walls = new JLabel("Walls: 10");
-	private JRadioButton p1Turn = new JRadioButton("White Turn", true); //Don't put an action listener on this!
-	private JRadioButton p2Turn = new JRadioButton("Black Turn", false); //                ||
-	private JLabel notification = new JLabel(); //To use for any errors, make sure it's being cleared though
-	private JButton saveButton = new JButton("Save");
-	private JButton undoButton = new JButton("Undo");
+	public JRadioButton p1Turn = new JRadioButton("White Turn", true); //Don't put an action listener on this!
+	public JRadioButton p2Turn = new JRadioButton("Black Turn", false); //                ||
+	public JLabel notification = new JLabel(); //To use for any errors, make sure it's being cleared though
+	public JFrame confirmFrame = new JFrame("Confirmation");
+	public JButton saveButton = new JButton("Save");
+	public JButton undoButton = new JButton("Undo");
 	private JButton exitButton = new JButton("Exit");
 	private JButton moveButton = new JButton("Move Wall");
 	private JButton grabButton = new JButton("Grab Wall");
 	private JPanel board;
 	private GroupLayout gameLayout;
+	private String fileName; //Just used to store save file name- eclipse get angry otherwise
 	
 	//First screen user sees, just title and two buttons
 	public void initLoadScreen() {
@@ -271,19 +272,15 @@ public class QuoridorView extends JFrame {
 		saveButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				//does a unique save file for that ID.
-				if(QuoridorController.containsFile(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat")) {
-					confirmSaveAction();
-				} else {
-					QuoridorController.savePosition(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat");
-				}
+				//Creates window prompting game name and confirming if it overrides
+				confirmSaveAction();
 				refresh();
 			}
 		});
 		exitButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				if(!QuoridorController.isUpdated(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat")) {
+				if(!QuoridorController.isUpdated(fileName)) {
 					confirmExitAction();
 				} else {
 					//Reboot
@@ -442,58 +439,121 @@ public class QuoridorView extends JFrame {
 	
 	//Creates a confirmation window. Idk how to pass a method, so this is specific to SaveAction
 	public void confirmSaveAction() {
-		JFrame frame = new JFrame("Confirmation");
+		confirmFrame.getContentPane().removeAll();
+		
+		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		
 		
 		JLabel notification = new JLabel();
+		JButton yesButton = new JButton("Yes");
+		JButton noButton = new JButton("No");
+		JButton saveButton = new JButton("Save");
+		JButton exitButton = new JButton("Exit");
+		JTextField gameName = new JTextField(20);
+		JLabel gameNameExplain = new JLabel("Save File Name: (empty will auto-generate)");
 		notification.setText("Saving will override previous save data. Do you wish to continue?");
 		notification.setForeground(Color.red);
+		GroupLayout.Group horiz = layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+										.addGroup(layout.createSequentialGroup()
+														.addComponent(gameNameExplain)
+														.addComponent(gameName)
+											     )
+										.addGroup(layout.createSequentialGroup()
+														.addComponent(saveButton)
+														.addComponent(exitButton)	   
+												 );
+		GroupLayout.Group vert = layout.createSequentialGroup()
+									   .addGroup(layout.createParallelGroup()
+											   		   .addComponent(gameNameExplain)
+											   		   .addComponent(gameName)
+											    )
+									   .addGroup(layout.createParallelGroup()
+											   		   .addComponent(saveButton)
+											   		   .addComponent(exitButton)	   
+											    );
+		layout.setHorizontalGroup(horiz);
+		layout.setVerticalGroup(vert);
+		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {saveButton, exitButton});
 		
-		JButton yesButton = new JButton("Yes");
+		
+		
+		
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Save the game
-				QuoridorController.savePosition(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat");
+				QuoridorController.savePosition(fileName);
 				//Exit the frame
-				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
-		JButton noButton = new JButton("No");
+		
 		noButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				//Exit the frame
-				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				confirmFrame.remove(notification);
+				layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+												.addGroup(layout.createSequentialGroup()
+																.addComponent(gameNameExplain)
+																.addComponent(gameName))
+												.addGroup(horiz));
+				layout.setVerticalGroup(layout.createSequentialGroup()
+												.addGroup(layout.createParallelGroup()
+																.addComponent(gameNameExplain)
+																.addComponent(gameName))
+												.addGroup(vert));
+				layout.replace(yesButton, saveButton);
+				layout.replace(noButton, exitButton);
+				SwingUtilities.updateComponentTreeUI(confirmFrame);
+				confirmFrame.pack();
 			}
 		});
 		
+		saveButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				String name = gameName.getText();
+				if(name.equals("")) {
+					name = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat";
+				} else if(name.length() <=  4 ||
+						!name.substring(name.length() - 4, name.length()).equals(".dat")) {
+					System.out.println(name.substring(name.length() - 4, name.length()));
+					name += ".dat";
+				}
+				fileName = name;
+				if(QuoridorController.containsFile(fileName)) {
+					confirmFrame.remove(gameName);
+					layout.replace(gameNameExplain, notification);
+					layout.replace(saveButton, yesButton);
+					layout.replace(exitButton, noButton);
+					SwingUtilities.updateComponentTreeUI(confirmFrame);
+					confirmFrame.pack();
+				} else {
+					//Save the game
+					QuoridorController.savePosition(fileName);
+					//Exit the frame
+					confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+				}
+			}
+		});
 		
+		exitButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				//Exit the frame
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+			}
+		});
+
 		
-		GroupLayout layout = new GroupLayout(frame.getContentPane());
-		
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-										.addComponent(notification)
-										.addGroup(layout.createSequentialGroup()
-												  .addComponent(yesButton)
-												  .addComponent(noButton)	   
-																	   ));
-		layout.setVerticalGroup(layout.createSequentialGroup()
-				.addComponent(notification)
-				.addGroup(layout.createParallelGroup()
-							.addComponent(yesButton)
-							.addComponent(noButton)	   
-							   ));
-		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
-		
-		frame.getContentPane().setLayout(layout);
-		frame.pack();
-		frame.setVisible(true);
+		confirmFrame.getContentPane().setLayout(layout);
+		confirmFrame.pack();
+		confirmFrame.setVisible(true);
 	}
-	//Basically copy of above
 	public void confirmExitAction() {
-		JFrame frame = new JFrame("Confirmation");
+		confirmFrame.getContentPane().removeAll();
 		JLabel notification = new JLabel("You have unsaved data. Do you wish to continue?");
 		notification.setForeground(Color.red);
 		JButton yesButton = new JButton("Yes");
@@ -504,7 +564,7 @@ public class QuoridorView extends JFrame {
 				clearActionListeners();
 				initLoadScreen();
 				//Exit the frame
-				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
 		JButton noButton = new JButton("No");
@@ -512,10 +572,10 @@ public class QuoridorView extends JFrame {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Exit the frame
-				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
-		GroupLayout layout = new GroupLayout(frame.getContentPane());
+		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
@@ -531,9 +591,9 @@ public class QuoridorView extends JFrame {
 							.addComponent(noButton)	   
 							   ));
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
-		frame.getContentPane().setLayout(layout);
-		frame.pack();
-		frame.setVisible(true);
+		confirmFrame.getContentPane().setLayout(layout);
+		confirmFrame.pack();
+		confirmFrame.setVisible(true);
 	}
 	
 	
@@ -551,7 +611,7 @@ public class QuoridorView extends JFrame {
 	}
 	
 	//Just toggling radio buttons
-	private void switchPlayerButton() {
+	public void switchPlayerButton() {
 		if(p1Turn.isSelected()) {
 			p1Turn.setSelected(false);
 			p2Turn.setSelected(true);
