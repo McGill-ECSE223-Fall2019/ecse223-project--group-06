@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 
 import javax.swing.DefaultListModel;
@@ -24,8 +25,11 @@ import javax.swing.SwingUtilities;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.model.Direction;
+import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+import ca.mcgill.ecse223.quoridor.model.WallMove;
 
-public class QuoridorView extends JFrame {
+public class QuoridorView extends JFrame implements KeyListener {
 	private static final long serialVersionUID = -4426310869335015542L;
 	
 	
@@ -339,6 +343,19 @@ public class QuoridorView extends JFrame {
 							(i/9)*height,
 							width - 5, height - 5);
 				}
+				board.setColor(new Color(255, 164, 66));
+				for(WallMove wall : QuoridorController.getWalls()) {
+					if(wall.getWallDirection() == Direction.Horizontal) {
+						board.fillRect(wall.getTargetTile().getRow() * 40, 
+									   wall.getTargetTile().getColumn() * 40 - 5, 
+									   10, 5);
+					} else {
+						board.fillRect(wall.getTargetTile().getRow() * 40 - 5, 
+								   wall.getTargetTile().getColumn() * 40, 
+								   5, 10);
+					}
+					
+				}
 			}
 		};
 		board.setPreferredSize(new Dimension(40*9, 40*9));
@@ -425,6 +442,7 @@ public class QuoridorView extends JFrame {
 	
 	//This is just to refresh the screen with any changes to the components
 	public void refresh() {
+		board.repaint();
 		SwingUtilities.updateComponentTreeUI(this);
 		pack();
 	}
@@ -439,13 +457,14 @@ public class QuoridorView extends JFrame {
 	
 	//Creates a confirmation window. Idk how to pass a method, so this is specific to SaveAction
 	public void confirmSaveAction() {
+
 		confirmFrame.getContentPane().removeAll();
-		
+
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		
-		
+
 		JLabel notification = new JLabel();
 		JButton yesButton = new JButton("Yes");
 		JButton noButton = new JButton("No");
@@ -485,6 +504,7 @@ public class QuoridorView extends JFrame {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Save the game
 				QuoridorController.savePosition(fileName);
+				
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
@@ -519,7 +539,7 @@ public class QuoridorView extends JFrame {
 					name = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat";
 				} else if(name.length() <=  4 ||
 						!name.substring(name.length() - 4, name.length()).equals(".dat")) {
-					System.out.println(name.substring(name.length() - 4, name.length()));
+					
 					name += ".dat";
 				}
 				fileName = name;
@@ -546,11 +566,12 @@ public class QuoridorView extends JFrame {
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
-
+		
 		
 		confirmFrame.getContentPane().setLayout(layout);
 		confirmFrame.pack();
 		confirmFrame.setVisible(true);
+		
 	}
 	public void confirmExitAction() {
 		confirmFrame.getContentPane().removeAll();
@@ -619,6 +640,30 @@ public class QuoridorView extends JFrame {
 			p1Turn.setSelected(true);
 			p2Turn.setSelected(false);
 		}
+	}
+	
+	
+	public void keyTyped(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_ENTER && 
+				QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+			
+			if(QuoridorController.wallIsValid()) {
+				QuoridorController.dropWall();
+				notification.setVisible(false);
+				refresh();
+			} else {
+				notifyInvalid("Invalid Wall Placement");
+				refresh();
+			}
+			
+		}
+
+	}
+	public void keyPressed(KeyEvent e) {
+		
+	}
+	public void keyReleased(KeyEvent e) {
+		
 	}
 
 }
