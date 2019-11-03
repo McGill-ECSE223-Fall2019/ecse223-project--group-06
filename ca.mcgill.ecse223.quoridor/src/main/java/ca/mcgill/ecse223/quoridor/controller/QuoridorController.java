@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package ca.mcgill.ecse223.quoridor.controller;
 
 import java.io.BufferedWriter;
@@ -556,3 +557,34 @@ public class QuoridorController {
 		throw new java.lang.UnsupportedOperationException();
 	}
 }
+=======
+package ca.mcgill.ecse223.quoridor.controller;
+
+public class QuoridorController {
+	
+	
+	/*
+	 * @author Keanu Natchev
+	 */
+		
+		
+		public static void existingUserName() {
+			throw new java.lang.UnsupportedOperationException();
+		}
+		
+		public static boolean validatePosition() {
+			throw new java.lang.UnsupportedOperationException();
+		}
+		
+		public static boolean ExistingUserName(String userName) {
+			throw new java.lang.UnsupportedOperationException();
+		}
+		
+
+	/*
+	 * @author Keanu Natchev
+	 */
+
+	
+}
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104

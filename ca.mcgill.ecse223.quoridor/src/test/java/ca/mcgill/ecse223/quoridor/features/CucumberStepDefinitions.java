@@ -40,17 +40,27 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-public class CucumberStepDefinitions {
+import static org.junit.Assert.assertEquals;
 
+<<<<<<< HEAD
+=======
+public class CucumberStepDefinitions {
+	
+	
+	
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	private Quoridor quoridor;
 	private Board board;
 	private Player player1;
 	private Player player2;
 	private Player currentPlayer;
 	private Game game;
+<<<<<<< HEAD
 	private WallMove aWallMove;
 	
 
+=======
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	// ***********************************************
 	// Background step definitions
 	// ***********************************************
@@ -825,6 +835,7 @@ public void the_board_shall_be_initialized() {
 	 * @author Matteo Nunez
 	 *
 	 */
+<<<<<<< HEAD
 	@When("The initialization of the board is initiated")
 	public void theInitializationOfTheBoardIsInitiated() {
 		QuoridorController.initializeBoard(QuoridorApplication.getQuoridor().getBoard());
@@ -915,17 +926,27 @@ public void the_board_shall_be_initialized() {
 	    throw new cucumber.api.PendingException();
 	}
 	
+=======
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//Feature: #2 Provide or select user name
 	//Name: Keanu, Natchev
 	//ID#: 260804586
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	@Given("A new game is initializing")
 	public void aNewGameIsInitializing() {
 		QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
 		assertEquals(true, GameStatus.Initializing);
+<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
+=======
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Given("Next player to set user name is {string}")
@@ -941,56 +962,99 @@ public void the_board_shall_be_initialized() {
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 			}
 		}
+<<<<<<< HEAD
 
 		throw new cucumber.api.PendingException();
+=======
+				
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Given("There is existing user {string}")
 	public void thereIsExistingUser(String string) {
+<<<<<<< HEAD
 		List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
 		for(int i = 0; i < existingUsers.size(); i++) {
 			assertEquals(string, existingUsers.get(i).getName());
 		}
 		throw new cucumber.api.PendingException();
+=======
+	    List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
+	    for(int i = 0; i < existingUsers.size(); i++) {
+	    	assertEquals(string, existingUsers.get(i).getName());
+	    }
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@When("The player selects existing {string}")
 	public void thePlayerSelectsExisting(String string) {
 		assertEquals(true, QuoridorController.ExistingUserName(string));
+<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
+=======
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
 		if(string == "black") {
 			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().setName(string2);
+<<<<<<< HEAD
 
+=======
+			
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 		}
 		if(string == "white") {
 			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().setName(string2);
 		}
+<<<<<<< HEAD
 
 		throw new cucumber.api.PendingException();
+=======
+	    
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Given("There is no existing user {string}")
 	public void thereIsNoExistingUser(String string) {
+<<<<<<< HEAD
 		assertEquals(false, QuoridorController.ExistingUserName(string));
 		throw new cucumber.api.PendingException();
+=======
+	    assertEquals(false, QuoridorController.ExistingUserName(string));
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@When("The player provides new user name: {string}")
 	public void thePlayerProvidesNewUserName(String string) {
+<<<<<<< HEAD
 		QuoridorApplication.getQuoridor().addUser(string);
 		throw new cucumber.api.PendingException();
+=======
+	    QuoridorApplication.getQuoridor().addUser(string);
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The player shall be warned that {string} already exists")
 	public void thePlayerShallBeWarnedThatAlreadyExists(String string) {
+<<<<<<< HEAD
 		if(QuoridorController.ExistingUserName(string)) {
 			System.out.println("The user with the name: " + string + "already exists.");
 		}
 		throw new cucumber.api.PendingException();
+=======
+	    if(QuoridorController.ExistingUserName(string)) {
+	    	System.out.println("The user with the name: " + string + "already exists.");
+	    }
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("Next player to set user name shall be {string}")
@@ -1006,14 +1070,24 @@ public void the_board_shall_be_initialized() {
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 			}
 		}
+<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
 	}
 
+=======
+	    throw new cucumber.api.PendingException();
+	}
+	
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//Feature: #11 Validate position
 	//Name: Keanu, Natchev
 	//ID#: 260804586
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void aGamePositionIsSuppliedWithPawnCoordinate(Integer int1, Integer int2) {
 		if(int1 < 1 || int1 > 9 || int2 < 1 || int2 > 9) {
@@ -1035,15 +1109,26 @@ public void the_board_shall_be_initialized() {
 				assertEquals(column, int2);
 			}
 		}
+<<<<<<< HEAD
 
 
 		throw new cucumber.api.PendingException();
+=======
+	    
+		
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@When("Validation of the position is initiated")
 	public void validationOfThePositionIsInitiated() {
+<<<<<<< HEAD
 		QuoridorController.validatePosition();
 		throw new cucumber.api.PendingException();
+=======
+	    QuoridorController.validatePosition();
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The position shall be {string}")
@@ -1054,7 +1139,11 @@ public void the_board_shall_be_initialized() {
 		else {
 			string = "error";
 		}
+<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
+=======
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
@@ -1083,7 +1172,11 @@ public void the_board_shall_be_initialized() {
 				assertEquals(directionGiven, direction);
 			}
 		}
+<<<<<<< HEAD
 
+=======
+		
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
 			List<Wall> whiteWalls =  QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard();
 			Integer row;
@@ -1101,17 +1194,27 @@ public void the_board_shall_be_initialized() {
 		}
 
 
+<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
+=======
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The position shall be valid")
 	public void thePositionShallBeValid() {
+<<<<<<< HEAD
 		assertEquals(true, QuoridorController.validPosition());
 		throw new cucumber.api.PendingException();
+=======
+	    assertEquals(true, QuoridorController.validatePosition());
+	    throw new cucumber.api.PendingException();
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The position shall be invalid")
 	public void thePositionShallBeInvalid() {
+<<<<<<< HEAD
 		assertEquals(false, QuoridorController.validPosition());
 		throw new cucumber.api.PendingException();
 	}
@@ -1119,6 +1222,13 @@ public void the_board_shall_be_initialized() {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	
+=======
+		assertEquals(false, QuoridorController.validatePosition());
+	    throw new cucumber.api.PendingException();
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+>>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 
 	// ***********************************************
 	// Clean up
