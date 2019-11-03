@@ -36,12 +36,9 @@ public class QuoridorController {
 	 * @param player
 	 */
 	public static void completeMove(Player player) {
-		Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
-		if(player.equals(curGame.getWhitePlayer()) ) {
-			curGame.getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
-		} else {
-			curGame.getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
-		}
+		
+		QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(player.getNextPlayer());
+		
 
 	}
 	/**
