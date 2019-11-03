@@ -281,17 +281,15 @@ public class QuoridorController {
 	 * @author Yanis Jallouli
 	 */
 	public static void dropWall() {
-		//TODO: You forgot to set Move variables, like previous move or next move
-		//I set the move variables, though it woul be better if this were done intializing the move
-		//TODO: Check if you used move/round number. You probably used it wrong
+		
 		Game current = QuoridorApplication.getQuoridor().getCurrentGame();
 		GamePosition curPos = current.getCurrentPosition();
-		
 		Wall curWall = current.getWallMoveCandidate().getWallPlaced();
 		
 		
 		//View checks if it's valid for us
-		//TODO: Create a .equals method for player <- This
+		
+		//Remove Walls from stock and place on board
 		//If White
 		if(curPos.getPlayerToMove().equals(current.getWhitePlayer())) {
 			//Move the wall from the player stock to the board
@@ -303,7 +301,7 @@ public class QuoridorController {
 			curPos.addBlackWallsOnBoard(curWall);
 		}
 		
-		//TODO: Add GUI update steps
+		
 		//Add the move to game list
 		if(current.getMoves().size() > 0) {
 			current.getWallMoveCandidate().setPrevMove(current.getMove(current.getMoves().size() - 1));
@@ -312,10 +310,12 @@ public class QuoridorController {
 		}
 		current.addMove(current.getWallMoveCandidate());
 		
-		//TODO: See if switch does this
-		//Updating the position- see if needed (might be done in switch)
+		//Update currentPosition to include new wall //TODO: See if switch does it
 		
-		current.addPosition(curPos);  //Switch player will need to make a new curPos
+		//Add current pos to game's array
+		current.addPosition(curPos);
+		
+		//Create a new current Pos
 		GamePosition newPos;
 		if(curPos.getPlayerToMove().equals(current.getWhitePlayer())) {
 			PlayerPosition white = new PlayerPosition(current.getWhitePlayer(), curPos.getWhitePosition().getTile());
@@ -336,7 +336,7 @@ public class QuoridorController {
 		
 		
 		
-		//Alright complete needs to set MoveMode, PlayertoMove
+		//Set move type/wallmove cand. to null
 		current.setWallMoveCandidate(null);
 		current.setMoveMode(null);
 		
@@ -374,7 +374,12 @@ public class QuoridorController {
 		return false;
 	}
 	
-	//TODO: javadoc
+	/**Get Walls
+	 * Query method that returns an ArrayList of all wall moves
+	 * registered within the current game.
+	 * @return list of wall moves
+	 * @author Yanis Jallouli
+	 */
 	public static ArrayList<WallMove> getWalls() {
 		ArrayList<WallMove> walls = new ArrayList<WallMove>();
 		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
@@ -400,9 +405,9 @@ public class QuoridorController {
 		File fil = new File(filePath);
 		
 		
-		/* 1) Writes white position (playerPos & walls) in file
-		 * 2) Writes black position the same way on new line
-		 * 3) Go down two lines and start writing white/black moves of each round
+		/* 1) Writes white position (playerPos & walls) in file "W: e3, a4h, e8v..."
+		 * 2) Writes black position the same way on new line "B: a4, c3v, f6v..."
+		 * 3) Go down two lines and start writing white/black moves of each round "1. e4h a5\n2. e2 d5v\n3. ..."
 		 */	
 		
 		try {
@@ -410,39 +415,34 @@ public class QuoridorController {
 			PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(fil)));
 	
 			writer.print("W: ");
-			
-			Tile whitePos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile();
-			
+			Tile whitePos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()
+									.getWhitePosition().getTile();
 			char col = (char) ((whitePos.getColumn() -1) + 'a');
 			writer.print(col);
 			writer.print(whitePos.getRow());
 			
-			
-			for(int i = 0; i < moves.size(); i++) {
-				Move move = moves.get(i);
+			for(WallMove move : getWalls()) {
 				//Assumes White Player moves first
-				if(i % 2 == 0 && move instanceof WallMove) {
+				if(move.getMoveNumber() % 2 == 1) {
 					writer.print(", ");
 					writeWall((WallMove) move, writer);
-				}
-					
+				}	
 			}
+			
 			writer.println();
 			
 			writer.print("B: ");
-			
-			Tile blackPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile();
-			
+			Tile blackPos = QuoridorApplication.getQuoridor().getCurrentGame()
+									.getCurrentPosition().getBlackPosition().getTile();		
 			col = (char) ((blackPos.getColumn() -1) + 'a');
 			writer.print(col);
 			writer.print(blackPos.getRow());
 			
 			
 			
-			for(int i = 0; i < moves.size(); i++) {
-				Move move = moves.get(i);
+			for(WallMove move : getWalls()) {
 				//Assumes Black Player moves second
-				if(i % 2 == 1 && move instanceof WallMove) {
+				if(move.getMoveNumber() % 2 == 0) {
 					writer.print(", ");
 					writeWall((WallMove) move, writer);
 				}	
@@ -491,11 +491,17 @@ public class QuoridorController {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 		return true;
 	}
 	
-	//TODO: Make Javadoc
+	/**Private helper method that writes a wall into a file with the correct syntax
+	 * Does not account for anything other than column, row, and direction
+	 * @param move - WallMove to write into file
+	 * @param writer - PrintWriter set to write into a file
+	 * @throws IOException - thrown in case of error
+	 * @author Yanis Jallouli
+	 */
 	private static void writeWall(WallMove move, PrintWriter writer) throws IOException {
 		char col = (char) ((move.getTargetTile().getColumn() -1) + 'a');
 		writer.print(col);
@@ -504,6 +510,13 @@ public class QuoridorController {
 		else writer.print("v");
 	}
 	
+	/**Private helper method that writes a player into a file with the correct syntax
+	 * Does not account for anything other than column, and row
+	 * @param move - PlayerMove to write into file
+	 * @param writer - PrintWriter set to write into a file
+	 * @throws IOException - thrown in case of error
+	 * @author Yanis Jallouli
+	 */
 	private static void writePlayer(Move move, PrintWriter writer) throws IOException {
 		char col = (char) ((move.getTargetTile().getColumn() -1) + 'a');
 		writer.print(col);
@@ -557,12 +570,13 @@ public class QuoridorController {
 		}
 		int realMoveNum = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
 		if(realMoveNum == moveNumber) {
-			//This is to combat the "File is up to date but not modified('updated')
-			//Essentially I'm checking that the last modification was just before now
+			//This is to combat the "File is up to date but not modified('updated')"
+			//Essentially I'm setting last mod to 0 when we update, or a high number when we don't
 			//TODO: Remove this once we don't need Gherkin
-			if(System.currentTimeMillis() - fil.lastModified() > 200) {
-				return false; //If it wasn't changed in the current sitting, it wasn't updated
+			if(fil.lastModified() > 10000) {	
+				return false;
 			}
+			
 			return true;
 		} else {
 			return false;
@@ -585,7 +599,11 @@ public class QuoridorController {
 		return false;
 	}
 	
-	//TODO: Make Javadoc
+	/** A method to delete a file from the fileSystem
+	 * @param filePath - path to the file to be deleted
+	 * @return Boolean- whether the file was deleted succesfully
+	 * @author Yanis Jallouli
+	 */
 	public static boolean deleteFile(String filePath) {
 		File file = new File(filePath);
 		if(!file.exists()) return false;

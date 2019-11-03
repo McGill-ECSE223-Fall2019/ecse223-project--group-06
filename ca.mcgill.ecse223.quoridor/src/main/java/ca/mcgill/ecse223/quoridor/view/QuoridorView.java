@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -215,7 +216,8 @@ public class QuoridorView extends JFrame implements KeyListener {
 	        l.addElement("LongComplicatedUsername16"); 
 	        l.addElement("LongComplicatedUsername17"); 
         JList<String> list = new JList<String>(l);
-        //TODO: Make this work for double click too (addMouseListener)
+        //Will work on enter
+        //TODO: make it specific to box
         list.addKeyListener(new java.awt.event.KeyListener() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {}
 			public void keyTyped(java.awt.event.KeyEvent evt) {}
@@ -305,9 +307,8 @@ public class QuoridorView extends JFrame implements KeyListener {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//TODO: Implement Grab Wall	
-				//Whoever's doing this might want to make a Wall rectangle. 
-				//To draw on the board, use the paintComponent in JPanel below
-				//Idk if that updates though, you'll need to look into documentation. I'm sorry...
+				//I figured out a way. Put the wall on in the game's candidate wall
+				//And call refresh. It should work
 				refresh();
 			}
 		});
@@ -402,8 +403,8 @@ public class QuoridorView extends JFrame implements KeyListener {
 											 			 			 .addComponent(saveButton)
 											 			 			 .addComponent(undoButton)
 														  )
-												 .addComponent(exitButton)
-												 ;
+												 .addComponent(exitButton);
+		
 		GroupLayout.Group vertical = gameLayout.createSequentialGroup()
 				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(p2Name) 
@@ -431,8 +432,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 				 													.addComponent(saveButton)
 				 													.addComponent(undoButton)
 				 										)
-				 								.addComponent(exitButton)
-				 ;
+				 								.addComponent(exitButton);
 		
 		
 		
@@ -446,9 +446,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 	//Not implemented, but eventually was where I was planning on doing the timer stuff.
 	//I just don't know how
 	public void updateView() {
-		//TODO: This needs to update Time left. Updating everything else is left to action listeners
-		//It also might have to update player? Or make it update with player pos in paintComponent()?
-		//But that only works once controller works
+		//TODO: This needs to update Time left
 		refresh();
 	}
 	
@@ -516,7 +514,8 @@ public class QuoridorView extends JFrame implements KeyListener {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Save the game
 				QuoridorController.savePosition(fileName);
-				
+				File f = new File(fileName);
+				f.setLastModified(0); //TODO: Remove all the f stuff
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
@@ -542,6 +541,8 @@ public class QuoridorView extends JFrame implements KeyListener {
 																.addComponent(exitButton)));
 				SwingUtilities.updateComponentTreeUI(confirmFrame);
 				confirmFrame.pack();
+				File f = new File(fileName);
+				f.setLastModified(1000000000); //TODO: Remove all the f stuff
 			}
 		});
 		
@@ -564,9 +565,11 @@ public class QuoridorView extends JFrame implements KeyListener {
 					layout.replace(exitButton, noButton);
 					SwingUtilities.updateComponentTreeUI(confirmFrame);
 					confirmFrame.pack();
-				} else {
+				} else {	
 					//Save the game
 					QuoridorController.savePosition(fileName);
+					File f = new File(fileName); 
+					f.setLastModified(0);
 					//Exit the frame
 					confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 				}
@@ -658,8 +661,14 @@ public class QuoridorView extends JFrame implements KeyListener {
 	
 	
 	public void keyTyped(KeyEvent e) {
+
 		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 			DropWall();
+		} else if (e.getKeyCode() == KeyEvent.VK_UP) {
+		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {	
+		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {	
+		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {	
+		} else if (e.getKeyCode() == KeyEvent.VK_R) {
 		}
 	}
 	public void keyPressed(KeyEvent e) {
@@ -670,10 +679,8 @@ public class QuoridorView extends JFrame implements KeyListener {
 	}
 	public void DropWall() {
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-			System.out.println("Move mode is right");
 			if(QuoridorController.wallIsValid()) {
 				if(p1Turn.isSelected()) {
-					
 					Integer numWalls = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
 					p1Walls.setText("Walls: " + Integer.toString(numWalls - 1));
 				} else {
@@ -687,7 +694,6 @@ public class QuoridorView extends JFrame implements KeyListener {
 			} else {
 				notifyInvalid("Invalid Wall Placement");
 				refresh();
-				System.out.println("Wall isn't valid?");
 			}
 		}
 	}
