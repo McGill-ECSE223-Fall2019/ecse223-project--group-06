@@ -517,23 +517,19 @@ public void the_board_shall_be_initialized() {
 	public void iHaveMoreWallsOnStock() {
 		Assert.assertTrue(
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasWalls());
-		throw new cucumber.api.PendingException();
+		//throw new cucumber.api.PendingException();
 	}
 
 	@When("I try to grab a wall from my stock")
 	public void iTryToGrabAWallFromMyStock() {
-		QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()
-				.getPlayerToMove().getWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()
-						.getPlayerToMove().getWalls().size() - 1));
-		throw new cucumber.api.PendingException();
+		QuoridorController.grabWall();
+		//throw new cucumber.api.PendingException();
 	}
 
 	@Then("A wall move candidate shall be created at initial position")
 	public void aWallMoveCandidateShallBeCreatedAtInitialPosition() {
-		aWallMove = QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame()
-				.getCurrentPosition().getPlayerToMove().getWall(QuoridorApplication.getQuoridor().getCurrentGame()
-						.getCurrentPosition().getPlayerToMove().getWalls().size() - 1));
-		throw new cucumber.api.PendingException();
+		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() != null);
+		//throw new cucumber.api.PendingException();
 	}
 
 	@And("I shall have a wall in my hand over the board")
@@ -544,11 +540,8 @@ public void the_board_shall_be_initialized() {
 
 	@And("The wall in my hand shall disappear from my stock")
 	public void theWallInMyHandShallDisappearFromMyStock() {
-		QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
-				.removeWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
-						.getWall(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()
-								.getPlayerToMove().getWalls().size() - 1));
-		throw new cucumber.api.PendingException();
+		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().indexOfWall(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallPlaced()) == -1);
+		//throw new cucumber.api.PendingException();
 	}
 
 	// Scenario 2
@@ -557,7 +550,7 @@ public void the_board_shall_be_initialized() {
 		for (Wall wall : QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
 				.getWalls())
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().removeWall(wall);
-		throw new cucumber.api.PendingException();
+		//throw new cucumber.api.PendingException();
 	}
 
 	@Then("I shall be notified that I have no more walls")
@@ -568,26 +561,29 @@ public void the_board_shall_be_initialized() {
 
 	@And("I shall have no walls in my hand")
 	public void iShallHaveNoWallsInMyHand() {
-		Assert.assertFalse(
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasWalls());
-		throw new cucumber.api.PendingException();
+		Assert.assertTrue(
+				QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null);
+		//throw new cucumber.api.PendingException();
 	}
 
 	// Scenario Outline: Move Wall over the board
 	@Given("A wall move candidate exists with {string} at position {int}, {int}")
 	public void aWallMoveCandidateExistsWith(String dir, int row, int col) {
-		if (dir.equals("vertical"))
+		aWallMove = QuoridorController.grabWall();
+		aWallMove.setTargetTile(QuoridorController.findTile(row, col));
+		if (dir.equals("vertical")) {
 			aWallMove.setWallDirection(Direction.Vertical);
-		else
+		}
+		else {
 			aWallMove.setWallDirection(Direction.Horizontal);
-		QuoridorController.moveWall(aWallMove, QuoridorController.findTile(row, col));
-		throw new cucumber.api.PendingException();
+		}
+		//throw new cucumber.api.PendingException();
 	}
 
 	@And("The wall candidate is not at the {string} edge of the board")
 	public void notAtTheSide(String side) {
 		Assert.assertFalse(QuoridorController.isSide(aWallMove));
-		throw new cucumber.api.PendingException();
+		//throw new cucumber.api.PendingException();
 	}
 
 	@When("I try to move the wall {string}")
@@ -604,32 +600,33 @@ public void the_board_shall_be_initialized() {
 		if (side.equals("down"))
 			QuoridorController.moveWall(aWallMove, QuoridorController.findTile(aWallMove.getTargetTile().getRow() + 1,
 					aWallMove.getTargetTile().getColumn()));
-		throw new cucumber.api.PendingException();
+		//throw new cucumber.api.PendingException();
 	}
 
 	@Then("The wall shall be moved over the board to position {int}, {int}")
-	public void validatePosition(int nrow, int ncol) {
+	public void wallShallBeMovedToPosition(int nrow, int ncol) {
 		Assert.assertTrue(aWallMove.getTargetTile().getRow() == nrow && aWallMove.getTargetTile().getColumn() == ncol);
-		throw new cucumber.api.PendingException();
+		//throw new cucumber.api.PendingException();
 	}
 
 	@And("A wall move candidate shall exist with {string} at position {int}, {int}")
 	public void validateCandidate(String dir, int nrow, int ncol) {
 		if (dir.equals("vertical"))
-			Assert.assertTrue(aWallMove.getWallDirection().equals(Direction.Vertical)
-					&& aWallMove.getTargetTile().equals(QuoridorController.findTile(nrow, ncol)));
+			Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection().equals(Direction.Vertical)
+					&& QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().equals(QuoridorController.findTile(nrow, ncol)));
 		if (dir.equals("horizontal"))
-			Assert.assertTrue(aWallMove.getWallDirection().equals(Direction.Horizontal)
-					&& aWallMove.getTargetTile().equals(QuoridorController.findTile(nrow, ncol)));
-		throw new cucumber.api.PendingException();
+			Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection().equals(Direction.Horizontal)
+					&& QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().equals(QuoridorController.findTile(nrow, ncol)));
+		//throw new cucumber.api.PendingException();
+		
 	}
 
 	// Scenario Outline: Move wall at the edge of the board
 
 	@And("The wall candidate is at the {string} edge of the board")
 	public void atTheSide(String side) {
-		Assert.assertTrue(QuoridorController.isSide(aWallMove));
-		throw new cucumber.api.PendingException();
+		Assert.assertTrue(QuoridorController.isSide(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate()));
+		//throw new cucumber.api.PendingException();
 	}
 
 	@Then("I shall be notified that my move is illegal")
@@ -652,7 +649,7 @@ public void the_board_shall_be_initialized() {
 	public void iHaveAWallInHandOverBoard() {
 		//TODO: Get rid of null pointer?
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
-			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));
+			QuoridorController.grabWall();
 		}
 	}
 	
@@ -670,10 +667,7 @@ public void the_board_shall_be_initialized() {
 			if(move instanceof WallMove) moveList.add((WallMove) move);
 		}
 		
-		if(!QuoridorController.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
-				moveList, 
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
+		if(!QuoridorController.wallIsValid()) {
 			Assert.fail(); //TODO: Fix this
 		}
 	}
@@ -721,10 +715,7 @@ public void the_board_shall_be_initialized() {
 			if(move instanceof WallMove) moveList.add((WallMove) move);
 		}
 		
-		if(QuoridorController.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
-				moveList, 
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
+		if(QuoridorController.wallIsValid() {
 			Assert.fail(); //If you reached here, the parameters being passed in are wrong
 		}
 	}
