@@ -3,6 +3,7 @@ package ca.mcgill.ecse223.quoridor.features;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
 import cucumber.api.PendingException;
-import io.cucumber.core.api.Scenario;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -43,6 +43,7 @@ import io.cucumber.java.en.When;
 
 public class CucumberStepDefinitions {
 
+	private QuoridorView view = new QuoridorView();
 	private Quoridor quoridor;
 	private Board board;
 	private Player player1;
@@ -128,7 +129,11 @@ public class CucumberStepDefinitions {
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
-		// GUI-related feature -- TODO for later
+		//TODO: Get rid of null pointer?- also do GUI stuff (GUI feature)
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
+			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));	
+		}
+		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
 	}
 	
 	@Given("^A new game is initializing$")
@@ -655,40 +660,27 @@ public void the_board_shall_be_initialized() {
 	// ***********************************************
 	// Drop Wall definitions
 	// ***********************************************
-	
-	@And("I have a wall in my hand over the board")
-	public void iHaveAWallInHandOverBoard() {
-		//TODO: Get rid of null pointer?
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
-			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));
-		}
-	}
-	
+
 	//Scenario 1
 	@Given("The wall move candidate with {string} at position {int}, {int} is valid")
 	public void theWallMoveCandidateWithDirAtPosIsValid(String dir, int row, int col) throws InvalidInputException {
 		//Get a string- make a direction
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		//Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
-		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
-		QuoridorController.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , QuoridorController.findTile(row, col));
-		//Fail if invalid wall given
-		List<WallMove> moveList = new ArrayList<WallMove>();
-		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
-			if(move instanceof WallMove) moveList.add((WallMove) move);
-		}
+		WallMove toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		toCheck.setWallDirection(direction);
+		toCheck.setTargetTile(QuoridorController.findTile(row, col));
 		
-		if(!QuoridorController.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
-				moveList, 
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
-			Assert.fail(); //TODO: Fix this
+		if(!QuoridorController.wallIsValid()) {
+			QuoridorApplication.getQuoridor().getCurrentGame().getMoves().remove(QuoridorController.invalidWall());
 		}
 	}
 	
 	@When("I release the wall in my hand") 
 	public void iReleaseTheWallInMyHand(){
-		QuoridorController.dropWall();
+		//QuoridorController.dropWall();
+		
+		view.DropWall();
+
 	}
 	
 	@Then("A wall move shall be registered with {string} at position {int}, {int}")
@@ -705,14 +697,11 @@ public void the_board_shall_be_initialized() {
 
 	@And("My move shall be completed")
 	public void myMoveIsCompleted() {
-		//TODO: GUI step?
-		throw new PendingException(); //I'm assuming this is a User confirming move
+		assertTrue(view.p2Turn.isSelected() && !view.p1Turn.isSelected());
 	}
 	
 	@And("It shall not be my turn to move")
 	public void itIsNotMyTurnToMove() {
-		//Or maybe I'm supposed to change it last step and check it this one? 
-		QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
 		Assert.assertTrue( !QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())     );
 	}
@@ -720,34 +709,25 @@ public void the_board_shall_be_initialized() {
 	@Given("The wall move candidate with {string} at position {int}, {int} is invalid")
 	public void theWallMoveCandidateWithDirAtPosIsInvalid(String dir, int row, int col) throws InvalidInputException {
 		//Background ensures I have a wall in hand
+		
+		//Get a string- make a direction
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
-		QuoridorController.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , QuoridorController.findTile(row, col));
-		//Check
-		List<WallMove> moveList = new ArrayList<WallMove>();
-		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
-			if(move instanceof WallMove) moveList.add((WallMove) move);
+		WallMove toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		toCheck.setWallDirection(direction);
+		toCheck.setTargetTile(QuoridorController.findTile(row, col));
+		
+		if(QuoridorController.wallIsValid()) {
+			//If it's valid, make it invalid
+			QuoridorApplication.getQuoridor().getCurrentGame().addMove(toCheck);
 		}
 		
-		if(QuoridorController.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
-				moveList, 
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
-			Assert.fail(); //If you reached here, the parameters being passed in are wrong
-		}
 	}
 	
 	
 	@Then("I shall be notified that my wall move is invalid")
 	public void iShallBeNotifiedThatMyWallMoveIsInvalid() {
-		throw new PendingException(); //GUI stuff
+		assertTrue(!view.notification.getText().equals("") && view.notification.isVisible());
 	}
-	/*//Taken care of in grab/move wall
-	@And("I shall have a wall in my hand over the board")
-	public void iShallHaveAWallInMyHandOverTheBoard() {
-		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate());
-	}
-	*/
 	
 	@And("It shall be my turn to move")
 	public void itShallBeMyTurnToMove() {
@@ -776,16 +756,11 @@ public void the_board_shall_be_initialized() {
 				QuoridorController.deleteFile(fileName);
 			}	
 	}
-	@After
-	public void myAfterHook(Scenario scenario) {
-	    if (scenario.isFailed()) {
-	        System.out.println("***>> Scenario '" + scenario.getName() + "' failed at line(s) " + scenario.getLine() + " with status '" + scenario.getStatus() + "'");
-	    }
-	}
 	
 	@When("The user initiates to save the game with name {string}")
-	public void theUserInitiatesToSaveTheGameWithName(String fileName) {
+	public void theUserInitiatesToSaveTheGameWithName(String fileName) {	
 		view.confirmSaveAction();
+		
 		JTextField fill = (JTextField) view.confirmFrame.getContentPane().getComponent(1); //Get TextBox
 		fill.setText(fileName);
 		JButton save = (JButton) view.confirmFrame.getContentPane().getComponent(2);
@@ -1193,7 +1168,8 @@ public void the_board_shall_be_initialized() {
 		//@formatter:on
 		Player player1 = new Player(new Time(thinkingTime), user1, 9, Direction.Horizontal);
 		Player player2 = new Player(new Time(thinkingTime), user2, 1, Direction.Horizontal);
-
+		player1.setNextPlayer(player2);
+		player2.setNextPlayer(player1);
 		Player[] players = { player1, player2 };
 
 		// Create all walls. Walls with lower ID belong to player1,
@@ -1240,5 +1216,4 @@ public void the_board_shall_be_initialized() {
 
 		game.setCurrentPosition(gamePosition);
 	}
-
 }

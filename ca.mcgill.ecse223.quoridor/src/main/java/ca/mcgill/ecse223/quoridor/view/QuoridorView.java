@@ -7,7 +7,9 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -24,8 +26,11 @@ import javax.swing.SwingUtilities;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.model.Direction;
+import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+import ca.mcgill.ecse223.quoridor.model.WallMove;
 
-public class QuoridorView extends JFrame {
+public class QuoridorView extends JFrame implements KeyListener {
 	private static final long serialVersionUID = -4426310869335015542L;
 	
 	
@@ -48,6 +53,7 @@ public class QuoridorView extends JFrame {
 	private JButton exitButton = new JButton("Exit");
 	private JButton moveButton = new JButton("Move Wall");
 	private JButton grabButton = new JButton("Grab Wall");
+	private JButton validateButton = new JButton("Validate Position");
 	private JPanel board;
 	private GroupLayout gameLayout;
 	private String fileName; //Just used to store save file name- eclipse get angry otherwise
@@ -211,7 +217,8 @@ public class QuoridorView extends JFrame {
 	        l.addElement("LongComplicatedUsername16"); 
 	        l.addElement("LongComplicatedUsername17"); 
         JList<String> list = new JList<String>(l);
-        //TODO: Make this work for double click too (addMouseListener)
+        //Will work on enter
+        //TODO: make it specific to box
         list.addKeyListener(new java.awt.event.KeyListener() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {}
 			public void keyTyped(java.awt.event.KeyEvent evt) {}
@@ -301,9 +308,8 @@ public class QuoridorView extends JFrame {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//TODO: Implement Grab Wall	
-				//Whoever's doing this might want to make a Wall rectangle. 
-				//To draw on the board, use the paintComponent in JPanel below
-				//Idk if that updates though, you'll need to look into documentation. I'm sorry...
+				//I figured out a way. Put the wall on in the game's candidate wall
+				//And call refresh. It should work
 				refresh();
 			}
 		});
@@ -311,6 +317,14 @@ public class QuoridorView extends JFrame {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//TODO: Implement MovePlayer
+				refresh();
+			}
+		});
+		validateButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				//TODO: Implement Validate Position- you can set the text of notification to tell user
+				//Remember to set the notification to visible
 				refresh();
 			}
 		});
@@ -339,6 +353,31 @@ public class QuoridorView extends JFrame {
 							(i/9)*height,
 							width - 5, height - 5);
 				}
+				board.setColor(new Color(255, 164, 66));
+				for(WallMove wall : QuoridorController.getWalls()) {
+					if(wall.getWallDirection() == Direction.Horizontal) {
+						board.fillRect(wall.getTargetTile().getRow() * 40, 
+									   wall.getTargetTile().getColumn() * 40 - 5, 
+									   10, 5);
+					} else {
+						board.fillRect(wall.getTargetTile().getRow() * 40 - 5, 
+								   wall.getTargetTile().getColumn() * 40, 
+								   5, 10);
+					}
+				}
+				WallMove candidate = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+				if(candidate != null) {
+					if(candidate.getWallDirection() == Direction.Horizontal) {
+						board.fillRect(candidate.getTargetTile().getRow() * 40, 
+									   candidate.getTargetTile().getColumn() * 40 - 5, 
+									   10, 5);
+					} else {
+						board.fillRect(candidate.getTargetTile().getRow() * 40 - 5, 
+								   candidate.getTargetTile().getColumn() * 40, 
+								   5, 10);
+					}
+				}
+				
 			}
 		};
 		board.setPreferredSize(new Dimension(40*9, 40*9));
@@ -373,8 +412,10 @@ public class QuoridorView extends JFrame {
 											 			 			 .addComponent(saveButton)
 											 			 			 .addComponent(undoButton)
 														  )
-												 .addComponent(exitButton)
-												 ;
+												 .addGroup(gameLayout.createSequentialGroup()
+																	 .addComponent(exitButton)
+																	 .addComponent(validateButton));
+		
 		GroupLayout.Group vertical = gameLayout.createSequentialGroup()
 				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(p2Name) 
@@ -402,8 +443,9 @@ public class QuoridorView extends JFrame {
 				 													.addComponent(saveButton)
 				 													.addComponent(undoButton)
 				 										)
-				 								.addComponent(exitButton)
-				 ;
+												.addGroup(gameLayout.createParallelGroup()
+																	.addComponent(exitButton)
+																	.addComponent(validateButton));
 		
 		
 		
@@ -417,14 +459,13 @@ public class QuoridorView extends JFrame {
 	//Not implemented, but eventually was where I was planning on doing the timer stuff.
 	//I just don't know how
 	public void updateView() {
-		//TODO: This needs to update Time left. Updating everything else is left to action listeners
-		//It also might have to update player? Or make it update with player pos in paintComponent()?
-		//But that only works once controller works
+		//TODO: This needs to update Time left
 		refresh();
 	}
 	
 	//This is just to refresh the screen with any changes to the components
 	public void refresh() {
+		if(board != null) board.repaint();
 		SwingUtilities.updateComponentTreeUI(this);
 		pack();
 	}
@@ -439,13 +480,14 @@ public class QuoridorView extends JFrame {
 	
 	//Creates a confirmation window. Idk how to pass a method, so this is specific to SaveAction
 	public void confirmSaveAction() {
+
 		confirmFrame.getContentPane().removeAll();
-		
+
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		
-		
+
 		JLabel notification = new JLabel();
 		JButton yesButton = new JButton("Yes");
 		JButton noButton = new JButton("No");
@@ -485,6 +527,8 @@ public class QuoridorView extends JFrame {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Save the game
 				QuoridorController.savePosition(fileName);
+				File f = new File(fileName);
+				f.setLastModified(0); //TODO: Remove all the f stuff
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
@@ -498,16 +542,20 @@ public class QuoridorView extends JFrame {
 												.addGroup(layout.createSequentialGroup()
 																.addComponent(gameNameExplain)
 																.addComponent(gameName))
-												.addGroup(horiz));
+												.addGroup(layout.createSequentialGroup()
+																.addComponent(saveButton)
+																.addComponent(exitButton)));
 				layout.setVerticalGroup(layout.createSequentialGroup()
 												.addGroup(layout.createParallelGroup()
 																.addComponent(gameNameExplain)
 																.addComponent(gameName))
-												.addGroup(vert));
-				layout.replace(yesButton, saveButton);
-				layout.replace(noButton, exitButton);
+												.addGroup(layout.createParallelGroup()
+																.addComponent(saveButton)
+																.addComponent(exitButton)));
 				SwingUtilities.updateComponentTreeUI(confirmFrame);
 				confirmFrame.pack();
+				File f = new File(fileName);
+				f.setLastModified(1000000000); //TODO: Remove all the f stuff
 			}
 		});
 		
@@ -519,7 +567,7 @@ public class QuoridorView extends JFrame {
 					name = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat";
 				} else if(name.length() <=  4 ||
 						!name.substring(name.length() - 4, name.length()).equals(".dat")) {
-					System.out.println(name.substring(name.length() - 4, name.length()));
+					
 					name += ".dat";
 				}
 				fileName = name;
@@ -530,9 +578,11 @@ public class QuoridorView extends JFrame {
 					layout.replace(exitButton, noButton);
 					SwingUtilities.updateComponentTreeUI(confirmFrame);
 					confirmFrame.pack();
-				} else {
+				} else {	
 					//Save the game
 					QuoridorController.savePosition(fileName);
+					File f = new File(fileName); 
+					f.setLastModified(0);
 					//Exit the frame
 					confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 				}
@@ -546,11 +596,12 @@ public class QuoridorView extends JFrame {
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
-
+		
 		
 		confirmFrame.getContentPane().setLayout(layout);
 		confirmFrame.pack();
 		confirmFrame.setVisible(true);
+		
 	}
 	public void confirmExitAction() {
 		confirmFrame.getContentPane().removeAll();
@@ -612,12 +663,51 @@ public class QuoridorView extends JFrame {
 	
 	//Just toggling radio buttons
 	public void switchPlayerButton() {
+		notification.setVisible(false);
 		if(p1Turn.isSelected()) {
 			p1Turn.setSelected(false);
 			p2Turn.setSelected(true);
 		} else {
 			p1Turn.setSelected(true);
 			p2Turn.setSelected(false);
+		}
+	}
+	
+	
+	public void keyTyped(KeyEvent e) {
+
+		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+			DropWall();
+		} else if (e.getKeyCode() == KeyEvent.VK_UP) {
+		} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {	
+		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {	
+		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {	
+		} else if (e.getKeyCode() == KeyEvent.VK_R) {
+		}
+	}
+	public void keyPressed(KeyEvent e) {
+		
+	}
+	public void keyReleased(KeyEvent e) {
+		
+	}
+	public void DropWall() {
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+			if(QuoridorController.wallIsValid()) {
+				if(p1Turn.isSelected()) {
+					Integer numWalls = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
+					p1Walls.setText("Walls: " + Integer.toString(numWalls - 1));
+				} else {
+					Integer numWalls = Integer.parseInt(p2Walls.getText());
+					p2Walls.setText(Integer.toString(numWalls - 1));
+				}
+				QuoridorController.dropWall();
+				switchPlayerButton();
+				refresh();
+			} else {
+				notifyInvalid("Invalid Wall Placement");
+				refresh();
+			}
 		}
 	}
 
