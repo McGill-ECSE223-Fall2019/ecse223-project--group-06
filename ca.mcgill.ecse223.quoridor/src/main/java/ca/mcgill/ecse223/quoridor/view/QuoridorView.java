@@ -53,6 +53,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 	private JButton exitButton = new JButton("Exit");
 	private JButton moveButton = new JButton("Move Wall");
 	private JButton grabButton = new JButton("Grab Wall");
+	private JButton validateButton = new JButton("Validate Position");
 	private JPanel board;
 	private GroupLayout gameLayout;
 	private String fileName; //Just used to store save file name- eclipse get angry otherwise
@@ -319,6 +320,14 @@ public class QuoridorView extends JFrame implements KeyListener {
 				refresh();
 			}
 		});
+		validateButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				//TODO: Implement Validate Position- you can set the text of notification to tell user
+				//Remember to set the notification to visible
+				refresh();
+			}
+		});
 		
 		
 		
@@ -403,7 +412,9 @@ public class QuoridorView extends JFrame implements KeyListener {
 											 			 			 .addComponent(saveButton)
 											 			 			 .addComponent(undoButton)
 														  )
-												 .addComponent(exitButton);
+												 .addGroup(gameLayout.createSequentialGroup()
+																	 .addComponent(exitButton)
+																	 .addComponent(validateButton));
 		
 		GroupLayout.Group vertical = gameLayout.createSequentialGroup()
 				 								.addGroup(gameLayout.createParallelGroup()
@@ -432,7 +443,9 @@ public class QuoridorView extends JFrame implements KeyListener {
 				 													.addComponent(saveButton)
 				 													.addComponent(undoButton)
 				 										)
-				 								.addComponent(exitButton);
+												.addGroup(gameLayout.createParallelGroup()
+																	.addComponent(exitButton)
+																	.addComponent(validateButton));
 		
 		
 		
@@ -650,6 +663,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 	
 	//Just toggling radio buttons
 	public void switchPlayerButton() {
+		notification.setVisible(false);
 		if(p1Turn.isSelected()) {
 			p1Turn.setSelected(false);
 			p2Turn.setSelected(true);
@@ -689,7 +703,6 @@ public class QuoridorView extends JFrame implements KeyListener {
 				}
 				QuoridorController.dropWall();
 				switchPlayerButton();
-				notification.setVisible(false);
 				refresh();
 			} else {
 				notifyInvalid("Invalid Wall Placement");
