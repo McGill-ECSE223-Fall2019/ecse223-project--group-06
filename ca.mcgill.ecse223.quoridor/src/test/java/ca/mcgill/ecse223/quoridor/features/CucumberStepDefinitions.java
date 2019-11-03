@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 
 import org.junit.Assert;
 
@@ -361,8 +362,8 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Set Total thinking time
 	 * @Author Xiangyu Li
-	 * @param minute
-	 * @param second
+	 * @param minute minute used for total thinking time
+	 * @param second second used for total thinking time 
 	 */
   
 	@When("{int}:{int} is set as the thinking time")
@@ -373,15 +374,15 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Set Total thinking time
 	 * @Author Xiangyu Li
-	 * @param minute
-	 * @param second
+	 * @param minute check if player have minutes left
+	 * @param second check if player have second left
 	 */
 	
 	@Then("Both players shall have {int}:{int} remaining time left")
 	public void both_players_shall_have_remaining_time_left(int minute,int second) {
 		long remaintime=(minute*60+second)*1000;
-		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime());
-		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime());
+		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime().getTime());
+		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime().getTime());
 	}
 	
 	//*************************************************
@@ -391,7 +392,7 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player want to move 
 	 */
 	@Given("The player to move is {string}")
 	public void Playertomove(String color) {
@@ -400,12 +401,12 @@ public void the_board_shall_be_initialized() {
 		}
 		else 
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
-		}
+	}
 	
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player to run clock
 	 */
 	@And("The clock of {string} is running")
 	public void the_clock_of_black_is_running(String color) {
@@ -419,21 +420,24 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color oof player to stop clock
 	 */
 	@And("The clock of {string} is stopped")
 	public void the_clock_of_white_is_stopped(String color) {
 	    // Write code here that turns the phrase above into concrete actions
 		if(color=="white") {
-			QuoridorController.stopwhiteclock();
+			Timer whitetimer=QuoridorController.runwhiteclock();
+			QuoridorController.stopwhiteclock(whitetimer);
 		}
-		else
-			QuoridorController.stopblackclock();
+		else {
+			Timer blacktimer=QuoridorController.runblackclock();
+			QuoridorController.stopblackclock(blacktimer);
+		}
 	}
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player who complete his move 
 	 */
 	@When("Player {string} completes his move")
 	public void player_blackplayer_completes_his_move(String color) {
@@ -443,11 +447,12 @@ public void the_board_shall_be_initialized() {
 		else {
 		QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());	
 		}
+
 	}
 	/**
 	 * Feature :Switch current player
-	 * Xiangyu Li
-	 * @param color
+	 * Xiangyu Li 
+	 * @param color color of player is in turn
 	 */
 	@Then("The user interface shall be showing it is {string} turn")
 	public void the_user_interface_is_showing_it_is_white_s_turn(String color) {
@@ -462,21 +467,24 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player to stop clock
 	 */
 	@And("The clock of {string} shall be stopped")
 	public void the_clock_of_black_shall_be_stopped(String color) {
-		if(color=="black") {
-			QuoridorController.stopblackclock();
+		if(color=="white") {
+			Timer whitetimer=QuoridorController.runwhiteclock();
+			QuoridorController.stopwhiteclock(whitetimer);
 		}
-		else
-			QuoridorController.stopwhiteclock();
+		else {
+			Timer blacktimer=QuoridorController.runblackclock();
+			QuoridorController.stopblackclock(blacktimer);
+		}
 	}
 	
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player to run his clock
 	 */
 	@And("The clock of {string} shall be running")
 	public void the_clock_of_white_shall_be_running(String color) {
@@ -491,7 +499,7 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player is going to move 
 	 */
 	@And("The next player to move shall be {string}")
 	public void the_player_to_move_is_secondplayer(String color) {

@@ -1,14 +1,19 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+
+import javax.swing.Timer;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
@@ -33,51 +38,78 @@ public class QuoridorController {
 	 * Set current player to complete its move 
 	 * Feature:Switch player
 	 * @author Xiangyu Li
-	 * @param player
+	 * @param player player that completes his move 
 	 */
 	public static void completeMove(Player player) {
-		throw new UnsupportedOperationException();
+		QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(player.getNextPlayer());
+		
 	}
 	/**
 	 * Set total thinking time for each player
 	 * Feature: Set total thinking time
-	 * @param minute
-	 * @param second
+	 * @param minute minute for total thinking time 
+	 * @param second second for total thinking time
 	 */
 	public static boolean setTotaltime(int minute, int second) {
-		throw new UnsupportedOperationException();
+		long totaltime=(minute*60+second)*1000;
+		long whitetime=QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime().getTime();
+		long blacktime=QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime().getTime();
+	    if(totaltime==whitetime&&totaltime==blacktime)
+			return true;
+		else 
+			return false;	
 	}
 	/**
 	 * @author Xiangyu Li
-	 * Feature:Set total thinking time
-	 *Stop black player's clock
+	 * Feature:Switch player
+	 * Stop black player's clock
+	 * @param Timer used for counting time and do actions
 	 */
-	public static void stopblackclock() {
-		throw new UnsupportedOperationException();	
+	public static void stopblackclock(Timer timer) {
+		timer.stop();
 	}
 	/**
 	 * @author Xiangyu Li
-	 * Feature:Set total thinking time
+	 * Feature:Switch player
 	 * Run white player's clock
 	 */
-	public static void runwhiteclock() {
-		throw new UnsupportedOperationException();
+	public static Timer runwhiteclock() {
+	
+		Timer whitetimer;
+		ActionListener taskPerformer= new ActionListener(){
+			 public void actionPerformed(ActionEvent evt) {
+		      }
+		};
+	
+		whitetimer=new Timer(0,taskPerformer);
+		whitetimer.start();
+		return whitetimer;
 	}
 	/**
 	 * @author Xiangyu Li
-	 * Feature: Set total thinking time
+	 * Feature:Switch player
 	 * Stop white player's clock
+	 * @param Timer used for counting time and do actions
 	 */
-	public static void stopwhiteclock() {
-		throw new UnsupportedOperationException();	
+	public static void stopwhiteclock(Timer timer) {
+		timer.stop();
 	}
 	/**
 	 * @author Xiangyu Li
-	 * Featrue:Set total thinking time
+	 * Feature:Switch player
 	 * Run black player's clock
 	 */
-	public static void runblackclock() {
-		throw new UnsupportedOperationException();
+	public static Timer runblackclock() {
+		
+		Timer blacktimer;
+		ActionListener taskPerformer= new ActionListener(){
+			 public void actionPerformed(ActionEvent evt) {
+		      }
+		};
+	
+		blacktimer=new Timer(0,taskPerformer);
+		blacktimer.start();
+		return blacktimer;
 	}
 	/**
 	 * @author Hongshuo Zhou
