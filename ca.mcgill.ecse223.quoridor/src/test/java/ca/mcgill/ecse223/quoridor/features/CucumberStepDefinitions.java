@@ -3,6 +3,7 @@ package ca.mcgill.ecse223.quoridor.features;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
-import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
@@ -31,8 +31,6 @@ import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
-import cucumber.api.PendingException;
-import io.cucumber.core.api.Scenario;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -130,9 +128,9 @@ public class CucumberStepDefinitions {
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
 		//TODO: Get rid of null pointer?- also do GUI stuff (GUI feature)
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
-			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));
-			QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
+			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));	
 		}
+		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
 	}
 	
 	@Given("^A new game is initializing$")
@@ -543,8 +541,7 @@ public void the_board_shall_be_initialized() {
 
 	@And("I shall have a wall in my hand over the board")
 	public void iShallHaveAWallInMyHandOverTheBoard() {
-		// GUI-related feature -- TODO for later
-		throw new cucumber.api.PendingException();
+		assertNotNull(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate());
 	}
 
 	@And("The wall in my hand shall disappear from my stock")
@@ -658,23 +655,21 @@ public void the_board_shall_be_initialized() {
 	public void theWallMoveCandidateWithDirAtPosIsValid(String dir, int row, int col) throws InvalidInputException {
 		//Get a string- make a direction
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		//Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
-		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
-		QuoridorController.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , QuoridorController.findTile(row, col));
-		//Fail if invalid wall given
-		List<WallMove> moveList = new ArrayList<WallMove>();
-		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
-			if(move instanceof WallMove) moveList.add((WallMove) move);
-		}
+		WallMove toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		toCheck.setWallDirection(direction);
+		toCheck.setTargetTile(QuoridorController.findTile(row, col));
 		
 		if(!QuoridorController.wallIsValid()) {
-			Assert.fail(); //TODO: Fix this
+			QuoridorApplication.getQuoridor().getCurrentGame().getMoves().remove(QuoridorController.invalidWall());
 		}
 	}
 	
 	@When("I release the wall in my hand") 
 	public void iReleaseTheWallInMyHand(){
-		QuoridorController.dropWall();
+		//QuoridorController.dropWall();
+		
+		view.DropWall();
+
 	}
 	
 	@Then("A wall move shall be registered with {string} at position {int}, {int}")
@@ -691,14 +686,11 @@ public void the_board_shall_be_initialized() {
 
 	@And("My move shall be completed")
 	public void myMoveIsCompleted() {
-		//TODO: GUI step?
-		throw new PendingException(); //I'm assuming this is a User confirming move
+		assertTrue(view.p2Turn.isSelected() && !view.p1Turn.isSelected());
 	}
 	
 	@And("It shall not be my turn to move")
 	public void itIsNotMyTurnToMove() {
-		//Or maybe I'm supposed to change it last step and check it this one? 
-		QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
 		Assert.assertTrue( !QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())     );
 	}
@@ -706,12 +698,17 @@ public void the_board_shall_be_initialized() {
 	@Given("The wall move candidate with {string} at position {int}, {int} is invalid")
 	public void theWallMoveCandidateWithDirAtPosIsInvalid(String dir, int row, int col) throws InvalidInputException {
 		//Background ensures I have a wall in hand
+		
+		//Get a string- make a direction
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 		WallMove toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
 		toCheck.setWallDirection(direction);
 		toCheck.setTargetTile(QuoridorController.findTile(row, col));
-		QuoridorApplication.getQuoridor().getCurrentGame().getMoves().add(toCheck);
 		
+		if(QuoridorController.wallIsValid()) {
+			//If it's valid, make it invalid
+			QuoridorApplication.getQuoridor().getCurrentGame().addMove(toCheck);
+		}
 		
 	}
 	

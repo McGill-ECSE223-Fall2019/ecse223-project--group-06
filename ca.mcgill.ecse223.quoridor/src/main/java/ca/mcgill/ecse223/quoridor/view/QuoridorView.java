@@ -354,8 +354,20 @@ public class QuoridorView extends JFrame implements KeyListener {
 								   wall.getTargetTile().getColumn() * 40, 
 								   5, 10);
 					}
-					
 				}
+				WallMove candidate = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+				if(candidate != null) {
+					if(candidate.getWallDirection() == Direction.Horizontal) {
+						board.fillRect(candidate.getTargetTile().getRow() * 40, 
+									   candidate.getTargetTile().getColumn() * 40 - 5, 
+									   10, 5);
+					} else {
+						board.fillRect(candidate.getTargetTile().getRow() * 40 - 5, 
+								   candidate.getTargetTile().getColumn() * 40, 
+								   5, 10);
+					}
+				}
+				
 			}
 		};
 		board.setPreferredSize(new Dimension(40*9, 40*9));
@@ -442,7 +454,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 	
 	//This is just to refresh the screen with any changes to the components
 	public void refresh() {
-		board.repaint();
+		if(board != null) board.repaint();
 		SwingUtilities.updateComponentTreeUI(this);
 		pack();
 	}
@@ -518,14 +530,16 @@ public class QuoridorView extends JFrame implements KeyListener {
 												.addGroup(layout.createSequentialGroup()
 																.addComponent(gameNameExplain)
 																.addComponent(gameName))
-												.addGroup(horiz));
+												.addGroup(layout.createSequentialGroup()
+																.addComponent(saveButton)
+																.addComponent(exitButton)));
 				layout.setVerticalGroup(layout.createSequentialGroup()
 												.addGroup(layout.createParallelGroup()
 																.addComponent(gameNameExplain)
 																.addComponent(gameName))
-												.addGroup(vert));
-				layout.replace(yesButton, saveButton);
-				layout.replace(noButton, exitButton);
+												.addGroup(layout.createParallelGroup()
+																.addComponent(saveButton)
+																.addComponent(exitButton)));
 				SwingUtilities.updateComponentTreeUI(confirmFrame);
 				confirmFrame.pack();
 			}
@@ -644,26 +658,38 @@ public class QuoridorView extends JFrame implements KeyListener {
 	
 	
 	public void keyTyped(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_ENTER && 
-				QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-			
-			if(QuoridorController.wallIsValid()) {
-				QuoridorController.dropWall();
-				notification.setVisible(false);
-				refresh();
-			} else {
-				notifyInvalid("Invalid Wall Placement");
-				refresh();
-			}
-			
+		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+			DropWall();
 		}
-
 	}
 	public void keyPressed(KeyEvent e) {
 		
 	}
 	public void keyReleased(KeyEvent e) {
 		
+	}
+	public void DropWall() {
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+			System.out.println("Move mode is right");
+			if(QuoridorController.wallIsValid()) {
+				if(p1Turn.isSelected()) {
+					
+					Integer numWalls = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
+					p1Walls.setText("Walls: " + Integer.toString(numWalls - 1));
+				} else {
+					Integer numWalls = Integer.parseInt(p2Walls.getText());
+					p2Walls.setText(Integer.toString(numWalls - 1));
+				}
+				QuoridorController.dropWall();
+				switchPlayerButton();
+				notification.setVisible(false);
+				refresh();
+			} else {
+				notifyInvalid("Invalid Wall Placement");
+				refresh();
+				System.out.println("Wall isn't valid?");
+			}
+		}
 	}
 
 }
