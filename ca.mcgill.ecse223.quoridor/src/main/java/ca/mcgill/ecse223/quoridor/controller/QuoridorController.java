@@ -127,7 +127,7 @@ public class QuoridorController {
 		// targetTile
 		// will validate position to ensure no overlapping
 		if(wallIsValid()) {
-			curMove.setTargetTile(targetTile);
+			return curMove.setTargetTile(targetTile);
 		}
 		return false;
 	}
@@ -182,7 +182,7 @@ public class QuoridorController {
 	 * @return
 	 */
 
-	public static WallMove grabWall() {
+	public static boolean grabWall() {
 		// will take in a wall and create a wall move object with some default values
 		WallMove newMove;
 		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
@@ -200,9 +200,9 @@ public class QuoridorController {
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
 			.removeWall(newMove.getWallPlaced());
 			
-			return newMove;
+			return true;
 		}
-		throw new RuntimeException("You have no walls to grab");
+		return false;
 		//throw new java.lang.UnsupportedOperationException();
 	}
 	

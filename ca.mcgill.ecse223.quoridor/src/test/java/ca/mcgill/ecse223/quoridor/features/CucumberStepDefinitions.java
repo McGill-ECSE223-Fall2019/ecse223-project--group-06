@@ -569,13 +569,11 @@ public void the_board_shall_be_initialized() {
 	// Scenario Outline: Move Wall over the board
 	@Given("A wall move candidate exists with {string} at position {int}, {int}")
 	public void aWallMoveCandidateExistsWith(String dir, int row, int col) {
-		aWallMove = QuoridorController.grabWall();
-		aWallMove.setTargetTile(QuoridorController.findTile(row, col));
 		if (dir.equals("vertical")) {
-			aWallMove.setWallDirection(Direction.Vertical);
+			aWallMove = new WallMove(1, 1, currentPlayer, QuoridorController.findTile(row, col), game, Direction.Vertical, currentPlayer.getWall(currentPlayer.getWalls().size()-1));
 		}
 		else {
-			aWallMove.setWallDirection(Direction.Horizontal);
+			aWallMove = new WallMove(1, 1, currentPlayer, QuoridorController.findTile(row, col), game, Direction.Horizontal, currentPlayer.getWall(currentPlayer.getWalls().size()-1));
 		}
 		//throw new cucumber.api.PendingException();
 	}

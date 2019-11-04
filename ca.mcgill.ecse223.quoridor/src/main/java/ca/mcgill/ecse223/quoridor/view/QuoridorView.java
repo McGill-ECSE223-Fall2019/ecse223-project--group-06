@@ -304,6 +304,8 @@ public class QuoridorView extends JFrame {
 				//Whoever's doing this might want to make a Wall rectangle. 
 				//To draw on the board, use the paintComponent in JPanel below
 				//Idk if that updates though, you'll need to look into documentation. I'm sorry...
+				if(!QuoridorController.grabWall())
+					notifyInvalid("No walls in stock");
 				refresh();
 			}
 		});
