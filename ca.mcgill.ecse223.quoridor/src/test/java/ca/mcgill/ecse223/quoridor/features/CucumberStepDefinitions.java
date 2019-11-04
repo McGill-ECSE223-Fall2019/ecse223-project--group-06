@@ -989,10 +989,8 @@ public void the_board_shall_be_initialized() {
 	
 	/**
 	 * Feature: #11 Validate position
-	 * 
 	 * @author Keanu, Natchev
 	 * ID#: 260804586
-	 *
 	 */
 	
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
