@@ -852,8 +852,8 @@ public class QuoridorController {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		//Board board = QuoridorApplication.getQuoridor().getBoard();
 		
-		Player whitePlayer = game.getWhitePlayer();
-		Player blackPlayer = game.getBlackPlayer();
+		Player whitePlayer = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+		Player blackPlayer = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
 		
 		
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
