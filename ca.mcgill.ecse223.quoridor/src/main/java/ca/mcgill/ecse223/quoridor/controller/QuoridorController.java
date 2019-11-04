@@ -161,14 +161,15 @@ public class QuoridorController {
 	 * @param targetTile - new tile to move to
 	 * @return whether or not the wall successfully moved
 	 */
-
 	public static boolean moveWall(WallMove curMove, Tile targetTile) {
 
 		// take in a WallMove created in GrabWall feature and put the wall in the
 		// targetTile
 		// will validate position to ensure no overlapping
-
-		throw new java.lang.UnsupportedOperationException();
+		if(wallIsValid()) {
+			return curMove.setTargetTile(targetTile);
+		}
+		return false;
 	}
 	
 	//TODO: A* Algorithm
