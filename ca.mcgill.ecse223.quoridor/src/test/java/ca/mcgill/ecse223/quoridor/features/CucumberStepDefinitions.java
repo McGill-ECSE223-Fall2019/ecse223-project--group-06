@@ -901,10 +901,8 @@ public void the_board_shall_be_initialized() {
 
 	/**
 	 * Feature: #2 Provide or select user name
-	 * 
 	 * @author Keanu, Natchev
 	 * ID#: 260804586
-	 *
 	 */
 
 	@Given("Next player to set user name is {string}")
