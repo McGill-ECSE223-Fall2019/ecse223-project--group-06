@@ -818,7 +818,7 @@ public void the_board_shall_be_initialized() {
 	 */
 	@When("The initialization of the board is initiated")
 	public void theInitializationOfTheBoardIsInitiated() {
-		QuoridorController.initializeBoard(QuoridorApplication.getQuoridor().getBoard());
+		QuoridorController.initializeBoard();
 	}
 	
 	@Then("It shall be white player to move")

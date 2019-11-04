@@ -733,18 +733,23 @@ public class QuoridorController {
 	 * @author Matteo Nunez
 	 * @param board - board object that is going to be initialize
 	 */
-	public static void initializeBoard(Board board) {
+	public static void initializeBoard() {
 		Game current = QuoridorApplication.getQuoridor().getCurrentGame();
+		Board board = QuoridorApplication.getQuoridor().getBoard();
 		
 		Player whitePlayer = current.getWhitePlayer();
 		Player blackPlayer = current.getBlackPlayer();
 		
-		if (current.getCurrentPosition() == null)
+		if (board.getTile(4) == null) 
 			throw new java.lang.UnsupportedOperationException();
-		current.getCurrentPosition().getPlayerToMove().setGameAsWhite(current);
 		
-		current.getCurrentPosition().getWhitePosition().setTile(findTile(9, 4));
-		current.getCurrentPosition().getWhitePosition().setTile(findTile(0, 4));
+		if (current.getCurrentPosition() == null)
+			current.setCurrentPosition(new GamePosition(0, new PlayerPosition(whitePlayer, board.getTile(4)), new PlayerPosition(blackPlayer, board.getTile(8*9+4)), whitePlayer, current));
+			//throw new java.lang.UnsupportedOperationException();
+		
+//		current.getCurrentPosition().getPlayerToMove().setGameAsWhite(current);
+//		current.getCurrentPosition().getWhitePosition().setTile(findTile(9, 4));
+//		current.getCurrentPosition().getWhitePosition().setTile(findTile(0, 4));
 		
 		for (int whiteWallInStock = current.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
 			current.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));
