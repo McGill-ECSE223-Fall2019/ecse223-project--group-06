@@ -19,6 +19,7 @@ import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
+import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
@@ -288,10 +289,39 @@ public class QuoridorController {
 
 	public static WallMove grabWall(Wall aWall) {
 		// will take in a wall and create a wall move object with some default values
-
-		throw new java.lang.UnsupportedOperationException();
+		WallMove newMove;
+		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
+		int walls = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().numberOfWalls();
+		
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasWalls()) {
+			newMove = new WallMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+1, 
+											QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()/2+1, 
+											QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove(), 
+											defaultTile(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()), 
+											QuoridorApplication.getQuoridor().getCurrentGame(), 
+											Direction.Vertical, 
+											QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWall(walls-1));
+			QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(newMove);
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
+			.removeWall(newMove.getWallPlaced());
+			
+			return newMove;
+		}
+		throw new RuntimeException("You have no walls to grab");
+		//throw new java.lang.UnsupportedOperationException();
 	}
 
+	/**
+	 * defaultTile helper method assigns default starting tile for white and black player
+	 * @param curPlayer
+	 * @return defaultTile to start a wall move candidate
+	 */
+	public static Tile defaultTile(Player curPlayer) {
+		if(curPlayer.hasGameAsBlack())
+			return QuoridorApplication.getQuoridor().getBoard().getTile(0);
+		return QuoridorApplication.getQuoridor().getBoard().getTile(81);
+	}
+	
 	/**
 	 * isSide helper method Checks whether wallMove targetTile is on side of board
 	 * 
@@ -299,7 +329,12 @@ public class QuoridorController {
 	 * @return boolean
 	 */
 	public static boolean isSide(WallMove aWallMove) {
-		throw new java.lang.UnsupportedOperationException();
+		if(aWallMove.getTargetTile().getColumn() == 1 || 
+				aWallMove.getTargetTile().getColumn() == 9 || 
+				aWallMove.getTargetTile().getRow() == 1 || 
+				aWallMove.getTargetTile().getRow() == 9)
+				return true;
+		return false;
 	}
 	////////////////////////////////////////////////////////////////
   
@@ -679,9 +714,14 @@ public class QuoridorController {
 	 * @param wall - wall object that is going to be rotated
 	 */
 	public static void rotateWall(Wall wall) {
-		throw new java.lang.UnsupportedOperationException();
+		if (wall.getMove().getWallDirection().equals(Direction.Vertical)) {
+			wall.getMove().setWallDirection(Direction.Horizontal);
+		} else if (wall.getMove().getWallDirection().equals(Direction.Horizontal)) {
+			wall.getMove().setWallDirection(Direction.Vertical);
+		} else {
+			throw new java.lang.UnsupportedOperationException();
+		}
 	}
-	
 	
 	/** Private helper method encapsulating writing player moves into the save file
 	 * 	Takes an initialized writer and move- writes it with predefined syntax.
