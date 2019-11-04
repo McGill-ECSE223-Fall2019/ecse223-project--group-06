@@ -30,7 +30,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputListener;
 
-import QuoridorView.MouseEventListener;
+import java.awt.event.MouseListener;
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Direction;
@@ -371,16 +371,16 @@ public class QuoridorView extends JFrame implements KeyListener {
 							width - 5, height - 5);
 				}
 
-				board.setColor(new Color(255, 164, 66));
+				g.setColor(new Color(255, 164, 66));
 				ArrayList<WallMove> walls = QuoridorController.getWalls();
 				if(walls != null) {
 					for(WallMove wall : QuoridorController.getWalls()) {
 						if(wall.getWallDirection() == Direction.Horizontal) {
-							board.fillRect(wall.getTargetTile().getRow() * 40, 
+							g.fillRect(wall.getTargetTile().getRow() * 40, 
 										   wall.getTargetTile().getColumn() * 40 - 5, 
 										   10, 5);
 						} else {
-							board.fillRect(wall.getTargetTile().getRow() * 40 - 5, 
+							g.fillRect(wall.getTargetTile().getRow() * 40 - 5, 
 									   wall.getTargetTile().getColumn() * 40, 
 									   5, 10);
 						}
@@ -501,7 +501,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 		    public void mouseClicked(MouseEvent e) {}
 		 
 		    /**
-		    * ¼ÇÂ¼Êó±ê°´ÏÂÊ±µÄµã
+		    * Â¼Ã‡Ã‚Â¼ÃŠÃ³Â±ÃªÂ°Â´Ã�Ã‚ÃŠÂ±ÂµÃ„ÂµÃ£
 		    */
 		    @Override
 		    public void mousePressed(MouseEvent e) {

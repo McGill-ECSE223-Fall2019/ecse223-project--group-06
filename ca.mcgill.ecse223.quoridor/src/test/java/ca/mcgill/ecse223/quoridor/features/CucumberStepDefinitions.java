@@ -131,7 +131,7 @@ public class CucumberStepDefinitions {
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
-			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));	
+			QuoridorController.grabWall();	
 		}
 		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
 	}
@@ -574,8 +574,7 @@ public void the_board_shall_be_initialized() {
 
 	@Then("I shall be notified that I have no more walls")
 	public void iShallBeNotifiedThatIHaveNoMoreWalls() {
-		Assert.assertTrue(notification.getText().equals("No walls in stock");
-		throw new cucumber.api.PendingException();
+		Assert.assertTrue(view.notification.getText().equals("No walls in stock"));
 	}
 
 	@And("I shall have no walls in my hand")
