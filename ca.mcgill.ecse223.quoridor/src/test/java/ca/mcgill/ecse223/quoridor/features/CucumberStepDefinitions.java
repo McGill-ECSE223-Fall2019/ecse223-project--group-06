@@ -894,11 +894,12 @@ public void the_board_shall_be_initialized() {
 	
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Feature: #2 Provide or select user name
-	//Name: Keanu, Natchev
-	//ID#: 260804586
 
-
+	/**
+	 * Feature: #2 Provide or select user name
+	 * @author Keanu, Natchev
+	 * ID#: 260804586
+	 */
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIs(String string) {
@@ -913,7 +914,6 @@ public void the_board_shall_be_initialized() {
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 			}
 		}
-
 		throw new cucumber.api.PendingException();
 	}
 
@@ -936,12 +936,10 @@ public void the_board_shall_be_initialized() {
 	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
 		if(string == "black") {
 			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().setName(string2);
-
 		}
 		if(string == "white") {
 			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().setName(string2);
 		}
-
 		throw new cucumber.api.PendingException();
 	}
 
@@ -953,7 +951,7 @@ public void the_board_shall_be_initialized() {
 
 	@When("The player provides new user name: {string}")
 	public void thePlayerProvidesNewUserName(String string) {
-		QuoridorApplication.getQuoridor().addUser(string);
+		QuoridorController.createUser(string);
 		throw new cucumber.api.PendingException();
 	}
 
@@ -982,10 +980,13 @@ public void the_board_shall_be_initialized() {
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Feature: #11 Validate position
-	//Name: Keanu, Natchev
-	//ID#: 260804586
-
+	
+	/**
+	 * Feature: #11 Validate position
+	 * @author Keanu, Natchev
+	 * ID#: 260804586
+	 */
+	
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void aGamePositionIsSuppliedWithPawnCoordinate(Integer int1, Integer int2) {
 		if(int1 < 1 || int1 > 9 || int2 < 1 || int2 > 9) {
@@ -1007,8 +1008,6 @@ public void the_board_shall_be_initialized() {
 				assertEquals(column, int2);
 			}
 		}
-
-
 		throw new cucumber.api.PendingException();
 	}
 
@@ -1055,7 +1054,7 @@ public void the_board_shall_be_initialized() {
 				assertEquals(directionGiven, direction);
 			}
 		}
-
+		
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
 			List<Wall> whiteWalls =  QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard();
 			Integer row;
@@ -1071,8 +1070,6 @@ public void the_board_shall_be_initialized() {
 				assertEquals(directionGiven, direction);
 			}
 		}
-
-
 		throw new cucumber.api.PendingException();
 	}
 
