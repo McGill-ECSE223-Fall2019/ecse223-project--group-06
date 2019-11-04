@@ -27,10 +27,10 @@ import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Tile;
+import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
-import ca.mcgill.ecse223.quoridor.model.Quoridor;
 
 public class QuoridorController {
 	QuoridorView view;
@@ -54,14 +54,10 @@ public class QuoridorController {
 	 * @param minute minute for total thinking time 
 	 * @param second second for total thinking time
 	 */
-	public static boolean setTotaltime(int minute, int second) {
+	public static void setTotaltime(int minute, int second) {
 		long totaltime=(minute*60+second)*1000;
-		long whitetime=QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime().getTime();
-		long blacktime=QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime().getTime();
-	    if(totaltime==whitetime&&totaltime==blacktime)
-			return true;
-		else 
-			return false;	
+		QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(totaltime));
+		QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setRemainingTime(new Time(totaltime));
 	}
 	/**
 	 * @author Xiangyu Li
@@ -125,7 +121,12 @@ public class QuoridorController {
 	 */
 	public static void startGame() throws InvalidInputException {
 		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
-		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+			Game newGame = new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+			QuoridorApplication.getQuoridor().setCurrentGame(newGame);
+			Player white = new Player(new Time(0), new User("qoihgpqidvp bfqqg...", QuoridorApplication.getQuoridor()), 0, Direction.Vertical);
+			Player black = new Player(new Time(0), new User("agbawgbawifwagikbakwbja", QuoridorApplication.getQuoridor()), 1, Direction.Vertical);
+			QuoridorApplication.getQuoridor().getCurrentGame().setWhitePlayer(white);
+			QuoridorApplication.getQuoridor().getCurrentGame().setBlackPlayer(black);
 		} else {
           throw new InvalidInputException("Running game exist");
 		}

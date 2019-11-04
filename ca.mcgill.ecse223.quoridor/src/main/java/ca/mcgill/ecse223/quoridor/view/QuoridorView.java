@@ -39,9 +39,15 @@ public class QuoridorView extends JFrame implements KeyListener {
 	private static final long serialVersionUID = -4426310869335015542L;
 	
 	
-	private JButton newGame = new JButton("New Game");
+	public JButton newGame = new JButton("New Game");
 	private JButton loadGame = new JButton("Load Game");
 	private JLabel title = new JLabel("Quoridor");
+	
+	//Load screen vars
+	public JTextField whiteName = new JTextField(20);
+	public JTextField blackName = new JTextField(20);
+	public JTextField minutesField = new JTextField(2);
+	public JTextField secondsField = new JTextField(2);
 		
 	private JLabel p1Name = new JLabel();
 	private JLabel p2Name = new JLabel();
@@ -56,10 +62,10 @@ public class QuoridorView extends JFrame implements KeyListener {
 	public JButton saveButton = new JButton("Save");
 	public JButton undoButton = new JButton("Undo");
 	private JButton exitButton = new JButton("Exit");
-	private JButton rotateButton=new JButton("Rotate Wall");
-	private JButton grabButton = new JButton("Grab Wall");
-	private JButton validateButton = new JButton("Validate Position");
-	private JPanel board;
+	public JButton rotateButton=new JButton("Rotate Wall");
+	public JButton grabButton = new JButton("Grab Wall");
+	public JButton validateButton = new JButton("Validate Position");
+	public JPanel board;
 	private JPanel wall;
 	private GroupLayout gameLayout;
 	private String fileName; //Just used to store save file name- eclipse get angry otherwise
@@ -109,10 +115,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 		getContentPane().removeAll();
 		
 		//All the components to be placed on the window
-		JTextField whiteName = new JTextField(20);
-		JTextField blackName = new JTextField(20);
-		JTextField minutesField = new JTextField(2);
-		JTextField secondsField = new JTextField(2);
+		
 		JButton useExisting = new JButton("Use existing names");
 		JButton useExistingClone = new JButton("Use existing names");
 		JLabel tmpMinutes = new JLabel("Minutes");
@@ -265,6 +268,12 @@ public class QuoridorView extends JFrame implements KeyListener {
 				p2Name.setText(blackName.getText());
 				p1Time.setText("Time: "+minutesField.getText()+" m " + secondsField.getText() +" s ");
 				p2Time.setText("Time: "+minutesField.getText()+" m " + secondsField.getText() +" s ");
+				try {
+					QuoridorController.setTotaltime(Integer.parseInt(minutesField.getText()), Integer.parseInt(secondsField.getText()));
+				} catch (Exception e) {
+					return;
+				}
+				
 				initGame();
 			}
 		});
