@@ -704,7 +704,28 @@ public class QuoridorController {
 	 * @param board - board object that is going to be initialize
 	 */
 	public static void initializeBoard(Board board) {
-		throw new java.lang.UnsupportedOperationException();
+		Game game = board.getQuoridor().getCurrentGame();
+		
+		Player whitePlayer = board.getQuoridor().getCurrentGame().getWhitePlayer();
+		Player blackPlayer = board.getQuoridor().getCurrentGame().getBlackPlayer();
+		
+		Tile whiteStartTile = findTile(9, 4);
+		Tile blackStartTile = findTile(0, 4);
+		
+		game.getCurrentPosition().setPlayerToMove(whitePlayer);
+		
+		game.getCurrentPosition().getWhitePosition().setTile(whiteStartTile);
+		game.getCurrentPosition().getWhitePosition().setTile(blackStartTile);
+		
+		for (int whiteWallInStock = game.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
+			game.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));
+		}
+		
+		for (int blackWallInStock = game.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
+			game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));
+		}
+		
+		//throw new java.lang.UnsupportedOperationException();
 	}
 	
 	/** 
