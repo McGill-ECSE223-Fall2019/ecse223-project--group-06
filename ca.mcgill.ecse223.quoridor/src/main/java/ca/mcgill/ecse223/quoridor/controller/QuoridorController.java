@@ -80,32 +80,20 @@ public class QuoridorController {
 	public static void runblackclock() {
 		throw new UnsupportedOperationException();
 	}
-	/**
-	 * @author Hongshuo Zhou
-	 * Feature: Start a new game
-	 * This method initializes a new game
-	 */
-	public static void initializeGame(){
-	Game game = new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
-	}
+	
 
 	/**
 	 * @author Hongshuo Zhou
 	 * feature: Start a new game
 	 * @throws InvalidInputException
-	 * This method starts the new game and start the board
+	 * This method starts the new game and check existing game
 	 */
-	public static void startGame() {
-		tearDown();
-		//start board
-		QuoridorApplication.getQuoridor().setBoard;
-		//create users
-		//ArrayList<Player> players = 
-		//Ready to start
-		new Game(GameStatus.ReadyToStart, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
-
-
-   		//throw new java.lang.UnsupportedOperationException();
+	public static void startGame() throws InvalidInputException {
+		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
+		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+		} else {
+          throw new InvalidInputException("Running game exist");
+		}
 	}
 
 	/** load position Feature
