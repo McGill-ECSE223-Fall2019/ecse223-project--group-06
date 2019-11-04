@@ -138,7 +138,10 @@ public class CucumberStepDefinitions {
 	public void aNewGameIsInitializing() throws Throwable {
 		initQuoridorAndBoard();
 		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
-		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+		;
+		QuoridorApplication.getQuoridor().setCurrentGame(new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor()));
+		QuoridorApplication.getQuoridor().getCurrentGame().setWhitePlayer(players.get(0));
+		QuoridorApplication.getQuoridor().getCurrentGame().setBlackPlayer(players.get(1));
 	}
 	
 	// ***********************************************
