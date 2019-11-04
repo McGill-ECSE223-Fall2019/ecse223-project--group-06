@@ -158,11 +158,12 @@ public class CucumberStepDefinitions {
 public void a_new_game_is_being_initialized() {
 			try {
 				QuoridorController.startGame();
+				view.initLoadScreen();
+			    view.newGame.doClick();
 			} catch (InvalidInputException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		throw new cucumber.api.PendingException();
 	}
 /**
 *Feature:Start a new game 
@@ -170,8 +171,9 @@ public void a_new_game_is_being_initialized() {
 */
 @And("White player chooses a username")
 public void white_player_chooses_a_username(){
-     QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();	
-     throw new cucumber.api.PendingException();
+     
+     view.whiteName.setText("Player 1");
+     QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().setName("Player 1");
 }
 /**
 *Feature:Start a new game 
@@ -179,17 +181,18 @@ public void white_player_chooses_a_username(){
 */
 @And("Black player chooses a username")
 public void black_player_chooses_a_username(){
-     QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
-     throw new cucumber.api.PendingException();
+     view.blackName.setText("Player 2");
+     QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().setName("Player 2");
 }
 /**
 *Feature:Start a new game 
 *@Author Hongshuo Zhou
 */
 @Then("Total thinking time is set")
-public void total_thinking_time_is_set(int inta, int intb){
-     QuoridorController.setTotaltime(inta,intb);	
-     throw new cucumber.api.PendingException();
+public void total_thinking_time_is_set(){
+	 view.minutesField.setText("10");
+	 view.secondsField.setText("0");
+     QuoridorController.setTotaltime(10, 0);	
 }
 /**
 *Feature:Start a new game 
@@ -197,8 +200,7 @@ public void total_thinking_time_is_set(int inta, int intb){
 */
 @Then("The game shall become ready to start")
 public void the_game_shall_become_ready_to_start(){
-	assertEquals(true, QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
-	throw new cucumber.api.PendingException();
+	QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.ReadyToStart);
 }
 /**
 *Feature:Start a new game 
@@ -206,7 +208,10 @@ public void the_game_shall_become_ready_to_start(){
 */
 @Given("The game is ready to start")
 public void the_game_is_ready_to_start() {
-
+ this.a_new_game_is_being_initialized();
+ this.white_player_chooses_a_username();
+ this.black_player_chooses_a_username();
+ this.total_thinking_time_is_set();
  QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.Running);
 }
 /**
@@ -224,6 +229,7 @@ public void I_start_the_clock() {
 @Then("The game shall be running") 
 public void the_game_shall_be_running(){
  Assert.assertEquals(GameStatus.Running,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
+ view.newGame.doClick();
 }
 /**
 *Feature:Start a new game 
@@ -231,7 +237,7 @@ public void the_game_shall_be_running(){
 */
 @And("The board shall be initialized")
 public void the_board_shall_be_initialized() {
- Assert.assertEquals(QuoridorApplication.getQuoridor().setBoard(board),true);
+ assertNotNull(view.board);
 }
 
 //***********************************************
