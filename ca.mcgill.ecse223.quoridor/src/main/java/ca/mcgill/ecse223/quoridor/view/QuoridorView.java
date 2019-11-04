@@ -13,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -365,27 +366,30 @@ public class QuoridorView extends JFrame implements KeyListener {
 							(i/9)*height,
 							width - 5, height - 5);
 				}
-				g.setColor(new Color(255, 164, 66));
-				for(WallMove wall : QuoridorController.getWalls()) {
-					if(wall.getWallDirection() == Direction.Horizontal) {
-						g.drawRect(wall.getTargetTile().getRow() * 40, 
-								   wall.getTargetTile().getColumn() * 40 - 5, 
-								   10, 5);
-						
-						g.fillRect(wall.getTargetTile().getRow() * 40, 
-									   wall.getTargetTile().getColumn() * 40 - 5, 
-									   10, 5);
-					} else {
-						g.drawRect(wall.getTargetTile().getRow() * 40 - 5, 
-								   wall.getTargetTile().getColumn() * 40, 
-								   5, 10);
 
-						g.fillRect(wall.getTargetTile().getRow() * 40 - 5, 
-								   wall.getTargetTile().getColumn() * 40, 
-								   5, 10);
+				board.setColor(new Color(255, 164, 66));
+				ArrayList<WallMove> walls = QuoridorController.getWalls();
+				if(walls != null) {
+					for(WallMove wall : QuoridorController.getWalls()) {
+						if(wall.getWallDirection() == Direction.Horizontal) {
+							board.fillRect(wall.getTargetTile().getRow() * 40, 
+										   wall.getTargetTile().getColumn() * 40 - 5, 
+										   10, 5);
+						} else {
+							board.fillRect(wall.getTargetTile().getRow() * 40 - 5, 
+									   wall.getTargetTile().getColumn() * 40, 
+									   5, 10);
+						}
 					}
 				}
-				WallMove candidate = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+				
+				WallMove candidate;
+				if(QuoridorApplication.getQuoridor().getCurrentGame() != null) {
+					candidate = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+				} else {
+					candidate = null;
+				}
+				
 				if(candidate != null) {
 					if(candidate.getWallDirection() == Direction.Horizontal) {
 						g.drawRect(candidate.getTargetTile().getRow() * 40, 
@@ -493,7 +497,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 		    public void mouseClicked(MouseEvent e) {}
 		 
 		    /**
-		    * 记录鼠标按下时的点
+		    * 录脟脗录脢贸卤锚掳麓脧脗脢卤碌脛碌茫
 		    */
 		    @Override
 		    public void mousePressed(MouseEvent e) {

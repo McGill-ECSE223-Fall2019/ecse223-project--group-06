@@ -409,6 +409,7 @@ public class QuoridorController {
 	 */
 	public static ArrayList<WallMove> getWalls() {
 		ArrayList<WallMove> walls = new ArrayList<WallMove>();
+		if(QuoridorApplication.getQuoridor().getCurrentGame() == null) return null;
 		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
 			if(move instanceof WallMove) walls.add((WallMove) move);
 		}
