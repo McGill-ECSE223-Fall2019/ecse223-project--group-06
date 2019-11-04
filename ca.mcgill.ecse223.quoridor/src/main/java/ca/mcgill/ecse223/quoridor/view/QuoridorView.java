@@ -757,6 +757,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {	
 		} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {	
 		} else if (e.getKeyCode() == KeyEvent.VK_R) {
+			RotateWall();
 		}
 	}
 	public void keyPressed(KeyEvent e) {
@@ -782,6 +783,12 @@ public class QuoridorView extends JFrame implements KeyListener {
 				notifyInvalid("Invalid Wall Placement");
 				refresh();
 			}
+		}
+	}
+	public void RotateWall() {
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+			QuoridorController.rotateWall();
+			refresh();
 		}
 	}
 

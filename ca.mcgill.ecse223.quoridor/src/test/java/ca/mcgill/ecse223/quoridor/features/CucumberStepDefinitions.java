@@ -3,6 +3,7 @@ package ca.mcgill.ecse223.quoridor.features;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Time;
@@ -24,7 +25,6 @@ import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
-import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
@@ -33,8 +33,6 @@ import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
-import cucumber.api.PendingException;
-import ca.mcgill.ecse223.quoridor.features.InvalidInputException;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -125,7 +123,7 @@ public class CucumberStepDefinitions {
 
 	@And("I do not have a wall in my hand")
 	public void iDoNotHaveAWallInMyHand() {
-		// GUI-related feature -- TODO for later
+		assertNull(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate());
 	}
 	
 	@And("^I have a wall in my hand over the board$")
@@ -587,11 +585,15 @@ public void the_board_shall_be_initialized() {
 	// Scenario Outline: Move Wall over the board
 	@Given("A wall move candidate exists with {string} at position {int}, {int}")
 	public void aWallMoveCandidateExistsWith(String dir, int row, int col) {
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
+			QuoridorController.grabWall();	
+		}
+		QuoridorController.moveWall(QuoridorController.findTile(row, col));
 		if (dir.equals("vertical")) {
-			aWallMove = new WallMove(1, 1, currentPlayer, QuoridorController.findTile(row, col), game, Direction.Vertical, currentPlayer.getWall(currentPlayer.getWalls().size()-1));
+			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(Direction.Vertical);
 		}
 		else {
-			aWallMove = new WallMove(1, 1, currentPlayer, QuoridorController.findTile(row, col), game, Direction.Horizontal, currentPlayer.getWall(currentPlayer.getWalls().size()-1));
+			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(Direction.Horizontal);
 		}
 		//throw new cucumber.api.PendingException();
 	}
@@ -605,16 +607,16 @@ public void the_board_shall_be_initialized() {
 	@When("I try to move the wall {string}")
 	public void tryToMoveWall(String side) {
 		if (side.equals("left"))
-			QuoridorController.moveWall(aWallMove, QuoridorController.findTile(aWallMove.getTargetTile().getRow(),
+			QuoridorController.moveWall(QuoridorController.findTile(aWallMove.getTargetTile().getRow(),
 					aWallMove.getTargetTile().getColumn() - 1));
 		if (side.equals("right"))
-			QuoridorController.moveWall(aWallMove, QuoridorController.findTile(aWallMove.getTargetTile().getRow(),
+			QuoridorController.moveWall(QuoridorController.findTile(aWallMove.getTargetTile().getRow(),
 					aWallMove.getTargetTile().getColumn() + 1));
 		if (side.equals("up"))
-			QuoridorController.moveWall(aWallMove, QuoridorController.findTile(aWallMove.getTargetTile().getRow() - 1,
+			QuoridorController.moveWall(QuoridorController.findTile(aWallMove.getTargetTile().getRow() - 1,
 					aWallMove.getTargetTile().getColumn()));
 		if (side.equals("down"))
-			QuoridorController.moveWall(aWallMove, QuoridorController.findTile(aWallMove.getTargetTile().getRow() + 1,
+			QuoridorController.moveWall(QuoridorController.findTile(aWallMove.getTargetTile().getRow() + 1,
 					aWallMove.getTargetTile().getColumn()));
 		//throw new cucumber.api.PendingException();
 	}
@@ -871,17 +873,13 @@ public void the_board_shall_be_initialized() {
 
 	@When("I try to flip the wall")
 	public void iTryToFlipTheWall() {
-		currentPlayer = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove();
-		Wall wall = currentPlayer.getWall(currentPlayer.getWalls().size() - 1);
-		QuoridorController.rotateWall(wall);
-	    throw new cucumber.api.PendingException();
+		view.RotateWall();
 	}
 
 	@Then("The wall shall be rotated over the board to {string}")
 	public void theWallShallBeRotatedOverTheBoardTo(String dir) {
 		Direction newDir = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		assertEquals(newDir, aWallMove.getWallDirection()); 
-	    throw new cucumber.api.PendingException();
+		assertEquals(newDir, QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection()); 
 	}
 
 	@And("A wall move candidate shall exist with {string} at position \\({int}, {int})")
@@ -889,7 +887,7 @@ public void the_board_shall_be_initialized() {
 		Direction direction = string.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 		assertEquals(direction, QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection());
 		assertEquals(QuoridorController.findTile(row, col), QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile());
-	    throw new cucumber.api.PendingException();
+	    
 	}
 	
 	
