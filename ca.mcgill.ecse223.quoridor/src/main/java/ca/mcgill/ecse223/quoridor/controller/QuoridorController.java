@@ -271,7 +271,7 @@ public class QuoridorController {
 		return null;
 	}
 
-	/**
+		/**
 	 * findTile helper method will find a tile given coordinates row and column
 	 * 
 	 * @param r
@@ -279,11 +279,16 @@ public class QuoridorController {
 	 * @return tile at location
 	 */
 	public static Tile findTile(int r, int c) {
-		// use row and col to find the tile we want. No guarantee tiles are in order
-		for(Tile t : QuoridorApplication.getQuoridor().getBoard().getTiles()) {
-			if(r == t.getRow() && c==t.getColumn()) return t;
-		}
-		return null;
+		// use row and col to find the tile we want
+		if(r <= 0)
+			r = 1;
+		if(r > 9)
+			r = 9;
+		if(c <= 0)
+			c = 1;
+		if(c > 9)
+			c = 9;
+		return QuoridorApplication.getQuoridor().getBoard().getTile((r-1)*9+c-1);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -296,10 +301,39 @@ public class QuoridorController {
 	 * @return
 	 */
 
-	public static WallMove grabWall(Wall aWall) {
+	public static boolean grabWall() {
 		// will take in a wall and create a wall move object with some default values
-
-		throw new java.lang.UnsupportedOperationException();
+		WallMove newMove;
+		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
+		int walls = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().numberOfWalls();
+		
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasWalls()) {
+			newMove = new WallMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+1, 
+											QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()/2+1, 
+											QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove(), 
+											defaultTile(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()), 
+											QuoridorApplication.getQuoridor().getCurrentGame(), 
+											Direction.Vertical, 
+											QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWall(walls-1));
+			QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(newMove);
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
+			.removeWall(newMove.getWallPlaced());
+			
+			return true;
+		}
+		return false;
+		//throw new java.lang.UnsupportedOperationException();
+	}
+	
+	/**
+	 * defaultTile helper method assigns default starting tile for white and black player
+	 * @param curPlayer
+	 * @return defaultTile to start a wall move candidate
+	 */
+	public static Tile defaultTile(Player curPlayer) {
+		if(curPlayer.hasGameAsBlack())
+			return QuoridorApplication.getQuoridor().getBoard().getTile(0);
+		return QuoridorApplication.getQuoridor().getBoard().getTile(81);
 	}
 
 	/**
@@ -309,7 +343,12 @@ public class QuoridorController {
 	 * @return boolean
 	 */
 	public static boolean isSide(WallMove aWallMove) {
-		throw new java.lang.UnsupportedOperationException();
+		if(aWallMove.getTargetTile().getColumn() == 1 || 
+			aWallMove.getTargetTile().getColumn() == 9 || 
+			aWallMove.getTargetTile().getRow() == 1 || 
+			aWallMove.getTargetTile().getRow() == 9)
+			return true;
+		return false;
 	}
 	////////////////////////////////////////////////////////////////
   
