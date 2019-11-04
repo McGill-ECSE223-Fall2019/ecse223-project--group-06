@@ -208,6 +208,7 @@ public void the_game_shall_become_ready_to_start(){
 */
 @Given("The game is ready to start")
 public void the_game_is_ready_to_start() {
+
  QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.Running);
 }
 /**
@@ -554,7 +555,6 @@ public void the_board_shall_be_initialized() {
 	@And("I shall have a wall in my hand over the board")
 	public void iShallHaveAWallInMyHandOverTheBoard() {
 		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() != null);
-		throw new cucumber.api.PendingException();
 	}
 
 	@And("The wall in my hand shall disappear from my stock")

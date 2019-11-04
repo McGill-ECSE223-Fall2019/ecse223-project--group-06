@@ -334,7 +334,7 @@ public class QuoridorController {
 	public static Tile defaultTile(Player curPlayer) {
 		if(curPlayer.hasGameAsBlack())
 			return QuoridorApplication.getQuoridor().getBoard().getTile(0);
-		return QuoridorApplication.getQuoridor().getBoard().getTile(81);
+		return QuoridorApplication.getQuoridor().getBoard().getTile(80);
 	}
 	
 	/**
