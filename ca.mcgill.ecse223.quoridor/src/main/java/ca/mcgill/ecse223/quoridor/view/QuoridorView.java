@@ -12,6 +12,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.sql.Time;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
@@ -27,12 +28,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.MouseInputListener;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 public class QuoridorView extends JFrame implements KeyListener {
@@ -73,6 +76,10 @@ public class QuoridorView extends JFrame implements KeyListener {
 	private JPanel wall;
 	private GroupLayout gameLayout;
 	private String fileName; //Just used to store save file name- eclipse get angry otherwise
+	public Timer whiteTimer;
+	public int whiteSeconds;
+	public Timer blackTimer;
+	public int blackSeconds;
 	
 	//First screen user sees, just title and two buttons
 	public void initLoadScreen() {
@@ -305,11 +312,15 @@ public class QuoridorView extends JFrame implements KeyListener {
 				try {
 					int minutes = Integer.parseInt(minutesField.getText());
 					int seconds = Integer.parseInt(secondsField.getText());
+					whiteSeconds = 60*minutes + seconds;
+					blackSeconds = 60*minutes + seconds;
 					QuoridorController.setTotaltime(minutes, seconds);
 					p1Time.setText("Time: "+minutes+" m " + seconds +" s ");
 					p2Time.setText("Time: "+minutes+" m " + seconds +" s ");
 				} catch (Exception e) {
 					QuoridorController.setTotaltime(10, 0);
+					whiteSeconds = 60*10;
+					blackSeconds = 60*10;
 					p1Time.setText("Time: "+10+" m " + 0 +" s ");
 					p2Time.setText("Time: "+10+" m " + 0 +" s ");
 					QuoridorController.setTotaltime(10, 0);
@@ -328,7 +339,10 @@ public class QuoridorView extends JFrame implements KeyListener {
 		getContentPane().removeAll();	
 		setTitle("Quoridor");
 		
-
+		QuoridorController.initializeBoard();
+		whiteTimer = QuoridorController.runwhiteclock(this);
+		blackTimer = QuoridorController.runblackclock(this);
+		
 		
 		//Defining action listeners- updates screen with components after each
 		
@@ -444,20 +458,35 @@ public class QuoridorView extends JFrame implements KeyListener {
 				
 				if(candidate != null) {
 					if(candidate.getWallDirection() == Direction.Horizontal) {
-						g.drawRect(candidate.getTargetTile().getRow() * 40, 
-								   candidate.getTargetTile().getColumn() * 40 - 5, 
-								   10, 5);
 						g.fillRect(candidate.getTargetTile().getRow() * 40, 
 									   candidate.getTargetTile().getColumn() * 40 - 5, 
 									   10, 5);
 					} else {
-						g.drawRect(candidate.getTargetTile().getRow() * 40 - 5, 
-								   candidate.getTargetTile().getColumn() * 40, 
-								   5, 10);
 						g.fillRect(candidate.getTargetTile().getRow() * 40 - 5, 
 								   candidate.getTargetTile().getColumn() * 40, 
 								   5, 10);
 					}
+				}
+				PlayerPosition whitePos;
+				PlayerPosition blackPos;
+				if(QuoridorApplication.getQuoridor().getCurrentGame() != null) {
+					whitePos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
+					blackPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
+				} else {
+					whitePos = null;
+					blackPos = null;
+				}
+				if(whitePos != null) {
+					g.setColor(new Color(255, 255, 255));
+					g.fillOval( whitePos.getTile().getRow() * 40 + 5, 
+								whitePos.getTile().getColumn() * 40 + 5, 
+								25, 25);
+				}
+				if(blackPos != null) {
+					g.setColor(new Color(255, 255, 255));
+					g.fillOval( blackPos.getTile().getRow() * 40 + 5, 
+								blackPos.getTile().getColumn() * 40 + 5, 
+								25, 25);
 				}
 				
 			}
@@ -583,7 +612,15 @@ public class QuoridorView extends JFrame implements KeyListener {
 	//Not implemented, but eventually was where I was planning on doing the timer stuff.
 	//I just don't know how
 	public void updateView() {
-		//TODO: This needs to update Time left
+		if(p1Turn.isSelected()) {
+			whiteSeconds--;
+			p1Time.setText("Time: "+(whiteSeconds / 60)+" m " + (whiteSeconds % 60) +" s ");
+			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(whiteSeconds * 1000));
+		} else {
+			blackSeconds--;
+			p2Time.setText("Time: "+(blackSeconds / 60)+" m " + (blackSeconds % 60) +" s ");
+			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setRemainingTime(new Time(blackSeconds * 1000));
+		}
 		refresh();
 	}
 	
@@ -788,10 +825,14 @@ public class QuoridorView extends JFrame implements KeyListener {
 					int minutes = Integer.parseInt(minutesField.getText());
 					int seconds = Integer.parseInt(secondsField.getText());
 					QuoridorController.setTotaltime(minutes, seconds);
+					whiteSeconds = 60*minutes + seconds;
+					blackSeconds = 60*minutes + seconds;
 					p1Time.setText("Time: "+minutes+" m " + seconds +" s ");
 					p2Time.setText("Time: "+minutes+" m " + seconds +" s ");
 				} catch (Exception e) {
 					QuoridorController.setTotaltime(10, 0);
+					whiteSeconds = 60*10;
+					blackSeconds = 60*10;
 					p1Time.setText("Time: "+10+" m " + 0 +" s ");
 					p2Time.setText("Time: "+10+" m " + 0 +" s ");
 					QuoridorController.setTotaltime(10, 0);

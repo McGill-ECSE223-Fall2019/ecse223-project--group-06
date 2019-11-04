@@ -226,7 +226,7 @@ public void the_game_is_ready_to_start() {
 */
 @When("I start the clock")
 public void I_start_the_clock() {
- QuoridorController.runwhiteclock();
+ QuoridorController.runwhiteclock(view);
 }
 /**
 *Feature:Start a new game 
@@ -434,10 +434,10 @@ public void the_board_shall_be_initialized() {
 	public void the_clock_of_black_is_running(String color) {
 	    // Write code here that turns the phrase above into concrete actions
 		if(color=="black") {
-			QuoridorController.runblackclock();
+			QuoridorController.runblackclock(view);
 		}
 		else
-			QuoridorController.runwhiteclock();
+			QuoridorController.runwhiteclock(view);
 	}
 	/**
 	 * Feature :Switch current player
@@ -448,11 +448,11 @@ public void the_board_shall_be_initialized() {
 	public void the_clock_of_white_is_stopped(String color) {
 	    // Write code here that turns the phrase above into concrete actions
 		if(color=="white") {
-			Timer whitetimer=QuoridorController.runwhiteclock();
+			Timer whitetimer=QuoridorController.runwhiteclock(view);
 			QuoridorController.stopwhiteclock(whitetimer);
 		}
 		else {
-			Timer blacktimer=QuoridorController.runblackclock();
+			Timer blacktimer=QuoridorController.runblackclock(view);
 			QuoridorController.stopblackclock(blacktimer);
 		}
 	}
@@ -494,11 +494,11 @@ public void the_board_shall_be_initialized() {
 	@And("The clock of {string} shall be stopped")
 	public void the_clock_of_black_shall_be_stopped(String color) {
 		if(color=="white") {
-			Timer whitetimer=QuoridorController.runwhiteclock();
+			Timer whitetimer=QuoridorController.runwhiteclock(view);
 			QuoridorController.stopwhiteclock(whitetimer);
 		}
 		else {
-			Timer blacktimer=QuoridorController.runblackclock();
+			Timer blacktimer=QuoridorController.runblackclock(view);
 			QuoridorController.stopblackclock(blacktimer);
 		}
 	}
@@ -511,10 +511,10 @@ public void the_board_shall_be_initialized() {
 	@And("The clock of {string} shall be running")
 	public void the_clock_of_white_shall_be_running(String color) {
 		if(color=="white") {
-			QuoridorController.runwhiteclock();
+			QuoridorController.runwhiteclock(view);
 		}
 		else
-			QuoridorController.runblackclock();
+			QuoridorController.runblackclock(view);
 	}
 	
 
@@ -824,55 +824,50 @@ public void the_board_shall_be_initialized() {
 	 */
 	@When("The initialization of the board is initiated")
 	public void theInitializationOfTheBoardIsInitiated() {
-		QuoridorController.initializeBoard(QuoridorApplication.getQuoridor().getBoard());
-	    throw new cucumber.api.PendingException();
+		view.newGame.doClick();
+		if(view.confirmFrame.isVisible()) {
+			((JButton) view.confirmFrame.getContentPane().getComponent(1)).doClick();
+		}
+		//QuoridorController.initializeBoard();
+	    
 	}
 	
 	@Then("It shall be white player to move")
 	public void itShallBeWhitePlayerToMove() {
-		assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite());
-	    throw new cucumber.api.PendingException();
+		if(!view.p1Turn.isSelected())
+		QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
 	}
 
 	@Then("White's pawn shall be in its initial position")
 	public void whitesPawnShallBeInItsInitialPosition() {
-		assertEquals(9, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
+		assertEquals(1, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
 		assertEquals(4, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn());
-		throw new cucumber.api.PendingException();
 	}
 
 	@Then("Black's pawn shall be in its initial position")
 	public void blacksPawnShallBeInItsInitialPosition() {
-		assertEquals(0, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
-		assertEquals(4, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn());
-	    throw new cucumber.api.PendingException();
+		assertEquals(9, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow());
+		assertEquals(4, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn());
 	}
 
 	@Then("All of White's walls shall be in stock")
 	public void allOfWhitesWallsShallBeInStock() {
 		assertEquals(10,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
-	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("All of Black's walls shall be in stock")
 	public void allOfBlacksWallsShallBeInStock() {
 		assertEquals(10,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size());
-	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("White's clock shall be counting down")
 	public void whitesClockShallBeCountingDown() throws InterruptedException {
-		Time time1 = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getRemainingTime();
-		QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getRemainingTime().wait(1000);
-		Time time2 = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getRemainingTime();
-		assertFalse(time1.compareTo(time2) == 0);
-	    throw new cucumber.api.PendingException();
+		assertTrue(view.whiteTimer.isRunning());
 	}
 
 	@Then("It shall be shown that this is White's turn")
 	public void itShallBeShownThatThisIsWhitesTurn() {
-		// GUI-related feature -- TODO for later
-	    throw new cucumber.api.PendingException();
+		Assert.assertTrue(view.p1Turn.isSelected());
 	}
 	
 	/**
