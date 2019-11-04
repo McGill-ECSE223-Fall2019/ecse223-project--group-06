@@ -26,7 +26,9 @@ import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
+import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
+import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 
 
 public class QuoridorController {
@@ -112,13 +114,20 @@ public class QuoridorController {
 		blacktimer.start();
 		return blacktimer;
 	}
+	
+
 	/**
 	 * @author Hongshuo Zhou
-	 * Feature: Start a new game
-	 * Stop white player's clock
+	 * feature: Start a new game
+	 * @throws InvalidInputException
+	 * This method starts the new game and check existing game
 	 */
-	public static void startGame() {
-   		throw new java.lang.UnsupportedOperationException();
+	public static void startGame() throws InvalidInputException {
+		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
+		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+		} else {
+          throw new InvalidInputException("Running game exist");
+		}
 	}
 
 	/** load position Feature
