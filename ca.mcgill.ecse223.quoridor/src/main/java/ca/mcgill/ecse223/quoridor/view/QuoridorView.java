@@ -332,7 +332,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 				else {
 					notifyInvalid("No walls in stock");
 			}
-		});
+		}});
 		rotateButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
