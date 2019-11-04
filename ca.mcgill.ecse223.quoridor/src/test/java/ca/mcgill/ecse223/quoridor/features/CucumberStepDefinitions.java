@@ -906,13 +906,6 @@ public void the_board_shall_be_initialized() {
 	 * ID#: 260804586
 	 *
 	 */
-	
-	@Given("A new game is initializing")
-	public void aNewGameIsInitializing() {
-		QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
-		assertEquals(true, GameStatus.Initializing);
-		throw new cucumber.api.PendingException();
-	}
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIs(String string) {
@@ -964,8 +957,7 @@ public void the_board_shall_be_initialized() {
 
 	@When("The player provides new user name: {string}")
 	public void thePlayerProvidesNewUserName(String string) {
-	
-		QuoridorApplication.getQuoridor().addUser(string);
+		QuoridorController.createUser(string);
 		throw new cucumber.api.PendingException();
 	}
 
