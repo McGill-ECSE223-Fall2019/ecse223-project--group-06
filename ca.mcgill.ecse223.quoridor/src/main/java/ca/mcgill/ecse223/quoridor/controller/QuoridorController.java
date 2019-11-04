@@ -850,12 +850,8 @@ public class QuoridorController {
 		Player whitePlayer = current.getWhitePlayer();
 		Player blackPlayer = current.getBlackPlayer();
 		
-		if (board.getTile(4) == null) 
-			throw new java.lang.UnsupportedOperationException();
-		
 		if (current.getCurrentPosition() == null)
 			current.setCurrentPosition(new GamePosition(0, new PlayerPosition(whitePlayer, board.getTile(4)), new PlayerPosition(blackPlayer, board.getTile(8*9+4)), whitePlayer, current));
-			//throw new java.lang.UnsupportedOperationException();
 		
 //		current.getCurrentPosition().getPlayerToMove().setGameAsWhite(current);
 //		current.getCurrentPosition().getWhitePosition().setTile(findTile(9, 4));
