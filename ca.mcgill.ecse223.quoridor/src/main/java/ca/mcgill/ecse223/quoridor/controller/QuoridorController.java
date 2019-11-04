@@ -162,13 +162,13 @@ public class QuoridorController {
 	 * @param targetTile - new tile to move to
 	 * @return whether or not the wall successfully moved
 	 */
-	public static boolean moveWall(WallMove curMove, Tile targetTile) {
+	public static boolean moveWall(Tile targetTile) {
 
 		// take in a WallMove created in GrabWall feature and put the wall in the
 		// targetTile
 		// will validate position to ensure no overlapping
 		if(wallIsValid()) {
-			return curMove.setTargetTile(targetTile);
+			return QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setTargetTile(targetTile);
 		}
 		return false;
 	}
@@ -764,11 +764,11 @@ public class QuoridorController {
 	 * @author Matteo Nunez
 	 * @param wall - wall object that is going to be rotated
 	 */
-	public static void rotateWall(Wall wall) {
-		if (wall.getMove().getWallDirection().equals(Direction.Vertical)) {
-			wall.getMove().setWallDirection(Direction.Horizontal);
-		} else if (wall.getMove().getWallDirection().equals(Direction.Horizontal)) {
-			wall.getMove().setWallDirection(Direction.Vertical);
+	public static void rotateWall() {
+		if (QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection().equals(Direction.Vertical)) {
+			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(Direction.Horizontal);
+		} else if (QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection().equals(Direction.Horizontal)) {
+			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(Direction.Vertical);
 		} else {
 			throw new java.lang.UnsupportedOperationException();
 		}
