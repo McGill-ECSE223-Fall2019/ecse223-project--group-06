@@ -125,7 +125,7 @@ public class QuoridorController {
 	 */
 	public static void startGame() throws InvalidInputException {
 		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
-		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), QuoridorApplication.getQuoridor());
 		} else {
           throw new InvalidInputException("Running game exist");
 		}
@@ -753,6 +753,7 @@ public class QuoridorController {
 		for (int blackWallInStock = game.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
 			game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));
 		}
+		
 		
 		//throw new java.lang.UnsupportedOperationException();
 	}

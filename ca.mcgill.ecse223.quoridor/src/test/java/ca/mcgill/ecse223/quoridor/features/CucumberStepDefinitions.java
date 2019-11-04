@@ -811,39 +811,33 @@ public void the_board_shall_be_initialized() {
 	@When("The initialization of the board is initiated")
 	public void theInitializationOfTheBoardIsInitiated() {
 		QuoridorController.initializeBoard(QuoridorApplication.getQuoridor().getBoard());
-	    throw new cucumber.api.PendingException();
 	}
 	
 	@Then("It shall be white player to move")
 	public void itShallBeWhitePlayerToMove() {
 		assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite());
-	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("White's pawn shall be in its initial position")
 	public void whitesPawnShallBeInItsInitialPosition() {
 		assertEquals(9, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
 		assertEquals(4, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn());
-		throw new cucumber.api.PendingException();
 	}
 
 	@Then("Black's pawn shall be in its initial position")
 	public void blacksPawnShallBeInItsInitialPosition() {
 		assertEquals(0, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
 		assertEquals(4, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn());
-	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("All of White's walls shall be in stock")
 	public void allOfWhitesWallsShallBeInStock() {
 		assertEquals(10,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
-	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("All of Black's walls shall be in stock")
 	public void allOfBlacksWallsShallBeInStock() {
 		assertEquals(10,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size());
-	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("White's clock shall be counting down")
