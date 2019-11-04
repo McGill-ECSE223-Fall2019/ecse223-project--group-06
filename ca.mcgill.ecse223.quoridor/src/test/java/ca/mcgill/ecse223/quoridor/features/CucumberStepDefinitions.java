@@ -546,7 +546,7 @@ public void the_board_shall_be_initialized() {
 
 	@And("I shall have a wall in my hand over the board")
 	public void iShallHaveAWallInMyHandOverTheBoard() {
-		// GUI-related feature -- TODO for later
+		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() != null);
 		throw new cucumber.api.PendingException();
 	}
 
@@ -567,7 +567,7 @@ public void the_board_shall_be_initialized() {
 
 	@Then("I shall be notified that I have no more walls")
 	public void iShallBeNotifiedThatIHaveNoMoreWalls() {
-		// GUI-related feature -- TODO for later
+		Assert.assertTrue(notification.getText().equals("You have no more walls");
 		throw new cucumber.api.PendingException();
 	}
 
