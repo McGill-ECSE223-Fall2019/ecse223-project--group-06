@@ -132,25 +132,104 @@ public class QuoridorController {
 		return false;
 	}
 
+	//TODO: A* Algorithm
 	public static boolean wallIsValid() {
 		// loop through wall moves to see if any interfere with desired move to be made
 		// check to see if wall to be moved overlaps with players or is out of bounds
-		for(int move=0; move < QuoridorApplication.getQuoridor().getCurrentGame().numberOfMoves(); move++) {
-			if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn() == QuoridorApplication.getQuoridor().getCurrentGame().getMove(move).getTargetTile().getColumn() && 
-					QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow() == QuoridorApplication.getQuoridor().getCurrentGame().getMove(move).getTargetTile().getRow()) {
-				return false;
+		WallMove check = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		ArrayList<WallMove> existing = new ArrayList<WallMove>();
+		for(Move m : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
+			if (m instanceof WallMove) existing.add((WallMove) m);
+		}
+		
+		if(check.getWallDirection() == Direction.Horizontal) {
+			if(check.getTargetTile().getColumn() == 9) return false;
+			for(WallMove ex : existing) {
+				//Horizontal check- Horizontal placed
+				if(ex.getWallDirection() == Direction.Horizontal) {
+					
+					if(ex.getTargetTile().getRow() == check.getTargetTile().getRow()) {
+						if(Math.abs(ex.getTargetTile().getColumn() - check.getTargetTile().getColumn()) < 2 ) {
+							return false;
+						}
+					}
+				//Horizontal check- Vertical Place
+				} else {
+					if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
+							&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+								return false;
+					}
+				}
+			}	
+			
+		} else {
+			if(check.getTargetTile().getRow() == 1) return false;
+			for(WallMove ex : existing) {
+				//Vertical check- Horizontal placed
+				if(ex.getWallDirection() == Direction.Horizontal) {
+					if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
+					&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+						return false;
+					}
+				//Vertical check- Vertical Place
+				} else {
+					if(ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+								if(Math.abs(ex.getTargetTile().getRow() - check.getTargetTile().getRow()) < 2 ) {
+									return false;
+								}
+					}
+				}
 			}
 		}
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn() == QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn() && 
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow() == QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow()) {
-			return false;
-		}
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn() == QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn() && 
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow() == QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow()) {
-			return false;
-		}
 		return true;
+		
 	}
+	public static WallMove invalidWall() {
+		WallMove check = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		ArrayList<WallMove> existing = new ArrayList<WallMove>();
+		for(Move m : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
+			if (m instanceof WallMove) existing.add((WallMove) m);
+		}
+		
+		if(check.getWallDirection() == Direction.Horizontal) {
+			for(WallMove ex : existing) {
+				//Horizontal check- Horizontal placed
+				if(ex.getWallDirection() == Direction.Horizontal) {
+					
+					if(ex.getTargetTile().getRow() == check.getTargetTile().getRow()) {
+						if(Math.abs(ex.getTargetTile().getColumn() - check.getTargetTile().getColumn()) < 2 ) {
+							return ex;
+						}
+					}
+				//Horizontal check- Vertical Place
+				} else {
+					if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
+							&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+								return ex;
+					}
+				}
+			}	
+			
+		} else {
+			for(WallMove ex : existing) {
+				//Vertical check- Horizontal placed
+				if(ex.getWallDirection() == Direction.Horizontal) {
+					if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
+					&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+						return ex;
+					}
+				//Vertical check- Vertical Place
+				} else {
+					if(ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+								if(Math.abs(ex.getTargetTile().getRow() - check.getTargetTile().getRow()) < 2 ) {
+									return ex;
+								}
+					}
+				}
+			}
+		}
+		return null;
+	
 
 	/**
 	 * findTile helper method will find a tile given coordinates row and column
