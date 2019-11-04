@@ -23,6 +23,7 @@ import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
+import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 
 
 public class QuoridorController {
