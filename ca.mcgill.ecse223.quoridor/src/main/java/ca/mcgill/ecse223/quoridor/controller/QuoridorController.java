@@ -804,7 +804,38 @@ public class QuoridorController {
 	 */
 		
 	public static boolean validPosition() {
-		throw new java.lang.UnsupportedOperationException();
+		GamePosition position = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+		if (position == null){
+			return false;
+		}
+		else{
+			List wallsOnBoard = position.getBlackWallsOnBoard();
+			Integer row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+			Integer column = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+			Direction direction = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection();
+			for(int i = 0; i < wallsOnBoard.size(); i ++) {
+				Integer rowBoard = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+				Integer columnBoard = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+				Direction directionBoard = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection();
+				int rowDifference = row - rowBoard;
+				int columnDifference = column - columnBoard;
+				if(direction == directionBoard && (rowDifference == 0 && columnDifference == 0)) {
+					return false;
+				}
+				if(direction != directionBoard && (rowDifference == 0 && columnDifference == 0)) {
+					return false;
+				}
+				if(direction == directionBoard && (rowDifference == 1 && columnDifference == 0)) {
+					return false;
+				}
+				if(direction == directionBoard && (rowDifference == 0 && columnDifference == 1)) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+
 	}
 	
 	/**

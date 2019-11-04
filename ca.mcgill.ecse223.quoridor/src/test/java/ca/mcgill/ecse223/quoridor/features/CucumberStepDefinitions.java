@@ -1002,28 +1002,30 @@ public void the_board_shall_be_initialized() {
 			System.out.println("Invalid coordinates given. Values must be between 1 and 9.");
 		}
 		else {			
-			Integer row;
-			Integer column;
+			//Integer row;
+			//Integer column;
 			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
-				row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow();
-				column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn();
-				assertEquals(row, int1);
-				assertEquals(column, int2);
+				//row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow();
+				//column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn();
+				PlayerPosition aNewBlackPosition = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile());
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setBlackPosition(aNewBlackPosition);
+				//assertEquals(row, int1);
+				//assertEquals(column, int2);
 			}
 			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
-				row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow();
-				column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn();
-				assertEquals(row, int1);
-				assertEquals(column, int2);
+				//row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow();
+				//column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn();
+				PlayerPosition aNewWhitePosition = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile());
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setWhitePosition(aNewWhitePosition);
+				//assertEquals(row, int1);
+				//assertEquals(column, int2);
 			}
 		}
-		throw new cucumber.api.PendingException();
 	}
 
 	@When("Validation of the position is initiated")
 	public void validationOfThePositionIsInitiated() {
 		QuoridorController.validatePosition();
-		throw new cucumber.api.PendingException();
 	}
 
 	@Then("The position shall be {string}")
@@ -1034,7 +1036,6 @@ public void the_board_shall_be_initialized() {
 		else {
 			string = "error";
 		}
-		throw new cucumber.api.PendingException();
 	}
 
 	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
@@ -1079,19 +1080,16 @@ public void the_board_shall_be_initialized() {
 				assertEquals(directionGiven, direction);
 			}
 		}
-		throw new cucumber.api.PendingException();
 	}
 
 	@Then("The position shall be valid")
 	public void thePositionShallBeValid() {
-		assertEquals(true, QuoridorController.validPosition());
-		throw new cucumber.api.PendingException();
+		assertEquals(true, QuoridorController.validatePosition());
 	}
 
 	@Then("The position shall be invalid")
 	public void thePositionShallBeInvalid() {
 		assertEquals(false, QuoridorController.validPosition());
-		throw new cucumber.api.PendingException();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
