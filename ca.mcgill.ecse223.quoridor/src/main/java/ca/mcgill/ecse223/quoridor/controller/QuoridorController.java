@@ -709,7 +709,17 @@ public class QuoridorController {
 	 */
 
 	public static boolean ExistingUserName(String userName) {
-		throw new java.lang.UnsupportedOperationException();
+		for(User u : QuoridorApplication.getQuoridor().getUsers()) {
+			if(u.getName().equals(userName)) return true;
+		}
+		return false;
+	}
+	
+	public static User findUserName(String userName) {
+		for(User u : QuoridorApplication.getQuoridor().getUsers()) {
+			if(u.getName().equals(userName)) return u;
+		}
+		return null;
 	}
 	
 	/**
@@ -720,7 +730,6 @@ public class QuoridorController {
 	
 	public static void createUser(String newUserName) {
 		QuoridorApplication.getQuoridor().addUser(newUserName);
-		throw new java.lang.UnsupportedOperationException();
 	}
 
 	///////////////////////////////////////////////////////////////////////////

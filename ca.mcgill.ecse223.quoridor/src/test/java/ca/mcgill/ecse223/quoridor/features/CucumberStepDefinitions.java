@@ -2,9 +2,9 @@ package ca.mcgill.ecse223.quoridor.features;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 
@@ -138,10 +139,11 @@ public class CucumberStepDefinitions {
 	public void aNewGameIsInitializing() throws Throwable {
 		initQuoridorAndBoard();
 		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
-		;
 		QuoridorApplication.getQuoridor().setCurrentGame(new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor()));
 		QuoridorApplication.getQuoridor().getCurrentGame().setWhitePlayer(players.get(0));
 		QuoridorApplication.getQuoridor().getCurrentGame().setBlackPlayer(players.get(1));
+		view.initLoadScreen();
+		view.newGame.doClick();
 	}
 	
 	// ***********************************************
@@ -163,6 +165,7 @@ public void a_new_game_is_being_initialized() {
 				QuoridorController.startGame();
 				view.initLoadScreen();
 			    view.newGame.doClick();
+			    
 			} catch (InvalidInputException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -233,6 +236,9 @@ public void I_start_the_clock() {
 public void the_game_shall_be_running(){
  Assert.assertEquals(GameStatus.Running,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
  view.newGame.doClick();
+ if(view.confirmFrame.isVisible()) {
+ 	((JButton) view.confirmFrame.getContentPane().getComponent(1)).doClick();
+ }
 }
 /**
 *Feature:Start a new game 
@@ -240,7 +246,7 @@ public void the_game_shall_be_running(){
 */
 @And("The board shall be initialized")
 public void the_board_shall_be_initialized() {
- assertNotNull(view.board);
+	assertNotNull(view.board);
 }
 
 //***********************************************
@@ -916,80 +922,77 @@ public void the_board_shall_be_initialized() {
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIs(String string) {
-		if(!(string == "black") && !(string == "white")) {
+		
+		if(string.equals("black")) {
+			view.useExistingBlack.doClick();
+			//view.blackName.setText(string); //No gurantee it's actually in the list
+			//In fact it probably isn't
+		} else if(string.equals("white")) {
+			view.useExistingWhite.doClick();
+			//view.bwhiteName.setText(string);
+		} else {
 			throw new IllegalArgumentException();
 		}
-		else {
-			if(string == "black") {
-				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
-			}
-			if(string == "white") {
-				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
-			}
-		}
-		throw new cucumber.api.PendingException();
 	}
 
 	@Given("There is existing user {string}")
 	public void thereIsExistingUser(String string) {
-		List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
-		for(int i = 0; i < existingUsers.size(); i++) {
-			assertEquals(string, existingUsers.get(i).getName());
+		if(!QuoridorController.ExistingUserName(string)) {
+			QuoridorController.createUser(string);
+			view.userList.add(new JLabel(string));
 		}
-		throw new cucumber.api.PendingException();
+		
 	}
 
 	@When("The player selects existing {string}")
 	public void thePlayerSelectsExisting(String string) {
-		assertEquals(true, QuoridorController.ExistingUserName(string));
-		throw new cucumber.api.PendingException();
+		if(view.userSelecting.equals("white")) {
+			view.whiteName.setText(string);
+		} else {
+			view.blackName.setText(string);
+		}
+		view.newGame.doClick(); //Start new game and confirm you want an existing user
+		((JButton) view.confirmFrame.getContentPane().getComponent(1)).doClick();
 	}
 
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
-		if(string == "black") {
-			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().setName(string2);
+		if(string.equals("black")) {
+			assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName().equals(string2));
+		} else {
+			assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName().equals(string2));
 		}
-		if(string == "white") {
-			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().setName(string2);
-		}
-		throw new cucumber.api.PendingException();
 	}
 
 	@Given("There is no existing user {string}")
 	public void thereIsNoExistingUser(String string) {
-		assertEquals(false, QuoridorController.ExistingUserName(string));
-		throw new cucumber.api.PendingException();
+		if(QuoridorController.ExistingUserName(string)) {
+			QuoridorApplication.getQuoridor().removeUser(QuoridorController.findUserName(string));
+		}
 	}
 
 	@When("The player provides new user name: {string}")
 	public void thePlayerProvidesNewUserName(String string) {
-		QuoridorController.createUser(string);
-		throw new cucumber.api.PendingException();
+		if(view.userSelecting.equals("white")) {
+			view.whiteName.setText(string);
+		} else {
+			view.blackName.setText(string);
+		}
+		view.newGame.doClick();
 	}
 
 	@Then("The player shall be warned that {string} already exists")
 	public void thePlayerShallBeWarnedThatAlreadyExists(String string) {
-		if(QuoridorController.ExistingUserName(string)) {
-			System.out.println("The user with the name: " + string + "already exists.");
-		}
-		throw new cucumber.api.PendingException();
+		view.confirmExistingName();
 	}
 
 	@Then("Next player to set user name shall be {string}")
 	public void nextPlayerToSetUserNameShallBe(String string) {
-		if(!string.equals("black") && !string.equals("white")) {
-			throw new IllegalArgumentException();
+		if(string.equals("white")) {
+			assertTrue(view.userSelecting.equals("white"));
+		} else {
+			assertTrue(view.userSelecting.equals("black"));
 		}
-		else {
-			if(string.equals("black")) {
-				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
-			}
-			if(string.equals("white")) {
-				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
-			}
-		}
-		throw new cucumber.api.PendingException();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////

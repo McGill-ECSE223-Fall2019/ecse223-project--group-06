@@ -48,9 +48,13 @@ public class QuoridorView extends JFrame implements KeyListener {
 	public JTextField blackName = new JTextField(20);
 	public JTextField minutesField = new JTextField(2);
 	public JTextField secondsField = new JTextField(2);
+	public JButton useExistingWhite = new JButton("Use existing names");
+	public JButton useExistingBlack = new JButton("Use existing names");
+	public String userSelecting = "white";
+	public JList<String> userList;
 		
-	private JLabel p1Name = new JLabel();
-	private JLabel p2Name = new JLabel();
+	public JLabel p1Name = new JLabel();
+	public JLabel p2Name = new JLabel();
 	private JLabel p1Time = new JLabel();
 	private JLabel p2Time = new JLabel();
 	private JLabel p1Walls = new JLabel("Walls: 10");
@@ -116,8 +120,6 @@ public class QuoridorView extends JFrame implements KeyListener {
 		
 		//All the components to be placed on the window
 		
-		JButton useExisting = new JButton("Use existing names");
-		JButton useExistingClone = new JButton("Use existing names");
 		JLabel tmpMinutes = new JLabel("Minutes");
 		JLabel tmpSeconds = new JLabel("Seconds");
 		JLabel tmpP1 = new JLabel("Player 1");
@@ -135,12 +137,12 @@ public class QuoridorView extends JFrame implements KeyListener {
 															.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 																			.addComponent(tmpP1)
 																			.addComponent(whiteName)
-																			.addComponent(useExisting)
+																			.addComponent(useExistingWhite)
 																	)
 															.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 																			.addComponent(tmpP2)
 																			.addComponent(blackName)
-																			.addComponent(useExistingClone)
+																			.addComponent(useExistingBlack)
 																	)
 															
 													)
@@ -171,8 +173,8 @@ public class QuoridorView extends JFrame implements KeyListener {
 												  		  .addComponent(blackName)
 												   )
 										   .addGroup(layout.createParallelGroup()
-												  		  .addComponent(useExisting)
-												  		  .addComponent(useExistingClone)
+												  		  .addComponent(useExistingWhite)
+												  		  .addComponent(useExistingBlack)
 												   )
 										   .addComponent(tmpTimeTitle)
 										   .addGroup(layout.createParallelGroup()
@@ -225,25 +227,29 @@ public class QuoridorView extends JFrame implements KeyListener {
 	        l.addElement("LongComplicatedUsername15"); 
 	        l.addElement("LongComplicatedUsername16"); 
 	        l.addElement("LongComplicatedUsername17"); 
-        JList<String> list = new JList<String>(l);
+        userList = new JList<String>(l);
         //Will work on enter
         //TODO: make it specific to box
-        list.addKeyListener(new java.awt.event.KeyListener() {
+        userList.addKeyListener(new java.awt.event.KeyListener() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {}
 			public void keyTyped(java.awt.event.KeyEvent evt) {}
 			@Override
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-					whiteName.setText(list.getSelectedValue());
-					blackName.setText(list.getSelectedValue());
+					if(userSelecting.equals("white")) {
+						whiteName.setText(userList.getSelectedValue());
+					} else {
+						blackName.setText(userList.getSelectedValue());
+					}
+
 				}
 				
 			}
 		});
-        pane.setViewportView(list);
+        pane.setViewportView(userList);
         
         //Define action for use existing button
-		useExisting.addActionListener(new java.awt.event.ActionListener() {
+		useExistingWhite.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				
@@ -253,9 +259,22 @@ public class QuoridorView extends JFrame implements KeyListener {
 																	  .addComponent(pane));
 				getContentPane().setLayout(layout);
 				pack();
+				userSelecting = "white";
 			}
 		});
-		useExistingClone.addActionListener(useExisting.getActionListeners()[0]);
+		useExistingBlack.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				
+				layout.setHorizontalGroup(layout.createSequentialGroup().addGroup(horizontal)
+																		.addComponent(pane));
+				layout.setVerticalGroup(layout.createParallelGroup().addGroup(vertical)
+																	  .addComponent(pane));
+				getContentPane().setLayout(layout);
+				pack();
+				userSelecting = "black";
+			}
+		});
 		
 		//Redefine what the newGame button does (start the board this time)
 		newGame.removeActionListener(newGame.getActionListeners()[0]);
@@ -266,12 +285,34 @@ public class QuoridorView extends JFrame implements KeyListener {
 				//TODO: Set stuff like the timer labels that we'll need
 				p1Name.setText(whiteName.getText());
 				p2Name.setText(blackName.getText());
-				p1Time.setText("Time: "+minutesField.getText()+" m " + secondsField.getText() +" s ");
-				p2Time.setText("Time: "+minutesField.getText()+" m " + secondsField.getText() +" s ");
-				try {
-					QuoridorController.setTotaltime(Integer.parseInt(minutesField.getText()), Integer.parseInt(secondsField.getText()));
-				} catch (Exception e) {
+				
+				if(!QuoridorController.ExistingUserName(whiteName.getText())) {
+					QuoridorController.createUser(whiteName.getText());
+				} else {
+					confirmExistingName();
 					return;
+				}
+				if(!QuoridorController.ExistingUserName(blackName.getText())) {
+					QuoridorController.createUser(blackName.getText());
+				} else {
+					confirmExistingName();
+					return;
+				}
+				try {QuoridorController.startGame();} 
+				catch (Exception e) { e.printStackTrace();}
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setUser(QuoridorController.findUserName(whiteName.getText()));
+				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setUser(QuoridorController.findUserName(blackName.getText()));
+				try {
+					int minutes = Integer.parseInt(minutesField.getText());
+					int seconds = Integer.parseInt(secondsField.getText());
+					QuoridorController.setTotaltime(minutes, seconds);
+					p1Time.setText("Time: "+minutes+" m " + seconds +" s ");
+					p2Time.setText("Time: "+minutes+" m " + seconds +" s ");
+				} catch (Exception e) {
+					QuoridorController.setTotaltime(10, 0);
+					p1Time.setText("Time: "+10+" m " + 0 +" s ");
+					p2Time.setText("Time: "+10+" m " + 0 +" s ");
+					QuoridorController.setTotaltime(10, 0);
 				}
 				
 				initGame();
@@ -729,6 +770,69 @@ public class QuoridorView extends JFrame implements KeyListener {
 		confirmFrame.pack();
 		confirmFrame.setVisible(true);
 	}
+	
+	public void confirmExistingName() {
+		confirmFrame.getContentPane().removeAll();
+		JLabel notification = new JLabel("The selected user name already exists. Continue?");
+		notification.setForeground(Color.red);
+		JButton yesButton = new JButton("Yes");
+		yesButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				try {QuoridorController.startGame();} 
+				catch (Exception e) { e.printStackTrace();}
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setUser(QuoridorController.findUserName(whiteName.getText()));
+				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setUser(QuoridorController.findUserName(blackName.getText()));
+				
+				try {
+					int minutes = Integer.parseInt(minutesField.getText());
+					int seconds = Integer.parseInt(secondsField.getText());
+					QuoridorController.setTotaltime(minutes, seconds);
+					p1Time.setText("Time: "+minutes+" m " + seconds +" s ");
+					p2Time.setText("Time: "+minutes+" m " + seconds +" s ");
+				} catch (Exception e) {
+					QuoridorController.setTotaltime(10, 0);
+					p1Time.setText("Time: "+10+" m " + 0 +" s ");
+					p2Time.setText("Time: "+10+" m " + 0 +" s ");
+					QuoridorController.setTotaltime(10, 0);
+				}
+				
+				initGame();
+				//Exit the frame
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+			}
+		});
+		JButton noButton = new JButton("No");
+		noButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				//Exit the frame
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+			}
+		});
+		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+										.addComponent(notification)
+										.addGroup(layout.createSequentialGroup()
+												  .addComponent(yesButton)
+												  .addComponent(noButton)	   
+																	   ));
+		layout.setVerticalGroup(layout.createSequentialGroup()
+									  .addComponent(notification)
+									  .addGroup(layout.createParallelGroup()
+											  		  .addComponent(yesButton)
+											  		  .addComponent(noButton)	   
+							   ));
+		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
+		confirmFrame.getContentPane().setLayout(layout);
+		confirmFrame.pack();
+		confirmFrame.setVisible(true);
+	}
+	
+	
+	
 	
 	
 	//This will clear the action listers assigned to the various buttons
