@@ -129,7 +129,6 @@ public class CucumberStepDefinitions {
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
-		//TODO: Get rid of null pointer?- also do GUI stuff (GUI feature)
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
 			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));	
 		}
@@ -551,8 +550,7 @@ public void the_board_shall_be_initialized() {
 
 	@And("I shall have a wall in my hand over the board")
 	public void iShallHaveAWallInMyHandOverTheBoard() {
-		// GUI-related feature -- TODO for later
-		throw new cucumber.api.PendingException();
+		assertNotNull(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate());
 	}
 
 	@And("The wall in my hand shall disappear from my stock")
@@ -904,12 +902,7 @@ public void the_board_shall_be_initialized() {
 	//Name: Keanu, Natchev
 	//ID#: 260804586
 
-	@Given("A new game is initializing")
-	public void aNewGameIsInitializing() {
-		QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
-		assertEquals(true, GameStatus.Initializing);
-		throw new cucumber.api.PendingException();
-	}
+
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIs(String string) {

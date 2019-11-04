@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -354,18 +355,28 @@ public class QuoridorView extends JFrame implements KeyListener {
 							width - 5, height - 5);
 				}
 				board.setColor(new Color(255, 164, 66));
-				for(WallMove wall : QuoridorController.getWalls()) {
-					if(wall.getWallDirection() == Direction.Horizontal) {
-						board.fillRect(wall.getTargetTile().getRow() * 40, 
-									   wall.getTargetTile().getColumn() * 40 - 5, 
-									   10, 5);
-					} else {
-						board.fillRect(wall.getTargetTile().getRow() * 40 - 5, 
-								   wall.getTargetTile().getColumn() * 40, 
-								   5, 10);
+				ArrayList<WallMove> walls = QuoridorController.getWalls();
+				if(walls != null) {
+					for(WallMove wall : QuoridorController.getWalls()) {
+						if(wall.getWallDirection() == Direction.Horizontal) {
+							board.fillRect(wall.getTargetTile().getRow() * 40, 
+										   wall.getTargetTile().getColumn() * 40 - 5, 
+										   10, 5);
+						} else {
+							board.fillRect(wall.getTargetTile().getRow() * 40 - 5, 
+									   wall.getTargetTile().getColumn() * 40, 
+									   5, 10);
+						}
 					}
 				}
-				WallMove candidate = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+				
+				WallMove candidate;
+				if(QuoridorApplication.getQuoridor().getCurrentGame() != null) {
+					candidate = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+				} else {
+					candidate = null;
+				}
+				
 				if(candidate != null) {
 					if(candidate.getWallDirection() == Direction.Horizontal) {
 						board.fillRect(candidate.getTargetTile().getRow() * 40, 
