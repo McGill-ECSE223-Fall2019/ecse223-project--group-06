@@ -688,22 +688,36 @@ public class QuoridorController {
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
-	/*
-	 * @author Keanu Natchev
+	
+	/**
 	 * Checks whether or not the position is valid
+	 * @author Keanu Natchev
+	 * @return Boolean: true if the position is valid and false if it is not.
 	 */
 		
 	public static boolean validPosition() {
 		throw new java.lang.UnsupportedOperationException();
 	}
 	
-	/*
+	/**
+	 * Goes through the list of usernames and checks whether the given username
+	 * is part of that list.
 	 * @author Keanu Natchev
 	 * @param userName - the username that needs to be checked
-	 * Checks whether or not there is a user with the same name as the input
 	 */
 
 	public static boolean ExistingUserName(String userName) {
+		throw new java.lang.UnsupportedOperationException();
+	}
+	
+	/**
+	 * Creates a new user with name
+	 * @author Keanu Natchev
+	 * @param newUserName: desired name of new user
+	 */
+	
+	public static void createUser(String newUserName) {
+		QuoridorApplication.getQuoridor().addUser(newUserName);
 		throw new java.lang.UnsupportedOperationException();
 	}
 
