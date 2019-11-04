@@ -567,7 +567,7 @@ public void the_board_shall_be_initialized() {
 
 	@Then("I shall be notified that I have no more walls")
 	public void iShallBeNotifiedThatIHaveNoMoreWalls() {
-		Assert.assertTrue(notification.getText().equals("You have no more walls");
+		Assert.assertTrue(notification.getText().equals("No walls in stock");
 		throw new cucumber.api.PendingException();
 	}
 
