@@ -318,15 +318,19 @@ public class QuoridorView extends JFrame implements KeyListener {
 				//TODO: Implement Grab Wall	
 				//I figured out a way. Put the wall on in the game's candidate wall
 				//And call refresh. It should work
-				wall = new JPanel();
-				wall.setBounds(11,423,5,85);
-				wall.setSize(5, 76);
-				wall.setBackground(Color.BLACK);
-				getContentPane().add(wall,JLayeredPane.DRAG_LAYER);
-				MouseEventListener mouseListener = new MouseEventListener(wall);
-				wall.addMouseListener(mouseListener);
-				wall.addMouseMotionListener(mouseListener);
-				refresh();
+				if(QuoridorController.grabWall()) {
+					wall = new JPanel();
+					wall.setBounds(11,423,5,85);
+					wall.setSize(5, 76);
+					wall.setBackground(Color.BLACK);
+					getContentPane().add(wall,JLayeredPane.DRAG_LAYER);
+					MouseEventListener mouseListener = new MouseEventListener(wall);
+					wall.addMouseListener(mouseListener);
+					wall.addMouseMotionListener(mouseListener);
+					refresh();
+				}
+				else {
+					notifyInvalid("No walls in stock");
 			}
 		});
 		rotateButton.addActionListener(new java.awt.event.ActionListener() {

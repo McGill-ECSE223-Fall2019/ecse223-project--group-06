@@ -16,9 +16,11 @@ import java.util.regex.Pattern;
 import javax.swing.Timer;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.features.InvalidInputException;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
+import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.Move;
@@ -28,7 +30,7 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
-
+import ca.mcgill.ecse223.quoridor.model.Quoridor;
 
 public class QuoridorController {
 	QuoridorView view;
@@ -113,13 +115,20 @@ public class QuoridorController {
 		blacktimer.start();
 		return blacktimer;
 	}
+	
+
 	/**
 	 * @author Hongshuo Zhou
-	 * Feature: Start a new game
-	 * Stop white player's clock
+	 * feature: Start a new game
+	 * @throws InvalidInputException
+	 * This method starts the new game and check existing game
 	 */
-	public static void startGame() {
-   		throw new java.lang.UnsupportedOperationException();
+	public static void startGame() throws InvalidInputException {
+		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
+		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+		} else {
+          throw new InvalidInputException("Running game exist");
+		}
 	}
 
 	/** load position Feature
@@ -153,14 +162,15 @@ public class QuoridorController {
 	 * @param targetTile - new tile to move to
 	 * @return whether or not the wall successfully moved
 	 */
-
 	public static boolean moveWall(WallMove curMove, Tile targetTile) {
 
 		// take in a WallMove created in GrabWall feature and put the wall in the
 		// targetTile
 		// will validate position to ensure no overlapping
-
-		throw new java.lang.UnsupportedOperationException();
+		if(wallIsValid()) {
+			return curMove.setTargetTile(targetTile);
+		}
+		return false;
 	}
 	
 	//TODO: A* Algorithm
@@ -262,7 +272,7 @@ public class QuoridorController {
 		return null;
 	}
 
-	/**
+		/**
 	 * findTile helper method will find a tile given coordinates row and column
 	 * 
 	 * @param r
@@ -270,11 +280,16 @@ public class QuoridorController {
 	 * @return tile at location
 	 */
 	public static Tile findTile(int r, int c) {
-		// use row and col to find the tile we want. No guarantee tiles are in order
-		for(Tile t : QuoridorApplication.getQuoridor().getBoard().getTiles()) {
-			if(r == t.getRow() && c==t.getColumn()) return t;
-		}
-		return null;
+		// use row and col to find the tile we want
+		if(r <= 0)
+			r = 1;
+		if(r > 9)
+			r = 9;
+		if(c <= 0)
+			c = 1;
+		if(c > 9)
+			c = 9;
+		return QuoridorApplication.getQuoridor().getBoard().getTile((r-1)*9+c-1);
 	}
 
 	/////////////////////////////////////////////////////////////
@@ -287,7 +302,7 @@ public class QuoridorController {
 	 * @return
 	 */
 
-	public static WallMove grabWall(Wall aWall) {
+	public static boolean grabWall() {
 		// will take in a wall and create a wall move object with some default values
 		WallMove newMove;
 		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
@@ -305,9 +320,9 @@ public class QuoridorController {
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
 			.removeWall(newMove.getWallPlaced());
 			
-			return newMove;
+			return true;
 		}
-		throw new RuntimeException("You have no walls to grab");
+		return false;
 		//throw new java.lang.UnsupportedOperationException();
 	}
 
@@ -674,22 +689,36 @@ public class QuoridorController {
 	}
 	
 	///////////////////////////////////////////////////////////////////////////
-	/*
-	 * @author Keanu Natchev
+	
+	/**
 	 * Checks whether or not the position is valid
+	 * @author Keanu Natchev
+	 * @return Boolean: true if the position is valid and false if it is not.
 	 */
 		
 	public static boolean validPosition() {
 		throw new java.lang.UnsupportedOperationException();
 	}
 	
-	/*
+	/**
+	 * Goes through the list of usernames and checks whether the given username
+	 * is part of that list.
 	 * @author Keanu Natchev
 	 * @param userName - the username that needs to be checked
-	 * Checks whether or not there is a user with the same name as the input
 	 */
 
 	public static boolean ExistingUserName(String userName) {
+		throw new java.lang.UnsupportedOperationException();
+	}
+	
+	/**
+	 * Creates a new user with name
+	 * @author Keanu Natchev
+	 * @param newUserName: desired name of new user
+	 */
+	
+	public static void createUser(String newUserName) {
+		QuoridorApplication.getQuoridor().addUser(newUserName);
 		throw new java.lang.UnsupportedOperationException();
 	}
 
