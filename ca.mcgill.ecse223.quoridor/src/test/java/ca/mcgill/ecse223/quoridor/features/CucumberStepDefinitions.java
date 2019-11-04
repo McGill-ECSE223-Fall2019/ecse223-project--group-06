@@ -3,6 +3,7 @@ package ca.mcgill.ecse223.quoridor.features;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 import java.sql.Time;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 
 import org.junit.Assert;
 
@@ -32,7 +34,6 @@ import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
 import cucumber.api.PendingException;
-import io.cucumber.core.api.Scenario;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -40,27 +41,18 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import static org.junit.Assert.assertEquals;
-
-<<<<<<< HEAD
-=======
 public class CucumberStepDefinitions {
-	
-	
-	
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
+
+	private QuoridorView view = new QuoridorView();
 	private Quoridor quoridor;
 	private Board board;
 	private Player player1;
 	private Player player2;
 	private Player currentPlayer;
 	private Game game;
-<<<<<<< HEAD
 	private WallMove aWallMove;
 	
 
-=======
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	// ***********************************************
 	// Background step definitions
 	// ***********************************************
@@ -137,7 +129,10 @@ public class CucumberStepDefinitions {
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
-		// GUI-related feature -- TODO for later
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
+			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));	
+		}
+		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
 	}
 	
 	@Given("^A new game is initializing$")
@@ -371,8 +366,8 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Set Total thinking time
 	 * @Author Xiangyu Li
-	 * @param minute
-	 * @param second
+	 * @param minute minute used for total thinking time
+	 * @param second second used for total thinking time 
 	 */
   
 	@When("{int}:{int} is set as the thinking time")
@@ -383,15 +378,15 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Set Total thinking time
 	 * @Author Xiangyu Li
-	 * @param minute
-	 * @param second
+	 * @param minute check if player have minutes left
+	 * @param second check if player have second left
 	 */
 	
 	@Then("Both players shall have {int}:{int} remaining time left")
 	public void both_players_shall_have_remaining_time_left(int minute,int second) {
 		long remaintime=(minute*60+second)*1000;
-		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime());
-		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime());
+		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime().getTime());
+		Assert.assertEquals(remaintime,QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime().getTime());
 	}
 	
 	//*************************************************
@@ -401,7 +396,7 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player want to move 
 	 */
 	@Given("The player to move is {string}")
 	public void Playertomove(String color) {
@@ -410,12 +405,12 @@ public void the_board_shall_be_initialized() {
 		}
 		else 
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
-		}
+	}
 	
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player to run clock
 	 */
 	@And("The clock of {string} is running")
 	public void the_clock_of_black_is_running(String color) {
@@ -429,21 +424,24 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color oof player to stop clock
 	 */
 	@And("The clock of {string} is stopped")
 	public void the_clock_of_white_is_stopped(String color) {
 	    // Write code here that turns the phrase above into concrete actions
 		if(color=="white") {
-			QuoridorController.stopwhiteclock();
+			Timer whitetimer=QuoridorController.runwhiteclock();
+			QuoridorController.stopwhiteclock(whitetimer);
 		}
-		else
-			QuoridorController.stopblackclock();
+		else {
+			Timer blacktimer=QuoridorController.runblackclock();
+			QuoridorController.stopblackclock(blacktimer);
+		}
 	}
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player who complete his move 
 	 */
 	@When("Player {string} completes his move")
 	public void player_blackplayer_completes_his_move(String color) {
@@ -453,11 +451,12 @@ public void the_board_shall_be_initialized() {
 		else {
 		QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());	
 		}
+
 	}
 	/**
 	 * Feature :Switch current player
-	 * Xiangyu Li
-	 * @param color
+	 * Xiangyu Li 
+	 * @param color color of player is in turn
 	 */
 	@Then("The user interface shall be showing it is {string} turn")
 	public void the_user_interface_is_showing_it_is_white_s_turn(String color) {
@@ -472,21 +471,24 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player to stop clock
 	 */
 	@And("The clock of {string} shall be stopped")
 	public void the_clock_of_black_shall_be_stopped(String color) {
-		if(color=="black") {
-			QuoridorController.stopblackclock();
+		if(color=="white") {
+			Timer whitetimer=QuoridorController.runwhiteclock();
+			QuoridorController.stopwhiteclock(whitetimer);
 		}
-		else
-			QuoridorController.stopwhiteclock();
+		else {
+			Timer blacktimer=QuoridorController.runblackclock();
+			QuoridorController.stopblackclock(blacktimer);
+		}
 	}
 	
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player to run his clock
 	 */
 	@And("The clock of {string} shall be running")
 	public void the_clock_of_white_shall_be_running(String color) {
@@ -501,7 +503,7 @@ public void the_board_shall_be_initialized() {
 	/**
 	 * Feature :Switch current player
 	 * Xiangyu Li
-	 * @param color
+	 * @param color color of player is going to move 
 	 */
 	@And("The next player to move shall be {string}")
 	public void the_player_to_move_is_secondplayer(String color) {
@@ -548,8 +550,7 @@ public void the_board_shall_be_initialized() {
 
 	@And("I shall have a wall in my hand over the board")
 	public void iShallHaveAWallInMyHandOverTheBoard() {
-		// GUI-related feature -- TODO for later
-		throw new cucumber.api.PendingException();
+		assertNotNull(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate());
 	}
 
 	@And("The wall in my hand shall disappear from my stock")
@@ -657,40 +658,27 @@ public void the_board_shall_be_initialized() {
 	// ***********************************************
 	// Drop Wall definitions
 	// ***********************************************
-	
-	@And("I have a wall in my hand over the board")
-	public void iHaveAWallInHandOverBoard() {
-		//TODO: Get rid of null pointer?
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
-			QuoridorController.grabWall(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));
-		}
-	}
-	
+
 	//Scenario 1
 	@Given("The wall move candidate with {string} at position {int}, {int} is valid")
 	public void theWallMoveCandidateWithDirAtPosIsValid(String dir, int row, int col) throws InvalidInputException {
 		//Get a string- make a direction
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		//Quoridorcontroller.rotate(QuoridorApplication.getQuoridor().getCurrentGame(), direction);
-		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
-		QuoridorController.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , QuoridorController.findTile(row, col));
-		//Fail if invalid wall given
-		List<WallMove> moveList = new ArrayList<WallMove>();
-		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
-			if(move instanceof WallMove) moveList.add((WallMove) move);
-		}
+		WallMove toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		toCheck.setWallDirection(direction);
+		toCheck.setTargetTile(QuoridorController.findTile(row, col));
 		
-		if(!QuoridorController.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
-				moveList, 
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
-			Assert.fail(); //TODO: Fix this
+		if(!QuoridorController.wallIsValid()) {
+			QuoridorApplication.getQuoridor().getCurrentGame().getMoves().remove(QuoridorController.invalidWall());
 		}
 	}
 	
 	@When("I release the wall in my hand") 
 	public void iReleaseTheWallInMyHand(){
-		QuoridorController.dropWall();
+		//QuoridorController.dropWall();
+		
+		view.DropWall();
+
 	}
 	
 	@Then("A wall move shall be registered with {string} at position {int}, {int}")
@@ -707,14 +695,11 @@ public void the_board_shall_be_initialized() {
 
 	@And("My move shall be completed")
 	public void myMoveIsCompleted() {
-		//TODO: GUI step?
-		throw new PendingException(); //I'm assuming this is a User confirming move
+		assertTrue(view.p2Turn.isSelected() && !view.p1Turn.isSelected());
 	}
 	
 	@And("It shall not be my turn to move")
 	public void itIsNotMyTurnToMove() {
-		//Or maybe I'm supposed to change it last step and check it this one? 
-		QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
 		Assert.assertTrue( !QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())     );
 	}
@@ -722,34 +707,25 @@ public void the_board_shall_be_initialized() {
 	@Given("The wall move candidate with {string} at position {int}, {int} is invalid")
 	public void theWallMoveCandidateWithDirAtPosIsInvalid(String dir, int row, int col) throws InvalidInputException {
 		//Background ensures I have a wall in hand
+		
+		//Get a string- make a direction
 		Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
-		QuoridorController.moveWall(  QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() , QuoridorController.findTile(row, col));
-		//Check
-		List<WallMove> moveList = new ArrayList<WallMove>();
-		for(Move move : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
-			if(move instanceof WallMove) moveList.add((WallMove) move);
+		WallMove toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		toCheck.setWallDirection(direction);
+		toCheck.setTargetTile(QuoridorController.findTile(row, col));
+		
+		if(QuoridorController.wallIsValid()) {
+			//If it's valid, make it invalid
+			QuoridorApplication.getQuoridor().getCurrentGame().addMove(toCheck);
 		}
 		
-		if(QuoridorController.wallIsValid(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), 
-				moveList, 
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(),
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition())) {
-			Assert.fail(); //If you reached here, the parameters being passed in are wrong
-		}
 	}
 	
 	
 	@Then("I shall be notified that my wall move is invalid")
 	public void iShallBeNotifiedThatMyWallMoveIsInvalid() {
-		throw new PendingException(); //GUI stuff
+		assertTrue(!view.notification.getText().equals("") && view.notification.isVisible());
 	}
-	/*//Taken care of in grab/move wall
-	@And("I shall have a wall in my hand over the board")
-	public void iShallHaveAWallInMyHandOverTheBoard() {
-		Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate());
-	}
-	*/
 	
 	@And("It shall be my turn to move")
 	public void itShallBeMyTurnToMove() {
@@ -778,16 +754,11 @@ public void the_board_shall_be_initialized() {
 				QuoridorController.deleteFile(fileName);
 			}	
 	}
-	@After
-	public void myAfterHook(Scenario scenario) {
-	    if (scenario.isFailed()) {
-	        System.out.println("***>> Scenario '" + scenario.getName() + "' failed at line(s) " + scenario.getLine() + " with status '" + scenario.getStatus() + "'");
-	    }
-	}
 	
 	@When("The user initiates to save the game with name {string}")
-	public void theUserInitiatesToSaveTheGameWithName(String fileName) {
+	public void theUserInitiatesToSaveTheGameWithName(String fileName) {	
 		view.confirmSaveAction();
+		
 		JTextField fill = (JTextField) view.confirmFrame.getContentPane().getComponent(1); //Get TextBox
 		fill.setText(fileName);
 		JButton save = (JButton) view.confirmFrame.getContentPane().getComponent(2);
@@ -835,7 +806,6 @@ public void the_board_shall_be_initialized() {
 	 * @author Matteo Nunez
 	 *
 	 */
-<<<<<<< HEAD
 	@When("The initialization of the board is initiated")
 	public void theInitializationOfTheBoardIsInitiated() {
 		QuoridorController.initializeBoard(QuoridorApplication.getQuoridor().getBoard());
@@ -926,27 +896,22 @@ public void the_board_shall_be_initialized() {
 	    throw new cucumber.api.PendingException();
 	}
 	
-=======
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Feature: #2 Provide or select user name
-	//Name: Keanu, Natchev
-	//ID#: 260804586
-<<<<<<< HEAD
 
-=======
+	/**
+	 * Feature: #2 Provide or select user name
+	 * 
+	 * @author Keanu, Natchev
+	 * ID#: 260804586
+	 *
+	 */
 	
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	@Given("A new game is initializing")
 	public void aNewGameIsInitializing() {
 		QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
 		assertEquals(true, GameStatus.Initializing);
-<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
-=======
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Given("Next player to set user name is {string}")
@@ -962,99 +927,54 @@ public void the_board_shall_be_initialized() {
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 			}
 		}
-<<<<<<< HEAD
-
 		throw new cucumber.api.PendingException();
-=======
-				
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Given("There is existing user {string}")
 	public void thereIsExistingUser(String string) {
-<<<<<<< HEAD
 		List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
 		for(int i = 0; i < existingUsers.size(); i++) {
 			assertEquals(string, existingUsers.get(i).getName());
 		}
 		throw new cucumber.api.PendingException();
-=======
-	    List<User> existingUsers = QuoridorApplication.getQuoridor().getUsers();
-	    for(int i = 0; i < existingUsers.size(); i++) {
-	    	assertEquals(string, existingUsers.get(i).getName());
-	    }
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@When("The player selects existing {string}")
 	public void thePlayerSelectsExisting(String string) {
 		assertEquals(true, QuoridorController.ExistingUserName(string));
-<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
-=======
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void theNameOfPlayerInTheNewGameShallBe(String string, String string2) {
 		if(string == "black") {
 			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().setName(string2);
-<<<<<<< HEAD
-
-=======
-			
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 		}
 		if(string == "white") {
 			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().setName(string2);
 		}
-<<<<<<< HEAD
-
 		throw new cucumber.api.PendingException();
-=======
-	    
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Given("There is no existing user {string}")
 	public void thereIsNoExistingUser(String string) {
-<<<<<<< HEAD
 		assertEquals(false, QuoridorController.ExistingUserName(string));
 		throw new cucumber.api.PendingException();
-=======
-	    assertEquals(false, QuoridorController.ExistingUserName(string));
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@When("The player provides new user name: {string}")
 	public void thePlayerProvidesNewUserName(String string) {
-<<<<<<< HEAD
+	
 		QuoridorApplication.getQuoridor().addUser(string);
 		throw new cucumber.api.PendingException();
-=======
-	    QuoridorApplication.getQuoridor().addUser(string);
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The player shall be warned that {string} already exists")
 	public void thePlayerShallBeWarnedThatAlreadyExists(String string) {
-<<<<<<< HEAD
 		if(QuoridorController.ExistingUserName(string)) {
 			System.out.println("The user with the name: " + string + "already exists.");
 		}
 		throw new cucumber.api.PendingException();
-=======
-	    if(QuoridorController.ExistingUserName(string)) {
-	    	System.out.println("The user with the name: " + string + "already exists.");
-	    }
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("Next player to set user name shall be {string}")
@@ -1070,24 +990,19 @@ public void the_board_shall_be_initialized() {
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 			}
 		}
-<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
 	}
 
-=======
-	    throw new cucumber.api.PendingException();
-	}
-	
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//Feature: #11 Validate position
-	//Name: Keanu, Natchev
-	//ID#: 260804586
-<<<<<<< HEAD
-
-=======
 	
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
+	/**
+	 * Feature: #11 Validate position
+	 * 
+	 * @author Keanu, Natchev
+	 * ID#: 260804586
+	 *
+	 */
+	
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void aGamePositionIsSuppliedWithPawnCoordinate(Integer int1, Integer int2) {
 		if(int1 < 1 || int1 > 9 || int2 < 1 || int2 > 9) {
@@ -1109,26 +1024,13 @@ public void the_board_shall_be_initialized() {
 				assertEquals(column, int2);
 			}
 		}
-<<<<<<< HEAD
-
-
 		throw new cucumber.api.PendingException();
-=======
-	    
-		
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@When("Validation of the position is initiated")
 	public void validationOfThePositionIsInitiated() {
-<<<<<<< HEAD
 		QuoridorController.validatePosition();
 		throw new cucumber.api.PendingException();
-=======
-	    QuoridorController.validatePosition();
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The position shall be {string}")
@@ -1139,11 +1041,7 @@ public void the_board_shall_be_initialized() {
 		else {
 			string = "error";
 		}
-<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
-=======
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
@@ -1172,11 +1070,7 @@ public void the_board_shall_be_initialized() {
 				assertEquals(directionGiven, direction);
 			}
 		}
-<<<<<<< HEAD
-
-=======
 		
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
 			List<Wall> whiteWalls =  QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsOnBoard();
 			Integer row;
@@ -1192,43 +1086,47 @@ public void the_board_shall_be_initialized() {
 				assertEquals(directionGiven, direction);
 			}
 		}
-
-
-<<<<<<< HEAD
 		throw new cucumber.api.PendingException();
-=======
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The position shall be valid")
 	public void thePositionShallBeValid() {
-<<<<<<< HEAD
 		assertEquals(true, QuoridorController.validPosition());
 		throw new cucumber.api.PendingException();
-=======
-	    assertEquals(true, QuoridorController.validatePosition());
-	    throw new cucumber.api.PendingException();
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
 	}
 
 	@Then("The position shall be invalid")
 	public void thePositionShallBeInvalid() {
-<<<<<<< HEAD
 		assertEquals(false, QuoridorController.validPosition());
 		throw new cucumber.api.PendingException();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	
-=======
-		assertEquals(false, QuoridorController.validatePosition());
-	    throw new cucumber.api.PendingException();
+	// ***********************************************
+	// Clean up
+	// ***********************************************
+
+	// After each scenario, the test model is discarded
+	@After
+	public void tearDown() {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		// Avoid null pointer for step definitions that are not yet implemented.
+		if (quoridor != null) {
+			quoridor.delete();
+			quoridor = null;
+		}
+		for (int i = 0; i < 20; i++) {
+			Wall wall = Wall.getWithId(i);
+			if(wall != null) {
+				wall.delete();
+			}
+		}
 	}
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
->>>>>>> 7b59325cc4c33ff08df243d371aa3f71979d1104
+
+	
 
 	// ***********************************************
 	// Clean up
@@ -1295,7 +1193,8 @@ public void the_board_shall_be_initialized() {
 		//@formatter:on
 		Player player1 = new Player(new Time(thinkingTime), user1, 9, Direction.Horizontal);
 		Player player2 = new Player(new Time(thinkingTime), user2, 1, Direction.Horizontal);
-
+		player1.setNextPlayer(player2);
+		player2.setNextPlayer(player1);
 		Player[] players = { player1, player2 };
 
 		// Create all walls. Walls with lower ID belong to player1,
@@ -1342,5 +1241,4 @@ public void the_board_shall_be_initialized() {
 
 		game.setCurrentPosition(gamePosition);
 	}
-
 }
