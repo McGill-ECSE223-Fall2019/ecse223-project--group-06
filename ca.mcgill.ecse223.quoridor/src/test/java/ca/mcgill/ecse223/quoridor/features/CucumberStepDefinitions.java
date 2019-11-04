@@ -34,6 +34,7 @@ import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
 import cucumber.api.PendingException;
+import ca.mcgill.ecse223.quoridor.features.InvalidInputException;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -148,17 +149,23 @@ public class CucumberStepDefinitions {
 
 
 //***********************************************
-//Start a new game
+// Start a new game
 // **********************************************
 /**
-*Feature:Start a new game 
-*@Author Hongshuo Zhou
+ * Feature:Start a new game
+* 
+* @Author Hongshuo Zhou
 */
 @When("A new game is being initialized")
-public void a_new_game_is_being_initialized(){
-	QuoridorController.startGame();
-	throw new cucumber.api.PendingException();
-}
+public void a_new_game_is_being_initialized() {
+			try {
+				QuoridorController.startGame();
+			} catch (InvalidInputException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		throw new cucumber.api.PendingException();
+	}
 /**
 *Feature:Start a new game 
 *@Author Hongshuo Zhou
