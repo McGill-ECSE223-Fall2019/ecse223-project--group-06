@@ -734,25 +734,24 @@ public class QuoridorController {
 	 * @param board - board object that is going to be initialize
 	 */
 	public static void initializeBoard(Board board) {
-		Game game = board.getQuoridor().getCurrentGame();
+		Game current = QuoridorApplication.getQuoridor().getCurrentGame();
 		
-		Player whitePlayer = board.getQuoridor().getCurrentGame().getWhitePlayer();
-		Player blackPlayer = board.getQuoridor().getCurrentGame().getBlackPlayer();
+		Player whitePlayer = current.getWhitePlayer();
+		Player blackPlayer = current.getBlackPlayer();
 		
-		Tile whiteStartTile = findTile(9, 4);
-		Tile blackStartTile = findTile(0, 4);
+		if (current.getCurrentPosition() == null)
+			throw new java.lang.UnsupportedOperationException();
+		current.getCurrentPosition().getPlayerToMove().setGameAsWhite(current);
 		
-		game.getCurrentPosition().setPlayerToMove(whitePlayer);
+		current.getCurrentPosition().getWhitePosition().setTile(findTile(9, 4));
+		current.getCurrentPosition().getWhitePosition().setTile(findTile(0, 4));
 		
-		game.getCurrentPosition().getWhitePosition().setTile(whiteStartTile);
-		game.getCurrentPosition().getWhitePosition().setTile(blackStartTile);
-		
-		for (int whiteWallInStock = game.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
-			game.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));
+		for (int whiteWallInStock = current.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
+			current.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));
 		}
 		
-		for (int blackWallInStock = game.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
-			game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));
+		for (int blackWallInStock = current.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
+			current.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));
 		}
 		
 		
