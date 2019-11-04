@@ -125,7 +125,7 @@ public class QuoridorController {
 	 */
 	public static void startGame() throws InvalidInputException {
 		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
-		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), QuoridorApplication.getQuoridor());
+		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
 		} else {
           throw new InvalidInputException("Running game exist");
 		}
