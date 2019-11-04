@@ -256,10 +256,11 @@ public void the_board_shall_be_initialized() {
 	*Feature: Load Position
 	*@Author Hongshuo Zhou
 	*/
+	private Boolean load;
+
 	@When("I initiate to load a saved game {string}")
-	public void i_initiate_to_load_a_saved_game(String string) {
-		QuoridorController.loadGame(string);
-	    throw new cucumber.api.PendingException();
+	public void i_initiate_to_load_a_saved_game(String filename) {
+		load = QuoridorController.loadGame(filename, true);
 	}
 	/**
 	*Feature: Load Position
@@ -268,7 +269,7 @@ public void the_board_shall_be_initialized() {
 	@And("The position to load is valid")
 	public void the_position_to_load_is_valid() {
 	    assertEquals(true, QuoridorController.validatePosition());
-	    throw new cucumber.api.PendingException();
+	    
 	}
 	/**
 	*Feature: Load Position
@@ -283,7 +284,7 @@ public void the_board_shall_be_initialized() {
 			currentcolor = "white";
 		}
 		assertEquals(string, currentcolor);
-	    throw new cucumber.api.PendingException();
+	    
 	}
 	/**
 	*Feature: Load Position
@@ -302,7 +303,6 @@ public void the_board_shall_be_initialized() {
 		}
 		assertEquals(row, intx);
 		assertEquals(col, inty);
-	    throw new cucumber.api.PendingException();
 	}
 	/**
 	*Feature: Load Position
@@ -325,7 +325,6 @@ public void the_board_shall_be_initialized() {
 		assertEquals(Direction.Vertical, wallDirection);
 		assertEquals(row, intx);
 		assertEquals(col, inty);
-	    throw new cucumber.api.PendingException();
 	}
 	/**
 	*Feature: Load Position
@@ -348,7 +347,7 @@ public void the_board_shall_be_initialized() {
 		assertEquals(Direction.Horizontal, wallDirection);
 		assertEquals(row, intx);
 		assertEquals(col, inty);
-	    throw new cucumber.api.PendingException();
+	    
 	}
 
 	/**
@@ -361,7 +360,6 @@ public void the_board_shall_be_initialized() {
 	    Integer whitewall = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWalls().size();
 	    assertEquals(blackwall, intx);
 	    assertEquals(whitewall, intx);
-	    throw new cucumber.api.PendingException();
 	}
 	/**
 	*Feature: Load Position
@@ -370,7 +368,7 @@ public void the_board_shall_be_initialized() {
 	@When("The position to load is invalid")
 	public void the_position_to_load_is_invalid() {
 		assertEquals(false, QuoridorController.validatePosition());
-	    throw new cucumber.api.PendingException();
+	   
 	}
 	/**
 	*Feature: Load Position
@@ -378,8 +376,7 @@ public void the_board_shall_be_initialized() {
 	*/
 	@Then("The load shall return an error") 
 	public void the_load_shall_return_an_error() {
-	    assertEquals("Failed loading game", QuoridorController.getLoadResult());
-	    throw new cucumber.api.PendingException();
+	    assertFalse(load);
 	}
 	//***********************************************
 	//Set total thinking time

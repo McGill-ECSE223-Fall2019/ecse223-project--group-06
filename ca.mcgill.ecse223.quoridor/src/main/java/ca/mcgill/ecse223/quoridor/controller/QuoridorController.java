@@ -2,8 +2,11 @@ package ca.mcgill.ecse223.quoridor.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -138,20 +141,118 @@ public class QuoridorController {
 	 * @return Whether the game successfully loaded
 	 * @param filename - name of game file
 	 */
-	public static void loadGame(String filename) {
-  	  	throw new java.lang.UnsupportedOperationException();
+	public static Boolean loadGame(String filename, boolean status) {
+		try {
+			startGame();
+			User white = findUserName("User1");
+			User black = findUserName("User2");
+			if (white == null){
+				createUser("User1");
+				white = findUserName("User1");
+			}
+			if (black == null){
+				createUser("User2");
+				black = findUserName("User2");
+			}
+			setTotaltime(1, 30);
+			runwhiteclock();
+			runblackclock();
+
+		} catch (InvalidInputException e) {
+			e.printStackTrace();
+		}
+		if(!containsFile(filename)) {
+			createFile(filename);
+		} else {
+			deleteFile(filename);
+			createFile(filename);
+		}
+		//read line for both players
+		File file = new File(filename);
+		String PlayerOneLine = new String();
+		String PlayerTwoLine = new String();
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(file));
+		try {
+			PlayerOneLine = reader.readLine();
+		PlayerTwoLine = reader.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		//create object
+		String blackline;
+		String whiteline;
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		int wCol,wRow,bCol,bRow;
+		Tile bTile,wTile;
+		PlayerPosition bposition,wposition;
+        // create players
+		Player bPlayer;
+		Player wPlayer;
+		Player playerToMove = null;
+		bPlayer = game.getBlackPlayer();
+		wPlayer = game.getWhitePlayer();
+
+		if (PlayerOneLine.charAt(0) == 'B' ){
+			blackline = PlayerOneLine;
+			whiteline = PlayerTwoLine;
+			playerToMove = bPlayer;
+		}
+		else{
+			blackline = PlayerTwoLine;
+			whiteline = PlayerOneLine;
+			playerToMove = wPlayer;
+		}
+		//set coordinate by transfer ASCII
+		bCol = blackline.charAt(3) - 96;
+		bRow = blackline.charAt(4) - 48;
+		bTile = QuoridorApplication.getQuoridor().getBoard().addTile(bRow, bCol);
+		bposition = new PlayerPosition(bPlayer, bTile);
+		wCol = whiteline.charAt(3) - 96;
+		wRow = whiteline.charAt(4) - 48;
+		wTile = QuoridorApplication.getQuoridor().getBoard().addTile(wRow, wCol);
+		wposition = new PlayerPosition(wPlayer, wTile);
+
+		GamePosition loadPosition = game.getCurrentPosition();
+		loadPosition.setPlayerToMove(playerToMove);
+		loadPosition.setBlackPosition(bposition);
+		loadPosition.setWhitePosition(wposition);
+
+		if(validatePos(loadPosition)){
+			game.setCurrentPosition(loadPosition);
+			return true;
+		}else{
+			return false;
+		}
+
+		
+
 	}
-    /** load position Feature
-	 * @author Hongshuo Zhou 
-	 * @return the load result
-	 */
-	public static boolean getLoadResult() {
-		throw new java.lang.UnsupportedOperationException();
+	public static boolean validatePos(GamePosition loadPosition) {
+
+		if (loadPosition == null){
+			return false;
+		}
+		else{
+			return true;
+		}
+		
 	}
 
 	
 	public static boolean validatePosition() {
-    		throw new java.lang.UnsupportedOperationException();
+			GamePosition position = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+			if (position == null){
+				return false;
+			}
+			else{
+				return true;
+			}
+		
 	}
 	//////////////////////////////////////////////////////////////
 	/**
