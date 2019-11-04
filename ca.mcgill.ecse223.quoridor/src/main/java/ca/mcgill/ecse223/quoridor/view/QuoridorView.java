@@ -2,12 +2,15 @@ package ca.mcgill.ecse223.quoridor.view;
 
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -24,7 +28,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.MouseInputListener;
 
+import QuoridorView.MouseEventListener;
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Direction;
@@ -52,10 +58,11 @@ public class QuoridorView extends JFrame implements KeyListener {
 	public JButton saveButton = new JButton("Save");
 	public JButton undoButton = new JButton("Undo");
 	private JButton exitButton = new JButton("Exit");
-	private JButton moveButton = new JButton("Move Wall");
+	private JButton rotateButton=new JButton("Rotate Wall");
 	private JButton grabButton = new JButton("Grab Wall");
 	private JButton validateButton = new JButton("Validate Position");
 	private JPanel board;
+	private JPanel wall;
 	private GroupLayout gameLayout;
 	private String fileName; //Just used to store save file name- eclipse get angry otherwise
 	
@@ -311,13 +318,23 @@ public class QuoridorView extends JFrame implements KeyListener {
 				//TODO: Implement Grab Wall	
 				//I figured out a way. Put the wall on in the game's candidate wall
 				//And call refresh. It should work
+				wall = new JPanel();
+				wall.setBounds(11,423,5,85);
+				wall.setSize(5, 76);
+				wall.setBackground(Color.BLACK);
+				getContentPane().add(wall,JLayeredPane.DRAG_LAYER);
+				MouseEventListener mouseListener = new MouseEventListener(wall);
+				wall.addMouseListener(mouseListener);
+				wall.addMouseMotionListener(mouseListener);
 				refresh();
 			}
 		});
-		moveButton.addActionListener(new java.awt.event.ActionListener() {
+		rotateButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				//TODO: Implement MovePlayer
+				//TODO: Implement Validate Position- you can set the text of notification to tell user
+				//Remember to set the notification to visible
+				wall.setSize(76,5);
 				refresh();
 			}
 		});
@@ -329,11 +346,6 @@ public class QuoridorView extends JFrame implements KeyListener {
 				refresh();
 			}
 		});
-		
-		
-		
-		
-		
 		//These are some things I'll need (component, layout, board)
 		//I have a method- switchPlayerButton - that will switch the p1Turn/p2Turn
 		p1Turn.setEnabled(false);
@@ -344,16 +356,17 @@ public class QuoridorView extends JFrame implements KeyListener {
 		board = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
-				Graphics2D board = (Graphics2D) g;
+				super.paintComponent(g);
 				int width = 40;
 				int height = width;
-				board.setColor(new Color(201, 156, 84));
+				g.setColor(new Color(201, 156, 84));
 				for(int i = 0; i < 81; i++) {
 
-					board.fillRect((i % 9)*width,
+					g.fillRect((i % 9)*width,
 							(i/9)*height,
 							width - 5, height - 5);
 				}
+
 				board.setColor(new Color(255, 164, 66));
 				ArrayList<WallMove> walls = QuoridorController.getWalls();
 				if(walls != null) {
@@ -379,11 +392,17 @@ public class QuoridorView extends JFrame implements KeyListener {
 				
 				if(candidate != null) {
 					if(candidate.getWallDirection() == Direction.Horizontal) {
-						board.fillRect(candidate.getTargetTile().getRow() * 40, 
+						g.drawRect(candidate.getTargetTile().getRow() * 40, 
+								   candidate.getTargetTile().getColumn() * 40 - 5, 
+								   10, 5);
+						g.fillRect(candidate.getTargetTile().getRow() * 40, 
 									   candidate.getTargetTile().getColumn() * 40 - 5, 
 									   10, 5);
 					} else {
-						board.fillRect(candidate.getTargetTile().getRow() * 40 - 5, 
+						g.drawRect(candidate.getTargetTile().getRow() * 40 - 5, 
+								   candidate.getTargetTile().getColumn() * 40, 
+								   5, 10);
+						g.fillRect(candidate.getTargetTile().getRow() * 40 - 5, 
 								   candidate.getTargetTile().getColumn() * 40, 
 								   5, 10);
 					}
@@ -419,7 +438,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 														  )
 												 .addGroup(gameLayout.createSequentialGroup()
 											 			 			 .addComponent(grabButton) 
-											 			 			 .addComponent(moveButton)
+											 			 			 .addComponent(rotateButton)
 											 			 			 .addComponent(saveButton)
 											 			 			 .addComponent(undoButton)
 														  )
@@ -450,7 +469,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 				 										)
 				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(grabButton) 
-				 													.addComponent(moveButton)
+				 													.addComponent(rotateButton)
 				 													.addComponent(saveButton)
 				 													.addComponent(undoButton)
 				 										)
@@ -467,6 +486,48 @@ public class QuoridorView extends JFrame implements KeyListener {
 		pack();
 	}
 	
+	class MouseEventListener implements MouseInputListener{
+		Point origin;
+		JPanel wall;
+		public MouseEventListener(JPanel wall) {
+			this.wall=wall;
+			origin = new Point();
+		}
+		 @Override
+		    public void mouseClicked(MouseEvent e) {}
+		 
+		    /**
+		    * ¼ÇÂ¼Êó±ê°´ÏÂÊ±µÄµã
+		    */
+		    @Override
+		    public void mousePressed(MouseEvent e) {
+		      origin.x = e.getX(); 
+		      origin.y = e.getY();
+		    }
+		 
+		    @Override
+		    public void mouseReleased(MouseEvent e) {}
+		    @Override
+		    public void mouseEntered(MouseEvent e) {
+		      this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+		    }    
+		    @Override
+		    public void mouseExited(MouseEvent e) {
+		      this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		    }
+		 
+		    @Override
+		    public void mouseDragged(MouseEvent e) {
+		      Point p = this.wall.getLocation();
+		      this.wall.setLocation(
+		        p.x + (e.getX() - origin.x), 
+		        p.y + (e.getY() - origin.y)); 
+		    }
+		 
+		    @Override
+		    public void mouseMoved(MouseEvent e) {}
+		     
+		  }
 	//Not implemented, but eventually was where I was planning on doing the timer stuff.
 	//I just don't know how
 	public void updateView() {
@@ -668,7 +729,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 		if(saveButton.getActionListeners().length > 0)saveButton.removeActionListener(saveButton.getActionListeners()[0]);
 		if(exitButton.getActionListeners().length > 0)exitButton.removeActionListener(exitButton.getActionListeners()[0]);
 		if(grabButton.getActionListeners().length > 0)grabButton.removeActionListener(grabButton.getActionListeners()[0]);
-		if(moveButton.getActionListeners().length > 0)moveButton.removeActionListener(moveButton.getActionListeners()[0]);
+		if(rotateButton.getActionListeners().length > 0)rotateButton.removeActionListener(rotateButton.getActionListeners()[0]);
 		if(undoButton.getActionListeners().length > 0)undoButton.removeActionListener(undoButton.getActionListeners()[0]);
 	}
 	
