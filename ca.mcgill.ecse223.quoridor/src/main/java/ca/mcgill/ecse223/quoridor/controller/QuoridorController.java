@@ -869,8 +869,7 @@ public class QuoridorController {
 			current.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));
 		}
 		
-		
-		//throw new java.lang.UnsupportedOperationException();
+		runwhiteclock();
 	}
 	
 	/** 

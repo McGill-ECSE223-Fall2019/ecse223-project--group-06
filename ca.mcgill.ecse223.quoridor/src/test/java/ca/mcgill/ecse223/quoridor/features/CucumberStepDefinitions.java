@@ -860,13 +860,11 @@ public void the_board_shall_be_initialized() {
 		QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getRemainingTime().wait(1000);
 		Time time2 = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getRemainingTime();
 		assertFalse(time1.compareTo(time2) == 0);
-	    throw new cucumber.api.PendingException();
 	}
 
 	@Then("It shall be shown that this is White's turn")
 	public void itShallBeShownThatThisIsWhitesTurn() {
 		// GUI-related feature -- TODO for later
-	    throw new cucumber.api.PendingException();
 	}
 	
 	/**
