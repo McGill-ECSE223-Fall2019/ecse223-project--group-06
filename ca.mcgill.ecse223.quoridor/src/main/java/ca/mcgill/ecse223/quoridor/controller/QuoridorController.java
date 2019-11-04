@@ -29,6 +29,7 @@ import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
+import ca.mcgill.ecse223.quoridor.model.Quoridor;
 import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
@@ -76,15 +77,17 @@ public class QuoridorController {
 	 * Feature:Switch player
 	 * Run white player's clock
 	 */
-	public static Timer runwhiteclock() {
+	public static Timer runwhiteclock(QuoridorView view) {
 	
 		Timer whitetimer;
 		ActionListener taskPerformer= new ActionListener(){
 			 public void actionPerformed(ActionEvent evt) {
+				 view.updateView();
 		      }
 		};
 	
-		whitetimer=new Timer(0,taskPerformer);
+		whitetimer=new Timer(1000,taskPerformer);
+		whitetimer.setInitialDelay(1000);
 		whitetimer.start();
 		return whitetimer;
 	}
@@ -102,15 +105,17 @@ public class QuoridorController {
 	 * Feature:Switch player
 	 * Run black player's clock
 	 */
-	public static Timer runblackclock() {
+	public static Timer runblackclock(QuoridorView view) {
 		
 		Timer blacktimer;
 		ActionListener taskPerformer= new ActionListener(){
 			 public void actionPerformed(ActionEvent evt) {
+				 view.updateView();
 		      }
 		};
 	
-		blacktimer=new Timer(0,taskPerformer);
+		blacktimer=new Timer(1000,taskPerformer);
+		blacktimer.setInitialDelay(1000);
 		blacktimer.start();
 		return blacktimer;
 	}
@@ -155,17 +160,14 @@ public class QuoridorController {
 				black = findUserName("User2");
 			}
 			setTotaltime(1, 30);
-			runwhiteclock();
-			runblackclock();
+			runwhiteclock(new QuoridorView());
+			runblackclock(new QuoridorView());
 
 		} catch (InvalidInputException e) {
 			e.printStackTrace();
 		}
 		if(!containsFile(filename)) {
-			createFile(filename);
-		} else {
-			deleteFile(filename);
-			createFile(filename);
+			return false;
 		}
 		//read line for both players
 		File file = new File(filename);
@@ -175,8 +177,9 @@ public class QuoridorController {
 		try {
 			reader = new BufferedReader(new FileReader(file));
 		try {
+			
 			PlayerOneLine = reader.readLine();
-		PlayerTwoLine = reader.readLine();
+			PlayerTwoLine = reader.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -217,7 +220,9 @@ public class QuoridorController {
 		wTile = QuoridorApplication.getQuoridor().getBoard().addTile(wRow, wCol);
 		wposition = new PlayerPosition(wPlayer, wTile);
 
+		initializeBoard();
 		GamePosition loadPosition = game.getCurrentPosition();
+		
 		loadPosition.setPlayerToMove(playerToMove);
 		loadPosition.setBlackPosition(bposition);
 		loadPosition.setWhitePosition(wposition);
@@ -844,28 +849,59 @@ public class QuoridorController {
 	 * @param board - board object that is going to be initialize
 	 */
 	public static void initializeBoard() {
-		Game current = QuoridorApplication.getQuoridor().getCurrentGame();
-		Board board = QuoridorApplication.getQuoridor().getBoard();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		//Board board = QuoridorApplication.getQuoridor().getBoard();
 		
-		Player whitePlayer = current.getWhitePlayer();
-		Player blackPlayer = current.getBlackPlayer();
+		Player whitePlayer = game.getWhitePlayer();
+		Player blackPlayer = game.getBlackPlayer();
 		
-		if (current.getCurrentPosition() == null)
-			current.setCurrentPosition(new GamePosition(0, new PlayerPosition(whitePlayer, board.getTile(4)), new PlayerPosition(blackPlayer, board.getTile(8*9+4)), whitePlayer, current));
 		
-//		current.getCurrentPosition().getPlayerToMove().setGameAsWhite(current);
-//		current.getCurrentPosition().getWhitePosition().setTile(findTile(9, 4));
-//		current.getCurrentPosition().getWhitePosition().setTile(findTile(0, 4));
-		
-		for (int whiteWallInStock = current.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
-			current.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if(quoridor.getBoard() == null) {
+			Board board = new Board(quoridor);
+			for (int i = 1; i <= 9; i++) { // rows
+				for (int j = 1; j <= 9; j++) { // columns
+					board.addTile(i, j);
+				}
+			}
 		}
 		
-		for (int blackWallInStock = current.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
-			current.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));
+		Tile whiteStartTile = findTile(1, 5);
+		Tile blackStartTile = findTile(9, 5);
+	
+		
+		
+		GamePosition cur = new GamePosition(0,
+											new PlayerPosition(whitePlayer, whiteStartTile),
+											new PlayerPosition(blackPlayer, blackStartTile),
+											whitePlayer,
+											game);
+		quoridor.getCurrentGame().setCurrentPosition(cur);
+				
+		
+		
+//		if (current.getCurrentPosition() == null)
+//			current.setCurrentPosition(new GamePosition(0, new PlayerPosition(whitePlayer, board.getTile(4)), new PlayerPosition(blackPlayer, board.getTile(8*9+4)), whitePlayer, current));
+		
+		game.getCurrentPosition().setPlayerToMove(whitePlayer);
+		
+		game.getCurrentPosition().getWhitePosition().setTile(whiteStartTile);
+		game.getCurrentPosition().getBlackPosition().setTile(blackStartTile);
+		
+		for (int whiteWallInStock = game.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
+			
+			try{game.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));}
+			catch(Exception e) {break;}
 		}
 		
-		runwhiteclock();
+		for (int blackWallInStock = game.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
+			try{game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));}
+			catch(Exception e) {break;}
+			//game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));
+		}
+		
+		//runwhiteclock(view);
+		//throw new java.lang.UnsupportedOperationException();
 	}
 	
 	/** 
