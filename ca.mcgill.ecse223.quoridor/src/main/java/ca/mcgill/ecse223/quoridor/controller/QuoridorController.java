@@ -902,9 +902,9 @@ public class QuoridorController {
 		Player whitePlayer = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 		Player blackPlayer = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
 		
-		
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if(quoridor.getBoard() == null) {
+		// Fill board
+		if(quoridor.getBoard() == null) {	
 			Board board = new Board(quoridor);
 			for (int i = 1; i <= 9; i++) { // rows
 				for (int j = 1; j <= 9; j++) { // columns
@@ -913,23 +913,24 @@ public class QuoridorController {
 			}
 		}
 		
-		Tile whiteStartTile = quoridor.getBoard().getTile(4);
-		Tile blackStartTile = quoridor.getBoard().getTile(76);
+		Tile whiteStartTile = quoridor.getBoard().getTile(4);	// White starting tile
+		Tile blackStartTile = quoridor.getBoard().getTile(76);	// Black starting tile
 		
 		GamePosition cur = new GamePosition(0,
-											new PlayerPosition(whitePlayer, whiteStartTile),
-											new PlayerPosition(blackPlayer, blackStartTile),
+											new PlayerPosition(whitePlayer, whiteStartTile),	// Move white player to initial position
+											new PlayerPosition(blackPlayer, blackStartTile),	// Move black player to initial position
 											whitePlayer,
 											game);
-		quoridor.getCurrentGame().setCurrentPosition(cur);
+		quoridor.getCurrentGame().setCurrentPosition(cur);	
 		
-		game.getCurrentPosition().setPlayerToMove(whitePlayer);
+		game.getCurrentPosition().setPlayerToMove(whitePlayer);	// White players plays first
 
+		// Add missing walls in white stock until 10
 		for (int whiteWallInStock = game.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
 			try{game.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));}
 			catch(Exception e) {break;}
 		}
-		
+		// Add missing walls in black stock until 10
 		for (int blackWallInStock = game.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
 			try{game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));}
 			catch(Exception e) {break;}
@@ -946,8 +947,10 @@ public class QuoridorController {
 	public static void rotateWall() {
 		if (QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection().equals(Direction.Vertical)) {
 			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(Direction.Horizontal);
+			
 		} else if (QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection().equals(Direction.Horizontal)) {
 			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(Direction.Vertical);
+			
 		} else {
 			throw new java.lang.UnsupportedOperationException();
 		}

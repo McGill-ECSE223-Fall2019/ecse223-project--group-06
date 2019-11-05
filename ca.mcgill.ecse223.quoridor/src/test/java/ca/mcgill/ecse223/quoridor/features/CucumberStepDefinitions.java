@@ -899,11 +899,8 @@ public void the_board_shall_be_initialized() {
 		
 		if(string.equals("black")) {
 			view.useExistingBlack.doClick();
-			//view.blackName.setText(string); //No gurantee it's actually in the list
-			//In fact it probably isn't
 		} else if(string.equals("white")) {
 			view.useExistingWhite.doClick();
-			//view.bwhiteName.setText(string);
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -983,23 +980,13 @@ public void the_board_shall_be_initialized() {
 			System.out.println("Invalid coordinates given. Values must be between 1 and 9.");
 		}
 		else {			
-			//Integer row;
-			//Integer column;
 			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
-				//row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow();
-				//column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn();
 				PlayerPosition aNewBlackPosition = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile());
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setBlackPosition(aNewBlackPosition);
-				//assertEquals(row, int1);
-				//assertEquals(column, int2);
 			}
 			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()) {
-				//row = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow();
-				//column = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn();
 				PlayerPosition aNewWhitePosition = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile());
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setWhitePosition(aNewWhitePosition);
-				//assertEquals(row, int1);
-				//assertEquals(column, int2);
 			}
 		}
 	}
