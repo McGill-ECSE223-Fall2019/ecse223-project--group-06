@@ -820,13 +820,10 @@ public void the_board_shall_be_initialized() {
 		if(view.confirmFrame.isVisible()) {
 			((JButton) view.confirmFrame.getContentPane().getComponent(1)).doClick();
 		}
-		//QuoridorController.initializeBoard();
-	    
 	}
 	
 	@Then("It shall be white player to move")
 	public void itShallBeWhitePlayerToMove() {
-		//assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite());
 		if(!view.p1Turn.isSelected())
 			QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
 	}
@@ -869,14 +866,6 @@ public void the_board_shall_be_initialized() {
 	 * @author Matteo Nunez
 	 *
 	 */
-//	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
-//	public void aWallMoveCandidateExistsWith(String string, int row, int col) {
-//		Direction direction = string.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
-//		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(direction);
-//		Quoridorcontroller.moveWall(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate(), QuoridorController.findTile(row, col));
-//		throw new cucumber.api.PendingException();
-//	}
-
 	@When("I try to flip the wall")
 	public void iTryToFlipTheWall() {
 		view.RotateWall();

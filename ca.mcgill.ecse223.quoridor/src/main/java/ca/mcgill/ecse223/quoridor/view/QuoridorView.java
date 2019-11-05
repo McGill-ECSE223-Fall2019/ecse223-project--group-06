@@ -478,14 +478,18 @@ public class QuoridorView extends JFrame implements KeyListener {
 				}
 				if(whitePos != null) {
 					g.setColor(new Color(255, 255, 255));
-					g.fillOval( whitePos.getTile().getRow() * 40 + 5, 
-								whitePos.getTile().getColumn() * 40 + 5, 
+					System.out.print("\nWHITE ROW: " + whitePos.getTile().getRow());
+					System.out.print("\nWHITE COL: " + whitePos.getTile().getColumn());
+					g.fillOval( whitePos.getTile().getRow() * 40 - 35, 
+								whitePos.getTile().getColumn() * 40 - 35, 
 								25, 25);
 				}
 				if(blackPos != null) {
-					g.setColor(new Color(255, 255, 255));
-					g.fillOval( blackPos.getTile().getRow() * 40 + 5, 
-								blackPos.getTile().getColumn() * 40 + 5, 
+					g.setColor(new Color(0, 0, 0));
+					System.out.print("\nBLACK ROW: " + blackPos.getTile().getRow());
+					System.out.print("\nBLACK COL: " + blackPos.getTile().getColumn());
+					g.fillOval( blackPos.getTile().getRow() * 40 - 35, 
+								blackPos.getTile().getColumn() * 40 - 35, 
 								25, 25);
 				}
 				

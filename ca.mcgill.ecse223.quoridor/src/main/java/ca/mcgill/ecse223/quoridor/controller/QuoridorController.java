@@ -913,8 +913,8 @@ public class QuoridorController {
 			}
 		}
 		
-		Tile whiteStartTile = findTile(1, 5);
-		Tile blackStartTile = findTile(9, 5);
+		Tile whiteStartTile = quoridor.getBoard().getTile(4);
+		Tile blackStartTile = quoridor.getBoard().getTile(76);
 		
 		GamePosition cur = new GamePosition(0,
 											new PlayerPosition(whitePlayer, whiteStartTile),
@@ -922,12 +922,9 @@ public class QuoridorController {
 											whitePlayer,
 											game);
 		quoridor.getCurrentGame().setCurrentPosition(cur);
-				
+		
 		game.getCurrentPosition().setPlayerToMove(whitePlayer);
-		
-		game.getCurrentPosition().getWhitePosition().setTile(whiteStartTile);
-		game.getCurrentPosition().getBlackPosition().setTile(blackStartTile);
-		
+
 		for (int whiteWallInStock = game.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
 			try{game.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));}
 			catch(Exception e) {break;}
