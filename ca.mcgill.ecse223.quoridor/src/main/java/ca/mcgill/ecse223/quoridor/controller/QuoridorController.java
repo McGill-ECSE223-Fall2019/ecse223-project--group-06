@@ -229,14 +229,60 @@ public class QuoridorController {
 
 		if(validatePos(loadPosition)){
 			game.setCurrentPosition(loadPosition);
+			loadWalls(blackline,bPlayer);
+			loadWalls(whiteline,wPlayer);
 			return true;
 		}else{
 			return false;
 		}
+	
+		} 
+	/** load position Feature
+	 * Helper method for load walls
+	 * @author Hongshuo Zhou 
+	 * @param input - inputline
+	 * @param player - player
+	 */
+		public static void loadWalls(String input, Player player) {
+		//initialize game
+		Game myGame = QuoridorApplication.getQuoridor().getCurrentGame();
+		Wall wall;
+		int column,row;
+		Direction direction;
+		GamePosition position = myGame.getCurrentPosition();
+
+		//check wall move, pawn move, overlap
+		for(int counter = 0; counter < (input.length()*0.2-1); counter = counter +1){
+			if(player.hasGameAsBlack()){
+				wall = position.getBlackWallsInStock(0);
+				position.removeBlackWallsInStock(wall);}
+			else{
+				wall = position.getWhiteWallsInStock(0);
+				position.removeWhiteWallsInStock(wall);
+
+			}
+			column = input.charAt(counter * 5 + 7) - 96;
+			row = input.charAt(counter * 5 + 8 ) - 48;
+			if(input.charAt(counter * 5 + 9) == 'h'){
+				direction = Direction.Horizontal;
+			}else{
+				direction = Direction.Vertical;
+			}
+			Tile tile = QuoridorApplication.getQuoridor().getBoard().getTile((row-1)*9+column-1);
+			new WallMove(counter, 0, player, tile, myGame, direction, wall);
+			if (player.hasGameAsBlack()){
+				position.addBlackWallsOnBoard(wall);
+			}else{
+				position.addWhiteWallsOnBoard(wall);
+			}
+		}
+		QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(position);
+
+		}
 
 		
 
-	}
+	
 	public static boolean validatePos(GamePosition loadPosition) {
 
 		if (loadPosition == null){
