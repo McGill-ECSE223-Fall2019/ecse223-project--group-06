@@ -572,14 +572,20 @@ public void the_board_shall_be_initialized() {
 	// Scenario 2
 	@Given("I have no more walls on stock")
 	public void iHaveNoMoreWallsOnStock() {
-		for (Wall wall : QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
-				.getWalls())
-			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().removeWall(wall);
+		for(int i = 0; i < QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfBlackWallsInStock(); i++) {
+			Wall wallToRemove = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock(0);
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().removeBlackWallsInStock(wallToRemove);
+		}
+		for(int i = 0; i < QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsInStock(); i++) {
+			Wall wallToRemove = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock(0);
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().removeWhiteWallsInStock(wallToRemove);
+		}
 		
 	}
 
 	@Then("I shall be notified that I have no more walls")
 	public void iShallBeNotifiedThatIHaveNoMoreWalls() {
+		view.grabButton.doClick();
 		Assert.assertTrue(view.notification.getText().equals("No walls in stock"));
 	}
 
