@@ -274,6 +274,16 @@ public class QuoridorController {
 		// take in a WallMove created in GrabWall feature and put the wall in the
 		// targetTile
 		// will validate position to ensure no overlapping
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Horizontal) {
+			if(targetTile.getColumn() == 9) {
+				targetTile = findTile(targetTile.getRow(), targetTile.getColumn()-1);
+			}
+		}
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+			if(targetTile.getRow() == 9) {
+				targetTile = findTile(targetTile.getRow()-1, targetTile.getColumn());
+			}
+		}
 		if(wallIsValid()) {
 			return QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setTargetTile(targetTile);
 		}
@@ -424,13 +434,11 @@ public class QuoridorController {
 											Direction.Vertical, 
 											QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWall(walls-1));
 			QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(newMove);
-			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
-			.removeWall(newMove.getWallPlaced());
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().removeWall(newMove.getWallPlaced());
 			
 			return true;
 		}
 		return false;
-		//throw new java.lang.UnsupportedOperationException();
 	}
 
 	/**
@@ -451,11 +459,20 @@ public class QuoridorController {
 	 * @return boolean
 	 */
 	public static boolean isSide(WallMove aWallMove) {
-		if(aWallMove.getTargetTile().getColumn() == 1 || 
-				aWallMove.getTargetTile().getColumn() == 9 || 
-				aWallMove.getTargetTile().getRow() == 1 || 
-				aWallMove.getTargetTile().getRow() == 9)
-				return true;
+		if(aWallMove.getWallDirection().equals(Direction.Horizontal)) {
+			if(aWallMove.getTargetTile().getColumn() == 1 || 
+					aWallMove.getTargetTile().getColumn() == 8 || 
+					aWallMove.getTargetTile().getRow() == 1 || 
+					aWallMove.getTargetTile().getRow() == 9)
+					return true;
+		}
+		if(aWallMove.getWallDirection().equals(Direction.Vertical)) {
+			if(aWallMove.getTargetTile().getColumn() == 1 || 
+					aWallMove.getTargetTile().getColumn() == 9 || 
+					aWallMove.getTargetTile().getRow() == 1 || 
+					aWallMove.getTargetTile().getRow() == 8)
+					return true;
+		}
 		return false;
 	}
 	////////////////////////////////////////////////////////////////
