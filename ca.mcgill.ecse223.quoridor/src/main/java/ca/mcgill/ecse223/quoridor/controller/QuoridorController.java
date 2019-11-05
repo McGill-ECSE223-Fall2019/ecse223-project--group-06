@@ -170,7 +170,7 @@ public class QuoridorController {
 			return false;
 		}
 		//read line for both players
-		File file = new File(filename);
+		File file = new File("src/../" + filename + ".dat" );
 		String PlayerOneLine = new String();
 		String PlayerTwoLine = new String();
 		BufferedReader reader;
@@ -213,11 +213,11 @@ public class QuoridorController {
 		//set coordinate by transfer ASCII
 		bCol = blackline.charAt(3) - 96;
 		bRow = blackline.charAt(4) - 48;
-		bTile = QuoridorApplication.getQuoridor().getBoard().addTile(bRow, bCol);
+		bTile = QuoridorApplication.getQuoridor().getBoard().getTile((bRow-1)*9+bCol-1);   ;
 		bposition = new PlayerPosition(bPlayer, bTile);
 		wCol = whiteline.charAt(3) - 96;
 		wRow = whiteline.charAt(4) - 48;
-		wTile = QuoridorApplication.getQuoridor().getBoard().addTile(wRow, wCol);
+		wTile = QuoridorApplication.getQuoridor().getBoard().getTile((wRow-1)*9+wCol-1);
 		wposition = new PlayerPosition(wPlayer, wTile);
 
 		initializeBoard();
