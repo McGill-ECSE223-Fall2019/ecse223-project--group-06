@@ -422,20 +422,33 @@ public class QuoridorController {
 	public static boolean grabWall() {
 		// will take in a wall and create a wall move object with some default values
 		WallMove newMove;
+		Player curPlayer;
 		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer()))
+			curPlayer = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+		else
+			curPlayer = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 		int walls = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().numberOfWalls();
 		
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasWalls()) {
 			newMove = new WallMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+1, 
 											QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()/2+1, 
-											QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove(), 
-											defaultTile(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()), 
+											curPlayer, 
+											defaultTile(curPlayer), 
 											QuoridorApplication.getQuoridor().getCurrentGame(), 
 											Direction.Vertical, 
 											QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWall(walls-1));
-			QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(newMove);
-			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().removeWall(newMove.getWallPlaced());
 			
+			QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(newMove);
+			
+			if(curPlayer.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().removeBlackWallsInStock(newMove.getWallPlaced());
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().addBlackWallsOnBoard(newMove.getWallPlaced());
+			}
+			else {
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().removeWhiteWallsInStock(newMove.getWallPlaced());
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().addWhiteWallsOnBoard(newMove.getWallPlaced());
+			}
 			return true;
 		}
 		return false;
