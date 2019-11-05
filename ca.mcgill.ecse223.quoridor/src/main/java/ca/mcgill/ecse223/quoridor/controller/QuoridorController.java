@@ -898,7 +898,6 @@ public class QuoridorController {
 	 */
 	public static void initializeBoard() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		//Board board = QuoridorApplication.getQuoridor().getBoard();
 		
 		Player whitePlayer = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 		Player blackPlayer = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
@@ -916,8 +915,6 @@ public class QuoridorController {
 		
 		Tile whiteStartTile = findTile(1, 5);
 		Tile blackStartTile = findTile(9, 5);
-	
-		
 		
 		GamePosition cur = new GamePosition(0,
 											new PlayerPosition(whitePlayer, whiteStartTile),
@@ -926,18 +923,12 @@ public class QuoridorController {
 											game);
 		quoridor.getCurrentGame().setCurrentPosition(cur);
 				
-		
-		
-//		if (current.getCurrentPosition() == null)
-//			current.setCurrentPosition(new GamePosition(0, new PlayerPosition(whitePlayer, board.getTile(4)), new PlayerPosition(blackPlayer, board.getTile(8*9+4)), whitePlayer, current));
-		
 		game.getCurrentPosition().setPlayerToMove(whitePlayer);
 		
 		game.getCurrentPosition().getWhitePosition().setTile(whiteStartTile);
 		game.getCurrentPosition().getBlackPosition().setTile(blackStartTile);
 		
 		for (int whiteWallInStock = game.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
-			
 			try{game.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));}
 			catch(Exception e) {break;}
 		}
@@ -945,11 +936,7 @@ public class QuoridorController {
 		for (int blackWallInStock = game.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
 			try{game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));}
 			catch(Exception e) {break;}
-			//game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));
 		}
-		
-		//runwhiteclock(view);
-		//throw new java.lang.UnsupportedOperationException();
 	}
 	
 	/** 
