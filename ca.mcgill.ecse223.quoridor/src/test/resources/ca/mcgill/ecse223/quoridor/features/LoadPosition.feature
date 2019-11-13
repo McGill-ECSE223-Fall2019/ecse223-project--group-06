@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+
+=======
+>>>>>>> iteration-4
 Feature: Load Position
   As a player, I want to continue a game from a given position as if this position were the current (starting) position of a new game.
 
@@ -28,5 +32,10 @@ Feature: Load Position
       | filename                                         |
       | quoridor_test_game_invalid_pawn.dat              |
       | quoridor_test_game_invalid_wall_overlap_.dat     |
+<<<<<<< HEAD
       | quoridor_test_game_invalid_wall_out-of-track.dat | 
+
       
+=======
+      
+>>>>>>> iteration-4
