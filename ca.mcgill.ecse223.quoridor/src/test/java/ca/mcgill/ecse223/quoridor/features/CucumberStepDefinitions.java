@@ -1,3 +1,4 @@
+
 package ca.mcgill.ecse223.quoridor.features;
 
 import static org.junit.Assert.assertEquals;
@@ -1184,3 +1185,4 @@ public void the_board_shall_be_initialized() {
 		game.setCurrentPosition(gamePosition);
 	}
 }
+
