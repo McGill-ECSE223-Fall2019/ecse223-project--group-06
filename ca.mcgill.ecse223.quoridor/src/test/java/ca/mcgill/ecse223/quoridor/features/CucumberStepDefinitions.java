@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 package ca.mcgill.ecse223.quoridor.features;
 
@@ -7,11 +8,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+=======
+package ca.mcgill.ecse223.quoridor.features;
+
+>>>>>>> iteration-4
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< HEAD
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -21,6 +27,9 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+=======
+import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+>>>>>>> iteration-4
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -34,6 +43,7 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
+<<<<<<< HEAD
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
@@ -54,6 +64,14 @@ public class CucumberStepDefinitions {
 	private WallMove aWallMove;
 	
 
+=======
+import io.cucumber.java.After;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+
+public class CucumberStepDefinitions {
+
+>>>>>>> iteration-4
 	// ***********************************************
 	// Background step definitions
 	// ***********************************************
@@ -125,21 +143,30 @@ public class CucumberStepDefinitions {
 
 	@And("I do not have a wall in my hand")
 	public void iDoNotHaveAWallInMyHand() {
+<<<<<<< HEAD
 		assertNull(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate());
+=======
+		// GUI-related feature -- TODO for later
+>>>>>>> iteration-4
 	}
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
+<<<<<<< HEAD
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() == null) {
 			QuoridorController.grabWall();	
 		}
 		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
+=======
+		// GUI-related feature -- TODO for later
+>>>>>>> iteration-4
 	}
 	
 	@Given("^A new game is initializing$")
 	public void aNewGameIsInitializing() throws Throwable {
 		initQuoridorAndBoard();
 		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
+<<<<<<< HEAD
 		QuoridorApplication.getQuoridor().setCurrentGame(new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor()));
 		QuoridorApplication.getQuoridor().getCurrentGame().setWhitePlayer(players.get(0));
 		QuoridorApplication.getQuoridor().getCurrentGame().setBlackPlayer(players.get(1));
@@ -1070,6 +1097,22 @@ public void the_board_shall_be_initialized() {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	
+=======
+		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+	}
+
+	// ***********************************************
+	// Scenario and scenario outline step definitions
+	// ***********************************************
+
+	/*
+	 * TODO Insert your missing step definitions here
+	 * 
+	 * Call the methods of the controller that will manipulate the model once they
+	 * are implemented
+	 * 
+	 */
+>>>>>>> iteration-4
 
 	// ***********************************************
 	// Clean up
@@ -1084,7 +1127,11 @@ public void the_board_shall_be_initialized() {
 			quoridor.delete();
 			quoridor = null;
 		}
+<<<<<<< HEAD
 		for (int i = 0; i < 20; i++) {
+=======
+		for (int i = 1; i <= 20; i++) {
+>>>>>>> iteration-4
 			Wall wall = Wall.getWithId(i);
 			if(wall != null) {
 				wall.delete();
@@ -1092,16 +1139,22 @@ public void the_board_shall_be_initialized() {
 		}
 	}
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> iteration-4
 	// ***********************************************
 	// Extracted helper methods
 	// ***********************************************
 
 	// Place your extracted methods below
 
+<<<<<<< HEAD
 	
 	
+=======
+>>>>>>> iteration-4
 	private void initQuoridorAndBoard() {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Board board = new Board(quoridor);
@@ -1136,14 +1189,22 @@ public void the_board_shall_be_initialized() {
 		//@formatter:on
 		Player player1 = new Player(new Time(thinkingTime), user1, 9, Direction.Horizontal);
 		Player player2 = new Player(new Time(thinkingTime), user2, 1, Direction.Horizontal);
+<<<<<<< HEAD
 		player1.setNextPlayer(player2);
 		player2.setNextPlayer(player1);
+=======
+
+>>>>>>> iteration-4
 		Player[] players = { player1, player2 };
 
 		// Create all walls. Walls with lower ID belong to player1,
 		// while the second half belongs to player 2
 		for (int i = 0; i < 2; i++) {
+<<<<<<< HEAD
 			for (int j = 0; j < 10; j++) {
+=======
+			for (int j = 1; j <= 10; j++) {
+>>>>>>> iteration-4
 				new Wall(i * 10 + j, players[i]);
 			}
 		}
@@ -1157,11 +1218,18 @@ public void the_board_shall_be_initialized() {
 
 	private void createAndStartGame(ArrayList<Player> players) {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
+<<<<<<< HEAD
 		// There are total 36 tiles in the first four rows and
 		// indexing starts from 0 -> tiles with indices 36 and 36+8=44 are the starting
 		// positions
 		Tile player1StartPos = quoridor.getBoard().getTile(36);
 		Tile player2StartPos = quoridor.getBoard().getTile(44);
+=======
+		// Tile indices start from 0 -> tiles with indices 4 and 8*9+4=76 are the starting
+		// positions
+		Tile player1StartPos = quoridor.getBoard().getTile(4);
+		Tile player2StartPos = quoridor.getBoard().getTile(76);
+>>>>>>> iteration-4
 		
 		Game game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
 		game.setWhitePlayer(players.get(0));
@@ -1173,16 +1241,29 @@ public void the_board_shall_be_initialized() {
 		GamePosition gamePosition = new GamePosition(0, player1Position, player2Position, players.get(0), game);
 
 		// Add the walls as in stock for the players
+<<<<<<< HEAD
 		for (int j = 0; j < 10; j++) {
 			Wall wall = Wall.getWithId(j);
 			gamePosition.addWhiteWallsInStock(wall);
 		}
 		for (int j = 0; j < 10; j++) {
+=======
+		for (int j = 1; j <= 10; j++) {
+			Wall wall = Wall.getWithId(j);
+			gamePosition.addWhiteWallsInStock(wall);
+		}
+		for (int j = 1; j <= 10; j++) {
+>>>>>>> iteration-4
 			Wall wall = Wall.getWithId(j + 10);
 			gamePosition.addBlackWallsInStock(wall);
 		}
 
 		game.setCurrentPosition(gamePosition);
 	}
+<<<<<<< HEAD
 }
 
+=======
+
+}
+>>>>>>> iteration-4

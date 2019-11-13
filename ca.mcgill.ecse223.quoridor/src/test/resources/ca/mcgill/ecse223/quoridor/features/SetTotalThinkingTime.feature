@@ -15,3 +15,7 @@ Feature: Set Total Thinking Time
     Examples:
       | min | sec |
       |   5 |  13 |
+<<<<<<< HEAD
+=======
+      |  10 |  00 |
+>>>>>>> iteration-4

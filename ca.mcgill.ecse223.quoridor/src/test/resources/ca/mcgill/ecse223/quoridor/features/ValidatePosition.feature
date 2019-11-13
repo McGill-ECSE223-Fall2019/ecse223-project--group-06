@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> iteration-4
 Feature: Validate Position
   As a player, I want to check if a given position is invalid with e.g. 
   overlapping walls or out-of-track pawn or wall positions.
@@ -60,3 +63,7 @@ Feature: Validate Position
       |    3 |    2 | vertical   |
       |    3 |    2 | horizontal |
     When Validation of the position is initiated
+<<<<<<< HEAD
+=======
+    Then The position shall be invalid
+>>>>>>> iteration-4
