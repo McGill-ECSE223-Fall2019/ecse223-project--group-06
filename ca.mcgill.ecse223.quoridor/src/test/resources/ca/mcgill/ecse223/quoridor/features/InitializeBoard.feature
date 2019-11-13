@@ -1,3 +1,4 @@
+
 Feature: Initialize Board
   As a player, I want to see the Quoridor board in its initial position and 
   my stock of walls and my clock is counting down 
@@ -12,4 +13,3 @@ Feature: Initialize Board
 	And All of White's walls shall be in stock
 	And All of Black's walls shall be in stock
 	And White's clock shall be counting down
-	And It shall be shown that this is White's turn

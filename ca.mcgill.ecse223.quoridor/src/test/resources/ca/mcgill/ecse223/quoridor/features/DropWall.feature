@@ -1,3 +1,4 @@
+
 Feature: Drop Wall
   As a player, I wish to drop a wall after I navigated it to a designated 
   (valid) target position in order to register my wall placement as my move.
@@ -38,4 +39,5 @@ Feature: Drop Wall
       | horizontal |   1 |   2 |
   	  | horizontal |   7 |   4 |
       | vertical 	 |   6 |   6 |
+
   	

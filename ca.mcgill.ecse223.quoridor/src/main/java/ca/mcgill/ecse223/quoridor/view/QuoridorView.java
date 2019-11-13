@@ -1,3 +1,4 @@
+
 package ca.mcgill.ecse223.quoridor.view;
 
 
@@ -951,3 +952,5 @@ public class QuoridorView extends JFrame implements KeyListener {
 	}
 
 }
+
+

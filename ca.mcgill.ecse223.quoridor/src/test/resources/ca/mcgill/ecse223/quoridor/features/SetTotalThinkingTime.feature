@@ -15,4 +15,3 @@ Feature: Set Total Thinking Time
     Examples:
       | min | sec |
       |   5 |  13 |
-      |  10 |  00 |
