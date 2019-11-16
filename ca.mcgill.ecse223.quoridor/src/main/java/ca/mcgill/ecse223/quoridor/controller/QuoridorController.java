@@ -212,13 +212,17 @@ public class QuoridorController {
 			playerToMove = wPlayer;
 		}
 		//set coordinate by transfer ASCII
-		bCol = blackline.charAt(3) - 96;
-		bRow = blackline.charAt(4) - 48;
-		bTile = QuoridorApplication.getQuoridor().getBoard().getTile((bRow-1)*9+bCol-1);   ;
+		bCol = blackline.charAt(3) - 'a';
+		bRow = blackline.charAt(4) - '0';
+		bCol += 1;
+		bTile = findTile(bRow, bCol);
+		
 		bposition = new PlayerPosition(bPlayer, bTile);
-		wCol = whiteline.charAt(3) - 96;
-		wRow = whiteline.charAt(4) - 48;
-		wTile = QuoridorApplication.getQuoridor().getBoard().getTile((wRow-1)*9+wCol-1);
+		wCol = whiteline.charAt(3) - 'a';
+		wRow = whiteline.charAt(4) - '0';
+		wCol += 1;
+		wTile = findTile(wRow, wCol);
+		
 		wposition = new PlayerPosition(wPlayer, wTile);
 
 		initializeBoard();
@@ -233,6 +237,9 @@ public class QuoridorController {
 			game.setCurrentPosition(loadPosition);
 			loadWalls(blackline,bPlayer);
 			loadWalls(whiteline,wPlayer);
+			if(!validatePosition()) {
+				return false;
+			}
 			return true;
 		}else{
 			return false;
@@ -254,14 +261,15 @@ public class QuoridorController {
 		GamePosition position = myGame.getCurrentPosition();
 
 		//check wall move, pawn move, overlap
-		for(int counter = 0; counter < (input.length()*0.2-1); counter = counter +1){
-			if(player.hasGameAsBlack()){
+		for(int counter = 0; counter < (input.length()*0.2-1); counter++){
+			if(player.equals(myGame.getBlackPlayer())){
 				wall = position.getBlackWallsInStock(0);
-				position.removeBlackWallsInStock(wall);}
-			else{
+				position.removeBlackWallsInStock(wall);
+				position.addBlackWallsOnBoard(wall);
+			} else {
 				wall = position.getWhiteWallsInStock(0);
 				position.removeWhiteWallsInStock(wall);
-
+				position.addWhiteWallsOnBoard(wall);
 			}
 			column = input.charAt(counter * 5 + 7) - 96;
 			row = input.charAt(counter * 5 + 8 ) - 48;
@@ -271,7 +279,7 @@ public class QuoridorController {
 				direction = Direction.Vertical;
 			}
 			Tile tile = QuoridorApplication.getQuoridor().getBoard().getTile((row-1)*9+column-1);
-			new WallMove(counter, 0, player, tile, myGame, direction, wall);
+			QuoridorApplication.getQuoridor().getCurrentGame().addMove(new WallMove(counter, 0, player, tile, myGame, direction, wall));
 			if (player.hasGameAsBlack()){
 				position.addBlackWallsOnBoard(wall);
 			}else{
@@ -291,6 +299,13 @@ public class QuoridorController {
 			return false;
 		}
 		else{
+			if(loadPosition.getBlackPosition().getTile() == loadPosition.getWhitePosition().getTile()) {
+				return false;
+			}
+			for(Wall w : loadPosition.getWhiteWallsOnBoard()) {
+				if(loadPosition.getBlackWallsOnBoard().contains(w)) return false;
+				
+			}
 			return true;
 		}
 		
@@ -303,6 +318,62 @@ public class QuoridorController {
 				return false;
 			}
 			else{
+				if(position.getBlackPosition().getTile() == position.getWhitePosition().getTile()) {
+					return false;
+				}
+				
+				for(Move m : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
+					
+					
+					if (m instanceof WallMove) {
+						ArrayList<WallMove> existing = new ArrayList<WallMove>();
+						WallMove check = (WallMove) m;
+						for(Move p : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
+							if (p instanceof WallMove && !p.equals(m)) existing.add((WallMove) p);
+						}
+						
+						if(check.getWallDirection() == Direction.Horizontal) {
+							if(check.getTargetTile().getColumn() == 9) return false;
+							for(WallMove ex : existing) {
+								//Horizontal check- Horizontal placed
+								if(ex.getWallDirection() == Direction.Horizontal) {
+									
+									if(ex.getTargetTile().getRow() == check.getTargetTile().getRow()) {
+										if(Math.abs(ex.getTargetTile().getColumn() - check.getTargetTile().getColumn()) < 2 ) {
+											return false;
+										}
+									}
+								//Horizontal check- Vertical Place
+								} else {
+									if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
+											&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+												return false;
+									}
+								}
+							}	
+							
+						} else {
+							if(check.getTargetTile().getRow() == 1) return false;
+							for(WallMove ex : existing) {
+								//Vertical check- Horizontal placed
+								if(ex.getWallDirection() == Direction.Horizontal) {
+									if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
+									&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+										return false;
+									}
+								//Vertical check- Vertical Place
+								} else {
+									if(ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+												if(Math.abs(ex.getTargetTile().getRow() - check.getTargetTile().getRow()) < 2 ) {
+													return false;
+												}
+									}
+								}
+							}
+						}	
+					}
+				}
+
 				return true;
 			}
 		
