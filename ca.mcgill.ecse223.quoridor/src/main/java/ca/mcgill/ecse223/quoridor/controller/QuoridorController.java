@@ -129,6 +129,7 @@ public class QuoridorController {
 	 * This method starts the new game and check existing game
 	 */
 	public static void startGame() throws InvalidInputException {
+		
 		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
 			Game newGame = new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
 			QuoridorApplication.getQuoridor().setCurrentGame(newGame);
@@ -539,34 +540,43 @@ public class QuoridorController {
 	 */
 
 	public static boolean grabWall() {
+		System.out.println("Grab Initiated");
 		// will take in a wall and create a wall move object with some default values
 		WallMove newMove;
 		Player curPlayer;
-		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer()))
-			curPlayer = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
-		else
-			curPlayer = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
-		int walls = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().numberOfWalls();
+		int nrWalls;
+		Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
+		GamePosition curPos = curGame.getCurrentPosition();
 		
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasWalls()) {
-			newMove = new WallMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+1, 
-											QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()/2+1, 
+		curGame.setMoveMode(MoveMode.WallMove);
+		
+		if(curPos.getPlayerToMove().equals(curGame.getBlackPlayer())) {
+			curPlayer = curGame.getBlackPlayer();
+			nrWalls = curPos.numberOfBlackWallsInStock();
+			
+		} else {
+			curPlayer = curGame.getWhitePlayer();
+			nrWalls = curPos.numberOfWhiteWallsInStock();
+		}
+		
+		
+		if(nrWalls > 0) {
+			newMove = new WallMove(curGame.getMoves().size()+1, 
+											curGame.getMoves().size()/2+1, 
 											curPlayer, 
 											defaultTile(curPlayer), 
-											QuoridorApplication.getQuoridor().getCurrentGame(), 
+											curGame, 
 											Direction.Vertical, 
-											QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().getWall(walls-1));
+											curPos.getPlayerToMove().getWall(nrWalls-1));
 			
-			QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(newMove);
+			curGame.setWallMoveCandidate(newMove);
 			
-			if(curPlayer.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().removeBlackWallsInStock(newMove.getWallPlaced());
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().addBlackWallsOnBoard(newMove.getWallPlaced());
-			}
-			else {
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().removeWhiteWallsInStock(newMove.getWallPlaced());
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().addWhiteWallsOnBoard(newMove.getWallPlaced());
+			if(curPlayer.equals(curGame.getBlackPlayer())) {
+				curPos.removeBlackWallsInStock(newMove.getWallPlaced());
+				curPos.addBlackWallsOnBoard(newMove.getWallPlaced());
+			} else {
+				curPos.removeWhiteWallsInStock(newMove.getWallPlaced());
+				curPos.addWhiteWallsOnBoard(newMove.getWallPlaced());
 			}
 			return true;
 		}
@@ -622,7 +632,8 @@ public class QuoridorController {
 		
 		//View checks if it's valid for us
 		
-		//Remove Walls from stock and place on board
+		//Remove Walls from stock and place on board - done in grab wall
+		/*
 		//If White
 		if(curPos.getPlayerToMove().equals(current.getWhitePlayer())) {
 			//Move the wall from the player stock to the board
@@ -633,7 +644,7 @@ public class QuoridorController {
 			curPos.removeBlackWallsInStock(curWall);
 			curPos.addBlackWallsOnBoard(curWall);
 		}
-		
+		*/
 		
 		//Add the move to game list
 		if(current.getMoves().size() > 0) {
@@ -655,7 +666,7 @@ public class QuoridorController {
 			PlayerPosition black = new PlayerPosition(current.getBlackPlayer(), curPos.getBlackPosition().getTile());
 			newPos = new GamePosition(curPos.getId() + 1, 
 									  white, black, 
-						   		      current.getWhitePlayer(), 
+						   		      current.getBlackPlayer(), 
 									  QuoridorApplication.getQuoridor().getCurrentGame() );
 		} else {
 			PlayerPosition white = new PlayerPosition(current.getWhitePlayer(), curPos.getWhitePosition().getTile());

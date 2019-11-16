@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.awt.event.WindowEvent;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +62,15 @@ public class CucumberStepDefinitions {
 
 		@Given("^The game is running$")
 		public void theGameIsRunning() {
-			initQuoridorAndBoard();
-			ArrayList<Player> createUsersAndPlayers = createUsersAndPlayers("user1", "user2");
-			createAndStartGame(createUsersAndPlayers);
+			//initQuoridorAndBoard();
+			view.initLoadScreen();
+			view.newGame.doClick();
+			view.newGame.doClick();
+			if(view.confirmFrame.isVisible()) {
+			 	((JButton) view.confirmFrame.getContentPane().getComponent(1)).doClick();
+			 }
+			//ArrayList<Player> createUsersAndPlayers = createUsersAndPlayers("user1", "user2");
+			//createAndStartGame(createUsersAndPlayers);
 		}
 
 		@And("^It is my turn to move$")
@@ -561,19 +569,28 @@ public class CucumberStepDefinitions {
 
 		@And("The wall in my hand shall disappear from my stock")
 		public void theWallInMyHandShallDisappearFromMyStock() {
-			Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().indexOfWall(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallPlaced()) == -1);	
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) ) {
+				Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().indexOf(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallPlaced()) == -1);	
+			} else {
+				Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().indexOf(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallPlaced()) == -1);
+			}
+
 		}
 
 		// Scenario 2
 		@Given("I have no more walls on stock")
 		public void iHaveNoMoreWallsOnStock() {
-			for(int i = 0; i < QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfBlackWallsInStock(); i++) {
-				Wall wallToRemove = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock(0);
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().removeBlackWallsInStock(wallToRemove);
+			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+			int wallSize = curPos.numberOfBlackWallsInStock();
+			for(int i = 0; i < wallSize; i++) {
+				Wall wallToRemove = curPos.getBlackWallsInStock(0);
+				curPos.removeBlackWallsInStock(wallToRemove);
 			}
-			for(int i = 0; i < QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsInStock(); i++) {
-				Wall wallToRemove = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock(0);
-				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().removeWhiteWallsInStock(wallToRemove);
+			
+			wallSize = curPos.numberOfWhiteWallsInStock();
+			for(int i = 0; i < wallSize; i++) {
+				Wall wallToRemove = curPos.getWhiteWallsInStock(0);
+				curPos.removeWhiteWallsInStock(wallToRemove);
 			}
 			
 		}
@@ -733,7 +750,7 @@ public class CucumberStepDefinitions {
 		
 		@Then("I shall be notified that my wall move is invalid")
 		public void iShallBeNotifiedThatMyWallMoveIsInvalid() {
-			assertTrue(!view.notification.getText().equals("") && view.notification.isVisible());
+			assertTrue(view.notification.getText().equals("Invalid Wall Placement") && view.notification.isVisible());
 		}
 		
 		@And("It shall be my turn to move")
@@ -1081,6 +1098,7 @@ public class CucumberStepDefinitions {
 			if(wall != null) {
 				wall.delete();
 			}
+			
 		}
 	}
 		// ***********************************************
