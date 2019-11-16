@@ -731,9 +731,10 @@ public class QuoridorView extends JFrame implements KeyListener {
 				String name = gameName.getText();
 				if(name.equals("")) {
 					name = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat";
-				} else if(name.length() <=  4 ||
-						!name.substring(name.length() - 4, name.length()).equals(".dat")) {
-					
+		
+				} else if(name.length() <=  4 || 
+						(!name.substring(name.length() - 4, name.length()).equals(".dat") &&
+						!name.substring(name.length() - 4, name.length()).equals(".mov"))) {
 					name += ".dat";
 				}
 				fileName = name;
