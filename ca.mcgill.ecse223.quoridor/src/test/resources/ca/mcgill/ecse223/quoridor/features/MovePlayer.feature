@@ -23,7 +23,7 @@ Feature: Move Player
       | white		| 3 	| 3		| horizontal	| up		|	success | 2			| 3	 		 | black		|
       | white		| 1 	| 3		| horizontal	| up		|	illegal	| 1			| 3	 		 | white		|
       | white		| 6 	| 6		| horizontal	| down	|	success | 7			| 6	 		 | black		|
-      | white		| 9 	| 6		| horizontal	| up		|	illegal	| 9			| 6	 		 | white		|
+      | white		| 9 	| 6		| horizontal	| down	|	illegal	| 9			| 6	 		 | white		|
 
   
   Scenario Outline: Move of player blocked by wall

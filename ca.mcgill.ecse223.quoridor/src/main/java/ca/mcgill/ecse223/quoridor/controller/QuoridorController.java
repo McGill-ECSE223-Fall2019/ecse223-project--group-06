@@ -1201,7 +1201,10 @@ public class QuoridorController {
 				if(whiteCol < 1 || whiteCol > 9) return false;
 				for(WallMove w : QuoridorController.getWalls()) {
 					if(w.getWallDirection() == Direction.Vertical) {
-						if(w.getTargetTile().getColumn() == whiteCol && (w.getTargetTile().getRow() == whiteRow || w.getTargetTile().getRow() == whiteRow - 1)) {
+						int checkCol = whiteCol - cChange + (int) (cChange-0.1); //if 1 -> 0
+						System.out.println("Target Tile row: " + w.getTargetTile().getRow() + " & column: " + w.getTargetTile().getColumn());
+						System.out.println("Checking against row: " + whiteRow +" " + (whiteRow-1) + " & column: " + checkCol);
+						if(w.getTargetTile().getColumn() == checkCol && (w.getTargetTile().getRow() == whiteRow || w.getTargetTile().getRow() == whiteRow - 1)) {
 							return false;
 						}
 					}
@@ -1213,8 +1216,12 @@ public class QuoridorController {
 				whiteRow += rChange;
 				if(whiteRow < 1 || whiteRow > 9) return false;
 				for(WallMove w : QuoridorController.getWalls()) {
+					
 					if(w.getWallDirection() == Direction.Horizontal) {
-						if(w.getTargetTile().getRow() == whiteRow && (w.getTargetTile().getColumn() == whiteCol || w.getTargetTile().getColumn() == whiteCol - 1)) {
+						int checkRow = whiteRow - rChange +  (int) (rChange-0.1); //if 1 -> 0
+						System.out.println("Target Tile row: " + w.getTargetTile().getRow() + " & column: " + w.getTargetTile().getColumn());
+						System.out.println("Checking against row: " + checkRow + " & column: " + whiteCol + " " + (whiteCol - 1));
+						if(w.getTargetTile().getRow() == checkRow && (w.getTargetTile().getColumn() == whiteCol || w.getTargetTile().getColumn() == whiteCol - 1)) {
 							return false;
 						}
 					}
@@ -1233,7 +1240,8 @@ public class QuoridorController {
 				if(blackCol < 1 || blackCol > 9) return false;
 				for(WallMove w : QuoridorController.getWalls()) {
 					if(w.getWallDirection() == Direction.Vertical) {
-						if(w.getTargetTile().getColumn() == blackCol && (w.getTargetTile().getRow() == blackRow || w.getTargetTile().getRow() == blackRow - 1)) {
+						int checkCol = blackCol - cChange + (int) (cChange-0.1); //if 1 -> 0
+						if(w.getTargetTile().getColumn() == checkCol && (w.getTargetTile().getRow() == blackRow || w.getTargetTile().getRow() == blackRow - 1)) {
 							return false;
 						}
 					}
@@ -1246,7 +1254,8 @@ public class QuoridorController {
 				if(blackRow < 1 || blackRow > 9) return false;
 				for(WallMove w : QuoridorController.getWalls()) {
 					if(w.getWallDirection() == Direction.Horizontal) {
-						if(w.getTargetTile().getRow() == blackRow && (w.getTargetTile().getColumn() == blackCol || w.getTargetTile().getColumn() == blackCol - 1)) {
+						int checkRow = blackRow - rChange + (int) (rChange-0.1); //if 1 -> 0
+						if(w.getTargetTile().getRow() == checkRow && (w.getTargetTile().getColumn() == blackCol || w.getTargetTile().getColumn() == blackCol - 1)) {
 							return false;
 						}
 					}
@@ -1260,7 +1269,6 @@ public class QuoridorController {
 		}
 		
 		completeMove(curPos.getPlayerToMove());
-		
 		return true;
 	}
 	

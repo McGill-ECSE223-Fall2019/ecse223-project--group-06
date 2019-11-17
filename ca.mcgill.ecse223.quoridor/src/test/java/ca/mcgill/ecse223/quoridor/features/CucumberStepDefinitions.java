@@ -1259,7 +1259,7 @@ public class CucumberStepDefinitions {
 			} else {
 				Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 						QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())
-						&& view.p2Turn.isSelected());
+						);
 			}
 		}
 		
@@ -1277,13 +1277,21 @@ public class CucumberStepDefinitions {
 			}
 			
 			if(!exists) {
+				/*
 				QuoridorController.grabWall();
 				QuoridorController.moveWall(QuoridorController.findTile(row, col));
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() != dir) {
 					QuoridorController.rotateWall();
 				}
 				QuoridorController.dropWall();
-				System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getMoves());
+				*/
+				WallMove move = new WallMove(1, 1, QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), 
+						QuoridorController.findTile(row, col),
+						QuoridorApplication.getQuoridor().getCurrentGame(),
+						dir,
+						QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getWall(0));
+				QuoridorApplication.getQuoridor().getCurrentGame().addMove(move);
+				System.out.println("Placed wall!");
 			}
 		}
 		
