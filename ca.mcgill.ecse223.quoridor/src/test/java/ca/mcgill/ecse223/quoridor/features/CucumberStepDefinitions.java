@@ -1301,6 +1301,19 @@ public class CucumberStepDefinitions {
 		 * Feature: Jump Pawn
 		 */
 		
+		@Given("The opponent is located at {int}:{int}")
+		public void the_opponent_is_located_at(Integer int1, Integer int2) {
+		    // Write code here that turns the phrase above into concrete actions
+		    throw new cucumber.api.PendingException();
+		}
+		
+		@Given("There are no {string} walls {string} from the player nearby")
+		public void there_are_no_walls_from_the_player_nearby(String string, String string2) {
+		    // Write code here that turns the phrase above into concrete actions
+		    throw new cucumber.api.PendingException();
+		}
+		
+		
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
