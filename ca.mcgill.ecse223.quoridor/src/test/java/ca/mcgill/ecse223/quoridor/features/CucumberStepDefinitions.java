@@ -1276,6 +1276,22 @@ public class CucumberStepDefinitions {
 			else if(side.equals("down")) 	rChange = 1;
 			else if(side.equals("left")) 	cChange = -1;
 			else if(side.equals("right")) 	cChange = 1;
+			else if(side.equals("upleft")) {
+				cChange = -1;
+				rChange = -1;
+			}
+			else if(side.equals("upright")) {
+				cChange = 1;
+				rChange = -1;
+			}
+			else if(side.equals("downleft")) {
+				cChange = -1;
+				rChange = 1;
+			}
+			else if(side.equals("downright")) {
+				cChange = 1;
+				rChange = 1;
+			}
 			view.movePlayer(rChange, cChange);
 		}
 		
@@ -1309,6 +1325,7 @@ public class CucumberStepDefinitions {
 				
 				if(curPos.getPlayerToMove().equals(
 						QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
+					
 					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 				} else {
 					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
@@ -1318,11 +1335,13 @@ public class CucumberStepDefinitions {
 			//Last move added to Positions was white
 			if(toCheck.equals(
 					QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
-				
+				System.out.println("Target White Position: " + curPos.getWhitePosition().getTile().getRow() + " " + curPos.getWhitePosition().getTile().getColumn());
+				System.out.println("Vs: " + row + " " + col);
 				Assert.assertTrue(curPos.getWhitePosition().getTile().getRow() == row && curPos.getWhitePosition().getTile().getColumn() == col);
 			//Last move added to positions was black
 			} else {
-				
+				System.out.println("Target Black Position: " + curPos.getBlackPosition().getTile().getRow() + " " + curPos.getBlackPosition().getTile().getColumn());
+				System.out.println("Vs: " + row + " " + col);
 				Assert.assertTrue(curPos.getBlackPosition().getTile().getRow() == row && curPos.getBlackPosition().getTile().getColumn() == col);
 			}
 			
@@ -1406,7 +1425,7 @@ public class CucumberStepDefinitions {
 			
 			Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
 			
-			if(side.equals("left")) {
+			if(side.contains("left")) {
 				col -=1;
 				for(WallMove w : QuoridorController.getWalls()) {
 					if(direction == Direction.Vertical) {
@@ -1418,7 +1437,7 @@ public class CucumberStepDefinitions {
 					}
 					//Horizontal Wall can't block left path
 				}
-			} else if (side.equals("right")) {
+			} else if (side.contains("right")) {
 				//col +=1;
 				for(WallMove w : QuoridorController.getWalls()) {
 					if(direction == Direction.Vertical) {
@@ -1430,7 +1449,8 @@ public class CucumberStepDefinitions {
 					//Horizontal Wall can't block right path
 				}
 	
-			} else if (side.equals("down")) {
+			}
+			if (side.contains("down")) {
 				//row +=1;
 				for(WallMove w : QuoridorController.getWalls()) {
 					if(direction == Direction.Horizontal) {
@@ -1442,7 +1462,7 @@ public class CucumberStepDefinitions {
 					//Vertical Wall can't block down path
 				}
 				
-			} else if (side.equals("up")) {
+			} else if (side.contains("up")) {
 				row -=1;
 				for(WallMove w : QuoridorController.getWalls()) {
 					if(direction == Direction.Horizontal) {
