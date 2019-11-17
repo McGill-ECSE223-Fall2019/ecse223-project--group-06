@@ -82,6 +82,20 @@ public class QuoridorController {
 			
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(current.getWhitePlayer());
 		}
+		
+		for(Wall w :curPos.getBlackWallsInStock()) {
+			current.getCurrentPosition().addBlackWallsInStock(w);
+		}
+		for(Wall w :curPos.getWhiteWallsInStock()) {
+			current.getCurrentPosition().addWhiteWallsInStock(w);
+		}
+		for(Wall w :curPos.getBlackWallsOnBoard()) {
+			current.getCurrentPosition().addBlackWallsOnBoard(w);
+		}
+		for(Wall w :curPos.getWhiteWallsOnBoard()) {
+			current.getCurrentPosition().addWhiteWallsOnBoard(w);
+		}
+		
 		current.setWallMoveCandidate(null);
 		current.setMoveMode(null);
 
@@ -1202,8 +1216,7 @@ public class QuoridorController {
 				for(WallMove w : QuoridorController.getWalls()) {
 					if(w.getWallDirection() == Direction.Vertical) {
 						int checkCol = whiteCol - cChange + (int) (cChange-0.1); //if 1 -> 0
-						System.out.println("Target Tile row: " + w.getTargetTile().getRow() + " & column: " + w.getTargetTile().getColumn());
-						System.out.println("Checking against row: " + whiteRow +" " + (whiteRow-1) + " & column: " + checkCol);
+
 						if(w.getTargetTile().getColumn() == checkCol && (w.getTargetTile().getRow() == whiteRow || w.getTargetTile().getRow() == whiteRow - 1)) {
 							return false;
 						}
@@ -1219,8 +1232,7 @@ public class QuoridorController {
 					
 					if(w.getWallDirection() == Direction.Horizontal) {
 						int checkRow = whiteRow - rChange +  (int) (rChange-0.1); //if 1 -> 0
-						System.out.println("Target Tile row: " + w.getTargetTile().getRow() + " & column: " + w.getTargetTile().getColumn());
-						System.out.println("Checking against row: " + checkRow + " & column: " + whiteCol + " " + (whiteCol - 1));
+
 						if(w.getTargetTile().getRow() == checkRow && (w.getTargetTile().getColumn() == whiteCol || w.getTargetTile().getColumn() == whiteCol - 1)) {
 							return false;
 						}

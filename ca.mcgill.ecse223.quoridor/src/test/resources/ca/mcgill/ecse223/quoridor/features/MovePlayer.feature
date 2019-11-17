@@ -30,18 +30,18 @@ Feature: Move Player
     Given The player to move is "<player>"
     And The player is located at <row>:<col>
     And There is a "<dir>" wall "<side>" from the player
-    And My opponent is not "<side>" from the player
+    And The opponent is not "<side>" from the player
     When Player "<player>" initiates to move "<side>"
     Then The move "<side>" shall be "<status>" 
     And Player's new position shall be <nrow>:<ncol>
     And The next player to move shall become "<nplayer>"
     Examples: 
-      | player 	| row | col | dir 				| side 	| status 	| nrow 	| ncol	 | player		|
-      | white		| 3 	| 3		| vertical 		| left	|	illegal | 3			| 3	 		 | white		|
-      | white		| 3 	| 3		| horizontal	| left	|	success	| 2			| 3	 		 | black		|
-      | white		| 3 	| 3		| vertical 		| right	|	illegal | 3			| 3	 		 | white		|
-      | white		| 3 	| 3		| horizontal	| right	|	success	| 4			| 3	 		 | black		|
-      | white		| 3 	| 3		| horizontal	| up		|	illegal | 3			| 3	 		 | white		|
-      | white		| 3 	| 3		| vertical		| up		|	success	| 3			| 2	 		 | black		|
-      | white		| 3 	| 3		| horizontal	| down	|	illegal | 3			| 3	 		 | white		|
-      | white		| 3 	| 3		| vertical		| down	|	success	| 3			| 4	 		 | black		|
+      | player 	| row | col | dir 				| side 	| status 	| nrow 	| ncol	 | nplayer	 |
+      | white		| 3 	| 3		| vertical 		| left	|	illegal | 3			| 3	 		 | white		 |
+      | white		| 3 	| 3		| horizontal	| left	|	success	| 3			| 2	 		 | black		 |
+      | white		| 3 	| 3		| vertical 		| right	|	illegal | 3			| 3	 		 | white		 |
+      | white		| 3 	| 3		| horizontal	| right	|	success	| 3			| 4	 		 | black		 |
+      | white		| 3 	| 3		| horizontal	| up		|	illegal | 3			| 3	 		 | white		 |
+      | white		| 3 	| 3		| vertical		| up		|	success	| 2			| 3	 		 | black		 |
+      | white		| 3 	| 3		| horizontal	| down	|	illegal | 3			| 3	 		 | white		 |
+      | white		| 3 	| 3		| vertical		| down	|	success	| 4			| 3	 		 | black		 |
