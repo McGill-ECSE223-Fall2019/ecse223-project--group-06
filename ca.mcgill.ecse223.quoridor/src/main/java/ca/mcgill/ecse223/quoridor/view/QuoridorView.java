@@ -951,11 +951,11 @@ public class QuoridorView extends JFrame implements KeyListener {
 				}
 				QuoridorController.dropWall();
 				switchPlayerButton();
-				refresh();
+				notification.setVisible(false);
 			} else {
 				notifyInvalid("Invalid Wall Placement");
-				refresh();
 			}
+			refresh();
 		}
 	}
 	public void RotateWall() {
@@ -963,6 +963,18 @@ public class QuoridorView extends JFrame implements KeyListener {
 			QuoridorController.rotateWall();
 			refresh();
 		}
+	}
+	public void movePlayer(int rChange, int cChange) {
+		if(QuoridorController.movePlayer( rChange, cChange)) {
+			System.out.println("Player has moved!");
+			switchPlayerButton();
+			notification.setVisible(false);
+		} else {
+			System.out.println("Player has NOT moved!");
+			notifyInvalid("Invalid Player Step");
+		}
+
+		refresh();
 	}
 
 }
