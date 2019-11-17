@@ -964,10 +964,35 @@ public class QuoridorView extends JFrame implements KeyListener {
 		}
 	}
 	public void movePlayer(int rChange, int cChange) {
-		if(QuoridorController.movePlayer( rChange, cChange)) {
+		//Check if diagonal
+		if(Math.abs(rChange) == 1 && Math.abs(cChange) == 1
+			&& QuoridorController.movePlayer( rChange, cChange, "diagonal")) {
 			switchPlayerButton();
+			refresh();
+			System.out.println("Went diagonal succesfully!");
+			return;
+		}
+		
+		//Otherwise proceed with jump/step Check
+		if(!QuoridorController.hasOpponent(rChange, cChange)) {
+			//If one is 0 and one is a 1 step move	
+			if((Math.abs(rChange) == 0 || Math.abs(cChange) == 0) 
+				&& (Math.abs(rChange)==1 || Math.abs(cChange) == 1) 
+				&& QuoridorController.movePlayer( rChange, cChange, "step"))
+			{
+				switchPlayerButton();
+			} else {
+				notifyInvalid("Invalid Player Move");
+			}
 		} else {
-			notifyInvalid("Invalid Player Step");
+			//If either one is 0 and the other is 1 step or both are 1 step
+			
+			if((Math.abs(rChange) <= 1 && Math.abs(cChange) <= 1) 
+			   && QuoridorController.movePlayer( rChange, cChange, "jump")) {
+				switchPlayerButton();
+			} else {
+				notifyInvalid("Invalid Player Move");
+			}
 		}
 
 		refresh();
