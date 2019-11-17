@@ -1398,7 +1398,6 @@ public class CucumberStepDefinitions {
 		 * Feature: Jump Pawn
 		 */
 		
-		
 		@And("The opponent is located at {int}:{int}")
 		public void theOpponentIsLocatedAt(int row, int col) {
 			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
@@ -1475,7 +1474,6 @@ public class CucumberStepDefinitions {
 				}
 			}
 		}
-		
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
