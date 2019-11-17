@@ -964,11 +964,20 @@ public class QuoridorView extends JFrame implements KeyListener {
 		}
 	}
 	public void movePlayer(int rChange, int cChange) {
-		if(QuoridorController.movePlayer( rChange, cChange)) {
-			switchPlayerButton();
+		if(!QuoridorController.hasOpponent(rChange, cChange)) {
+			if(QuoridorController.movePlayer( rChange, cChange, "step")) {
+				switchPlayerButton();
+			} else {
+				notifyInvalid("Invalid Player Move");
+			}
 		} else {
-			notifyInvalid("Invalid Player Step");
+			if(QuoridorController.movePlayer( rChange, cChange, "jump")) {
+				switchPlayerButton();
+			} else {
+				notifyInvalid("Invalid Player Move");
+			}
 		}
+		
 
 		refresh();
 	}

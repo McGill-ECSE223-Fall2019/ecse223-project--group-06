@@ -1267,7 +1267,6 @@ public class CucumberStepDefinitions {
 			if(oPos.getTile().equals(QuoridorController.findTile(row + rChange, col + cChange))) {
 				oPos.setTile(QuoridorController.findTile(row + 2*rChange, col + 2*cChange));
 			}
-			
 		}
 		
 		@When("Player {string} initiates to move {string}")
@@ -1283,7 +1282,7 @@ public class CucumberStepDefinitions {
 		@Then("The move {string} shall be {string}")
 		public void theMoveSideShallBeStatus(String side, String status) {
 			if(status.equals("illegal")) {
-				Assert.assertTrue(view.notification.isVisible() && view.notification.getText().equals("Invalid Player Step"));
+				Assert.assertTrue(view.notification.isVisible() && view.notification.getText().equals("Invalid Player Move"));
 			} else {
 				Assert.assertFalse(view.notification.isVisible());
 			}
@@ -1379,6 +1378,83 @@ public class CucumberStepDefinitions {
 		/**
 		 * Feature: Jump Pawn
 		 */
+		
+		
+		@And("The opponent is located at {int}:{int}")
+		public void theOpponentIsLocatedAt(int row, int col) {
+			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+			Player white = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+			
+			PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(row, col));
+			
+			if(curPos.getPlayerToMove().equals(white)) curPos.setBlackPosition(pos);
+			else curPos.setWhitePosition(pos);
+		}
+		
+		@And("There are no {string} walls {string} from the player nearby")
+		public void thereAreNoDirWallsSideFromPlayerNearby(String dir, String side) {
+
+			PlayerPosition pos;
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
+					QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) ) {
+				pos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
+			} else {
+				pos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
+			}
+			int row = pos.getTile().getRow();
+			int col = pos.getTile().getColumn();
+			
+			Direction direction = dir.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
+			
+			if(side.equals("left")) {
+				col -=1;
+				for(WallMove w : QuoridorController.getWalls()) {
+					if(direction == Direction.Vertical) {
+						if((w.getTargetTile().getColumn() == col || w.getTargetTile().getColumn() == col - 1) && 
+								(w.getTargetTile().getRow() == row || w.getTargetTile().getRow() == row - 1)) {
+							QuoridorApplication.getQuoridor().getCurrentGame().removeMove(w);
+						}
+
+					}
+					//Horizontal Wall can't block left path
+				}
+			} else if (side.equals("right")) {
+				//col +=1;
+				for(WallMove w : QuoridorController.getWalls()) {
+					if(direction == Direction.Vertical) {
+						if((w.getTargetTile().getColumn() == col || w.getTargetTile().getColumn() == col + 1)
+							&& (w.getTargetTile().getRow() == row || w.getTargetTile().getRow() == row - 1)) {
+							QuoridorApplication.getQuoridor().getCurrentGame().removeMove(w);
+						}
+					}
+					//Horizontal Wall can't block right path
+				}
+	
+			} else if (side.equals("down")) {
+				//row +=1;
+				for(WallMove w : QuoridorController.getWalls()) {
+					if(direction == Direction.Horizontal) {
+						if((w.getTargetTile().getRow() == row  || w.getTargetTile().getRow() == row + 1)
+								&& (w.getTargetTile().getColumn() == col || w.getTargetTile().getColumn() == col - 1)) {
+							QuoridorApplication.getQuoridor().getCurrentGame().removeMove(w);
+						}
+					}
+					//Vertical Wall can't block down path
+				}
+				
+			} else if (side.equals("up")) {
+				row -=1;
+				for(WallMove w : QuoridorController.getWalls()) {
+					if(direction == Direction.Horizontal) {
+						if((w.getTargetTile().getRow() == row || w.getTargetTile().getRow() == row - 1)  
+								&& (w.getTargetTile().getColumn() == col || w.getTargetTile().getColumn() == col - 1)) {
+							QuoridorApplication.getQuoridor().getCurrentGame().removeMove(w);
+						}
+					}
+					//Vertical Wall can't block up path
+				}
+			}
+		}
 		
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
