@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import javax.swing.Timer;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.MoveDirection;
 import ca.mcgill.ecse223.quoridor.features.InvalidInputException;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
@@ -1244,7 +1245,7 @@ public class QuoridorController {
 		
 		if(curPos.getPlayerToMove().equals(white)) {
 			//If a wall doesn't impede it and black isn't there
-			if(canMove(white, rChange, cChange) 
+			if(noWallBlock(white, rChange, cChange) 
 			  && (whiteRow + rChange != blackRow || whiteCol + cChange != blackCol)) {
 				targetRow = whiteRow + rChange;
 				targetCol = whiteCol + cChange;
@@ -1256,7 +1257,7 @@ public class QuoridorController {
 		} else {
 			
 			///If a wall doesn't impede it and black isn't there
-			if(canMove(curGame.getBlackPlayer(), rChange, cChange) 
+			if(noWallBlock(curGame.getBlackPlayer(), rChange, cChange) 
 					  && (blackRow + rChange != whiteRow || blackCol + cChange != whiteCol)) {
 						
 						targetRow = blackRow + rChange;
@@ -1278,11 +1279,9 @@ public class QuoridorController {
 		return true;
 	}
 	
-	
-	
 	private static boolean jumpPawn(int rChange, int cChange) {
 
-		//You could implement this by seeing if you can move (canMove()) towards the direction
+		//You could implement this by seeing if you can move (noWallBlock()) towards the direction
 		//of r/c Change twice. Something to note is that the only 2 inputs you will
 		//ever get here are 2,0 or 0,2
 		
@@ -1452,7 +1451,7 @@ public class QuoridorController {
 			if(targetRow < 1 || targetCol > 9) return false;
 			PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), findTile(targetRow, targetCol));
 			if(whiteCol + cChange == blackCol && whiteRow == blackRow) {
-				if(canMove(curGame.getWhitePlayer(), 0, cChange) && canMove(curGame.getBlackPlayer(), rChange, 0)) {
+				if(noWallBlock(curGame.getWhitePlayer(), 0, cChange) && noWallBlock(curGame.getBlackPlayer(), rChange, 0)) {
 					curPos.setWhitePosition(pos);
 					JumpMove move = new JumpMove(curGame.getMoves().size()+1, 
 							 curGame.getMoves().size()/2+1, 
@@ -1465,7 +1464,7 @@ public class QuoridorController {
 					return true;
 				}
 			} else if(whiteRow + rChange == blackRow && whiteCol == blackCol) {
-				if(canMove(curGame.getWhitePlayer(), rChange, 0) && canMove(curGame.getBlackPlayer(), 0, cChange)) {
+				if(noWallBlock(curGame.getWhitePlayer(), rChange, 0) && noWallBlock(curGame.getBlackPlayer(), 0, cChange)) {
 					curPos.setWhitePosition(pos);
 					JumpMove move = new JumpMove(curGame.getMoves().size()+1, 
 							 curGame.getMoves().size()/2+1, 
@@ -1485,7 +1484,7 @@ public class QuoridorController {
 			if(targetRow < 1 || targetCol > 9) return false;
 			PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), findTile(targetRow, targetCol));
 			if(blackCol + cChange == whiteCol && whiteRow == blackRow) {
-				if(canMove(curGame.getBlackPlayer(), 0, cChange) && canMove(curGame.getWhitePlayer(), rChange, 0)) {
+				if(noWallBlock(curGame.getBlackPlayer(), 0, cChange) && noWallBlock(curGame.getWhitePlayer(), rChange, 0)) {
 					curPos.setBlackPosition(pos);
 					JumpMove move = new JumpMove(curGame.getMoves().size()+1, 
 							 curGame.getMoves().size()/2+1, 
@@ -1498,7 +1497,7 @@ public class QuoridorController {
 					return true;
 				}
 			} else if(blackRow + rChange == whiteRow && whiteCol == blackCol) {
-				if(canMove(curGame.getBlackPlayer(), rChange, 0) && canMove(curGame.getWhitePlayer(), 0, cChange)) {
+				if(noWallBlock(curGame.getBlackPlayer(), rChange, 0) && noWallBlock(curGame.getWhitePlayer(), 0, cChange)) {
 					curPos.setBlackPosition(pos);
 					JumpMove move = new JumpMove(curGame.getMoves().size()+1, 
 							 curGame.getMoves().size()/2+1, 
@@ -1515,7 +1514,7 @@ public class QuoridorController {
 		return false;
 	}
 	
-	/** Private helper method that is essentially a copy of stepMove 
+	/** Helper method that is essentially a copy of stepMove 
 	 *  with an arbitrary player.
 	 *  Note, this does not account for an opponent in the way of the move
 	 * @param p - player to check move for
@@ -1523,7 +1522,7 @@ public class QuoridorController {
 	 * @param cChange - change in player column
 	 * @return boolean- move is allowed
 	 */
-	private static boolean canMove(Player p, int rChange, int cChange) {
+	public static boolean noWallBlock(Player p, int rChange, int cChange) {
 
 		GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
 		Player white = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
