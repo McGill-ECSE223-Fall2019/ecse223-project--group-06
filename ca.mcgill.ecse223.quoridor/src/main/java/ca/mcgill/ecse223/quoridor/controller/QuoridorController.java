@@ -1199,14 +1199,29 @@ public class QuoridorController {
 			curPos.setBlackPosition(pos);
 		}
 	}
-	public static boolean movePlayer(int rChange, int cChange, String type) {
-		if(type.equals("step") || type.equals("Step")) {
-			return stepPawn(rChange, cChange);
-		} else if (type.equals("jump") || type.equals("Jump")) {
-			return jumpPawn(rChange * 2, cChange * 2);
-		} else {
+	public static boolean movePlayer(int rChange, int cChange) {		
+		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() !=
+				MoveMode.PlayerMove) return false;
+		
+		if(Math.abs(rChange) == 1 && Math.abs(cChange) == 1) {
 			return diagonalMove(rChange, cChange);
 		}
+		
+		//Otherwise proceed with jump/step Check
+		if(!hasOpponent(rChange, cChange)) {
+			//If one is 0 and one is a 1 step move	
+			if((rChange == 0 || cChange == 0) 
+				&& (Math.abs(rChange)==1 || Math.abs(cChange) == 1)) {
+				return stepPawn(rChange, cChange);
+			}
+			//If either one is 0 and the other is 1 step or both are 1 step
+	
+		} else {
+			if((Math.abs(rChange) <= 1 && Math.abs(cChange) <= 1)) {
+				return jumpPawn(rChange * 2, cChange * 2);
+			}
+		}
+		return false;
 	}
 	
 	public static boolean hasOpponent(int rChange, int cChange) {
@@ -1603,5 +1618,139 @@ public class QuoridorController {
 		return true;
 	}
 	
+	public static void findAllowedTiles(boolean[] allowed) {
+		if(allowed.length != 81) return;
+		
+		
+		GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+		Player white = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+		
+		Player toMove;
+		Player oppo;
+		
+		int col, row;
+		if(curPos.getPlayerToMove().equals(white)) {
+			col = curPos.getWhitePosition().getTile().getColumn();
+			row = curPos.getWhitePosition().getTile().getRow();
+			
+			toMove = white;
+			oppo = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+		} else {
+			col = curPos.getBlackPosition().getTile().getColumn();
+			row = curPos.getBlackPosition().getTile().getRow();
+			
+			oppo = white;
+			toMove = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+		}
+
+		//Tiles are drawn by row then by column. 0= row1 col1, 
+		
+		//Checking the has opponent first
+		
+		//Check down
+		if(hasOpponent(1, 0)) {
+			if(noWallBlock(toMove, 1, 0)) {
+				
+				if(noWallBlock(oppo, 1, 0) ) {
+					//Jump straight allowed
+					allowed[(col-1) + (row+1) * 9] = true;
+					
+				} else {
+					if(noWallBlock(oppo, 0, -1)) {
+						//Jump diagonal- check left
+						allowed[(col-2) + (row) * 9] = true;
+						
+					} 
+					if(noWallBlock(oppo, 0, 1)) {
+						//Jump diagonal- check right
+						allowed[(col) + (row) * 9] = true;
+					}
+				}
+			}
+					
+		//Check up
+		} else if(hasOpponent(-1, 0)) {
+			if(noWallBlock(toMove, -1, 0)) {
+				
+				if(noWallBlock(oppo, -1, 0) ) {
+					//Jump straight allowed
+					allowed[(col-1) + (row-3) * 9] = true;
+					
+				} else {
+					if(noWallBlock(oppo, 0, -1)) {
+						//Jump diagonal- check left
+						allowed[(col-2) + (row-2) * 9] = true;
+						
+					} 
+					if(noWallBlock(oppo, 0, 1)) {
+						//Jump diagonal- check right
+						allowed[(col) + (row-2) * 9] = true;
+					}
+				}
+			}
+			
+			
+		//Check right
+		} else if(hasOpponent(0, 1)) {
+			if(noWallBlock(toMove, 0, 1)) {
+				if(noWallBlock(oppo, 0, 1) ) {
+					//Jump straight allowed
+					allowed[(col+1) + (row-1) * 9] = true;
+					
+				} else {
+					if(noWallBlock(oppo, -1, 0)) {
+						//Jump diagonal- check up
+						allowed[(col) + (row-2) * 9] = true;
+						
+					} 
+					if(noWallBlock(oppo, 1, 0)) {
+						//Jump diagonal- check down
+						allowed[(col) + (row) * 9] = true;
+					}
+				}
+			}
+			
+			
+		//Check left
+		} else if(hasOpponent(0, -1)) {
+			if(noWallBlock(toMove, 0, -1)) {
+				if(noWallBlock(oppo, 0, -1) ) {
+					//Jump straight allowed
+					allowed[(col-3) + (row-1) * 9] = true;
+				} else {
+					if(noWallBlock(oppo, -1, 0)) {
+						//Jump diagonal- check up
+						allowed[(col-2) + (row-2) * 9] = true;
+						
+					} 
+					if(noWallBlock(oppo, 1, 0)) {
+						//Jump diagonal- check down
+						allowed[(col-2) + (row) * 9] = true;
+					}
+				}
+			}
+		}
+		//If you reached here, you've done the opponent tiles, just to step check
+		if(!hasOpponent(1,0)) {
+			if(noWallBlock(toMove, 1, 0)) {
+				allowed[(col-1) + (row) * 9] = true;
+			}
+		}
+		if(!hasOpponent(-1,0)) {
+			if(noWallBlock(toMove, -1, 0)) {
+				allowed[(col-1) + (row-2) * 9] = true;
+			}
+		}
+		if(!hasOpponent(0,1)) {
+			if(noWallBlock(toMove, 0, 1)) {
+				allowed[(col) + (row-1) * 9] = true;
+			}
+		}
+		if(!hasOpponent(0,-1)) {
+			if(noWallBlock(toMove, 0, -1)) {
+				allowed[(col-2) + (row-1) * 9] = true;
+			}
+		}
+	}
 	
 }

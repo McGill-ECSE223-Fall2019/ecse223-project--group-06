@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.sql.Time;
+import java.util.Arrays;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -83,9 +84,13 @@ public class QuoridorView extends JFrame{
 	public Timer blackTimer;
 	public int blackSeconds;
 	
+	public boolean[] outlineTile = new boolean[81];
+	
 	//First screen user sees, just title and two buttons
 	public void initLoadScreen() {
 		getContentPane().removeAll();
+		Arrays.fill(outlineTile, false);
+		
 		setTitle("Quoridor Application");
 		title.setText("Quoridor");
 		title.setFont(new Font("Serif", Font.BOLD, 80));
@@ -396,6 +401,7 @@ public class QuoridorView extends JFrame{
 					MouseEventListener mouseListener = new MouseEventListener(wall);
 					wall.addMouseListener(mouseListener);
 					wall.addMouseMotionListener(mouseListener);
+					Arrays.fill(outlineTile, false);
 					refresh();
 				} else {
 					if(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
@@ -416,6 +422,10 @@ public class QuoridorView extends JFrame{
 					wall = null;
 				}
 				board.requestFocus();
+				QuoridorController.findAllowedTiles(outlineTile);
+				refresh();
+				//TODO: Make tiles a player can move to become outlined and add
+						//a mouse listener so they can click their choice.
 			}
 		});
 		rotateButton.addActionListener(new java.awt.event.ActionListener() {
@@ -444,16 +454,26 @@ public class QuoridorView extends JFrame{
 		board = new JPanel() {
 			@Override
 			public void paintComponent(Graphics g) {
-				//TODO: Make this so it doesn't ovveride walls on the screen
+				//TODO: Make this so it doesn't overide walls on the screen
 				//super.paintComponent(g);
 				int width = 40;
 				int height = width;
 				g.setColor(new Color(201, 156, 84));
 				for(int i = 0; i < 81; i++) {
-
-					g.fillRect((i % 9)*width,
-							(i/9)*height,
-							width - 5, height - 5);
+					if(outlineTile[i] ) {
+						g.fillRect((i % 9)*width,
+								(i/9)*height,
+								width - 5, height - 5);
+						g.setColor(new Color(0, 255, 0));
+						g.drawRect((i % 9)*width,
+									(i/9)*height,
+									width - 5, height - 5);
+						g.setColor(new Color(201, 156, 84));
+					} else {
+						g.fillRect((i % 9)*width,
+								(i/9)*height,
+								width - 5, height - 5);
+					}
 				}
 				
 				PlayerPosition whitePos;
@@ -697,6 +717,7 @@ public class QuoridorView extends JFrame{
 		notification.setText(message);
 		notification.setForeground(Color.RED);
 		notification.setVisible(true);
+		refresh();
 	}
 	
 	//Creates a confirmation window. Idk how to pass a method, so this is specific to SaveAction
@@ -966,6 +987,7 @@ public class QuoridorView extends JFrame{
 	
 	//Just toggling radio buttons
 	public void switchPlayerButton() {
+		Arrays.fill(outlineTile, false);
 		notification.setVisible(false);
 		if(p1Turn.isSelected()) {
 			p1Turn.setSelected(false);
@@ -974,7 +996,7 @@ public class QuoridorView extends JFrame{
 			p1Turn.setSelected(true);
 			p2Turn.setSelected(false);
 		}
-		
+		refresh();
 	}
 	
 	public void DropWall() {
@@ -1014,7 +1036,7 @@ public class QuoridorView extends JFrame{
 			} else {
 				notifyInvalid("Invalid Wall Placement");
 			}
-			refresh();
+			
 		}
 	}
 	public void RotateWall() {
@@ -1031,40 +1053,13 @@ public class QuoridorView extends JFrame{
 	}
 	public void movePlayer(int rChange, int cChange) {
 		System.out.println("Moving the player");
-		//Check if diagonal
-		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() !=
-				MoveMode.PlayerMove) return;
-		if(Math.abs(rChange) == 1 && Math.abs(cChange) == 1
-			&& QuoridorController.movePlayer( rChange, cChange, "diagonal")) {
-			switchPlayerButton();
-			refresh();
-			System.out.println("Went diagonal succesfully!");
-			return;
-		}
 		
-		//Otherwise proceed with jump/step Check
-		if(!QuoridorController.hasOpponent(rChange, cChange)) {
-			//If one is 0 and one is a 1 step move	
-			if((rChange == 0 || cChange == 0) 
-				&& (Math.abs(rChange)==1 || Math.abs(cChange) == 1) 
-				&& QuoridorController.movePlayer( rChange, cChange, "step"))
-			{
-				switchPlayerButton();
-			} else {
-				notifyInvalid("Invalid Player Move");
-			}
+		if(QuoridorController.movePlayer(rChange, cChange)) {
+			switchPlayerButton();
 		} else {
-			//If either one is 0 and the other is 1 step or both are 1 step
-			
-			if((Math.abs(rChange) <= 1 && Math.abs(cChange) <= 1) 
-			   && QuoridorController.movePlayer( rChange, cChange, "jump")) {
-				switchPlayerButton();
-			} else {
-				notifyInvalid("Invalid Player Move");
-			}
+			notifyInvalid("Invalid Player Move");
 		}
 
-		refresh();
 	}
 
 }
