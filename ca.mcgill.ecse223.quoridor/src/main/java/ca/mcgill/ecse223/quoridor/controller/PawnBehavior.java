@@ -9,11 +9,20 @@ public class PawnBehavior
 {
 
   //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum MoveDirection { East, South, West, North }
+
+  //------------------------
   // MEMBER VARIABLES
   //------------------------
 
+  //PawnBehavior Attributes
+  private MoveDirection dir;
+
   //PawnBehavior State Machines
-  public enum PawnSM { CanMove, CanJump, CanMoveAndJump, CantMoveAndJump }
+  public enum PawnSM { Idle, WallMove, PlayerMove }
   private PawnSM pawnSM;
 
   //PawnBehavior Associations
@@ -24,14 +33,28 @@ public class PawnBehavior
   // CONSTRUCTOR
   //------------------------
 
-  public PawnBehavior()
+  public PawnBehavior(MoveDirection aDir)
   {
-    setPawnSM(PawnSM.CanMove);
+    dir = aDir;
+    setPawnSM(PawnSM.Idle);
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setDir(MoveDirection aDir)
+  {
+    boolean wasSet = false;
+    dir = aDir;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public MoveDirection getDir()
+  {
+    return dir;
+  }
 
   public String getPawnSMFullName()
   {
@@ -44,10 +67,109 @@ public class PawnBehavior
     return pawnSM;
   }
 
-  public boolean setPawnSM(PawnSM aPawnSM)
+  public boolean initMove()
+  {
+    boolean wasEventProcessed = false;
+    
+    PawnSM aPawnSM = pawnSM;
+    switch (aPawnSM)
+    {
+      case Idle:
+        setPawnSM(PawnSM.PlayerMove);
+        wasEventProcessed = true;
+        break;
+      case WallMove:
+        setPawnSM(PawnSM.PlayerMove);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean initGrab()
+  {
+    boolean wasEventProcessed = false;
+    
+    PawnSM aPawnSM = pawnSM;
+    switch (aPawnSM)
+    {
+      case Idle:
+        setPawnSM(PawnSM.WallMove);
+        wasEventProcessed = true;
+        break;
+      case PlayerMove:
+        setPawnSM(PawnSM.WallMove);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean dropWall()
+  {
+    boolean wasEventProcessed = false;
+    
+    PawnSM aPawnSM = pawnSM;
+    switch (aPawnSM)
+    {
+      case WallMove:
+        setPawnSM(PawnSM.Idle);
+        wasEventProcessed = true;
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  public boolean move()
+  {
+    boolean wasEventProcessed = false;
+    
+    PawnSM aPawnSM = pawnSM;
+    switch (aPawnSM)
+    {
+      case PlayerMove:
+        if (!(isLegalStep(getDir()))&&!(isLegalJump(getDir())))
+        {
+          setPawnSM(PawnSM.PlayerMove);
+          wasEventProcessed = true;
+          break;
+        }
+        if (isLegalStep(getDir()))
+        {
+        // line 30 "../../../../../PawnStateMachine.ump"
+          moveStep(dir);
+          setPawnSM(PawnSM.Idle);
+          wasEventProcessed = true;
+          break;
+        }
+        if (isLegalJump(getDir()))
+        {
+        // line 31 "../../../../../PawnStateMachine.ump"
+          moveJump(dir);
+          setPawnSM(PawnSM.Idle);
+          wasEventProcessed = true;
+          break;
+        }
+        break;
+      default:
+        // Other states do respond to this event
+    }
+
+    return wasEventProcessed;
+  }
+
+  private void setPawnSM(PawnSM aPawnSM)
   {
     pawnSM = aPawnSM;
-    return true;
   }
   /* Code from template association_GetOne */
   public Game getCurrentGame()
@@ -94,11 +216,97 @@ public class PawnBehavior
     player = null;
   }
 
+  // line 42 "../../../../../PawnStateMachine.ump"
+  public void moveStep(MoveDirection dir){
+    GamePosition curPos = currentGame.getCurrentPosition();
+		Player white = currentGame.getWhitePlayer();
+
+		int whiteCol = curPos.getWhitePosition().getTile().getColumn();
+		int whiteRow = curPos.getWhitePosition().getTile().getRow();
+		int blackCol = curPos.getBlackPosition().getTile().getColumn();
+		int blackRow = curPos.getBlackPosition().getTile().getRow();
+		
+		int rChange = 0, cChange = 0;
+		if(dir == MoveDirection.North) {
+			rChange = -1;
+		} else if (dir == MoveDirection.South) {
+			rChange = 1;
+		} else if(dir == MoveDirection.West) {
+			cChange = -1;
+		} else if (dir == MoveDirection.East) {
+			cChange = 1;
+		}
+		int targetRow, targetCol;
+		if(curPos.getPlayerToMove().equals(white)) {
+				targetRow = whiteRow + rChange;
+				targetCol = whiteCol + cChange;
+				PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(whiteRow + rChange, whiteCol + cChange));
+				curPos.setWhitePosition(pos);
+		} else {
+				targetRow = blackRow + rChange;
+				targetCol = blackCol + rChange;
+				PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(blackRow + rChange, blackCol + cChange));
+				curPos.setBlackPosition(pos);
+		}
+		
+		StepMove move = new StepMove(currentGame.getMoves().size()+1, 
+									 currentGame.getMoves().size()/2+1, 
+									 curPos.getPlayerToMove(),
+									 QuoridorController.findTile(targetRow, targetCol),
+									 currentGame);
+									 
+		currentGame.addMove(move);
+		QuoridorController.completeMove(curPos.getPlayerToMove());
+  }
+
+  // line 86 "../../../../../PawnStateMachine.ump"
+  public void moveJump(MoveDirection dir){
+    GamePosition curPos = currentGame.getCurrentPosition();
+		Player white = currentGame.getWhitePlayer();
+
+		int whiteCol = curPos.getWhitePosition().getTile().getColumn();
+		int whiteRow = curPos.getWhitePosition().getTile().getRow();
+		int blackCol = curPos.getBlackPosition().getTile().getColumn();
+		int blackRow = curPos.getBlackPosition().getTile().getRow();
+		
+		int rChange = 0, cChange = 0;
+		if(dir == MoveDirection.North) {
+			rChange = -2;
+		} else if (dir == MoveDirection.South) {
+			rChange = 2;
+		} else if(dir == MoveDirection.West) {
+			cChange = -2;
+		} else if (dir == MoveDirection.East) {
+			cChange = 2;
+		}
+		int targetRow, targetCol;
+		if(curPos.getPlayerToMove().equals(white)) {
+				targetRow = whiteRow + rChange;
+				targetCol = whiteCol + cChange;
+				PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(whiteRow + rChange, whiteCol + cChange));
+				curPos.setWhitePosition(pos);
+		} else {
+				targetRow = blackRow + rChange;
+				targetCol = blackCol + rChange;
+				PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(blackRow + rChange, blackCol + cChange));
+				curPos.setBlackPosition(pos);
+		}
+		
+		JumpMove move = new JumpMove(currentGame.getMoves().size()+1, 
+									 currentGame.getMoves().size()/2+1, 
+									 curPos.getPlayerToMove(),
+									 QuoridorController.findTile(targetRow, targetCol),
+									 currentGame);
+									 
+		currentGame.addMove(move);
+		QuoridorController.completeMove(curPos.getPlayerToMove());
+  }
+
 
   /**
    * Returns the current row number of the pawn
    */
-  // line 54 "../../../../../PawnStateMachine.ump"
+  // line 132 "../../../../../PawnStateMachine.ump"
   public int getCurrentPawnRow(){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -114,7 +322,7 @@ public class PawnBehavior
   /**
    * Returns the current column number of the pawn
    */
-  // line 65 "../../../../../PawnStateMachine.ump"
+  // line 143 "../../../../../PawnStateMachine.ump"
   public int getCurrentPawnColumn(){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -130,7 +338,7 @@ public class PawnBehavior
   /**
    * Returns if it is legal to step in the given direction
    */
-  // line 76 "../../../../../PawnStateMachine.ump"
+  // line 154 "../../../../../PawnStateMachine.ump"
   public boolean isLegalStep(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -151,7 +359,6 @@ public class PawnBehavior
 			existingPos[1] = curPos.getWhitePosition().getTile().getRow();
 		}
 		//0 = column, 1 = row
-		
 		if(dir.equals(MoveDirection.North)) {
 			if(toCheckPos[1] - 1 == existingPos[1] && toCheckPos[0] == existingPos[0]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), -1, 0);
@@ -165,6 +372,7 @@ public class PawnBehavior
 			if(toCheckPos[0] + 1 == existingPos[0] && toCheckPos[1] == existingPos[1]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), 0, -1);
 		}
+		
 		return false;
   }
 
@@ -172,7 +380,7 @@ public class PawnBehavior
   /**
    * Returns if it is legal to jump in the given direction
    */
-  // line 113 "../../../../../PawnStateMachine.ump"
+  // line 191 "../../../../../PawnStateMachine.ump"
   public boolean isLegalJump(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 			Player white = currentGame.getWhitePlayer();
@@ -292,37 +500,18 @@ public class PawnBehavior
   /**
    * Action to be called when an illegal move is attempted
    */
-  // line 229 "../../../../../PawnStateMachine.ump"
+  // line 307 "../../../../../PawnStateMachine.ump"
   public void illegalMove(){
     //Taken care of in view?
     	//throw new RuntimeException("this is a illegal move");
   }
 
-  // line 235 "../../../../../PawnStateMachine.ump"
-  public void MakeMove(){
-    
-  }
 
-  // line 238 "../../../../../PawnStateMachine.ump"
-  public void MakeJump(){
-    
-  }
-
-  // line 240 "../../../../../PawnStateMachine.ump"
-  public void illegalJump(){
-    //Taken care of in view?
-    	//throw new RuntimeException("this is a illegal jump");
-  }
-  
-  //------------------------
-  // DEVELOPER CODE - PROVIDED AS-IS
-  //------------------------
-  
-  // line 245 "../../../../../PawnStateMachine.ump"
-  enum MoveDirection 
+  public String toString()
   {
-    East, South, West, North;
+    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "dir" + "=" + (getDir() != null ? !getDir().equals(this)  ? getDir().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "currentGame = "+(getCurrentGame()!=null?Integer.toHexString(System.identityHashCode(getCurrentGame())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "player = "+(getPlayer()!=null?Integer.toHexString(System.identityHashCode(getPlayer())):"null");
   }
-
-  
 }
