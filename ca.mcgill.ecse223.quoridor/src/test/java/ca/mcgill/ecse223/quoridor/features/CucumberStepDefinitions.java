@@ -857,13 +857,13 @@ public class CucumberStepDefinitions {
 
 		@Then("White's pawn shall be in its initial position")
 		public void whitesPawnShallBeInItsInitialPosition() {
-			assertEquals(1, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
+			assertEquals(9, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
 			assertEquals(5, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn());
 		}
 
 		@Then("Black's pawn shall be in its initial position")
 		public void blacksPawnShallBeInItsInitialPosition() {
-			assertEquals(9, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow());
+			assertEquals(1, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow());
 			assertEquals(5, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn());
 		}
 
