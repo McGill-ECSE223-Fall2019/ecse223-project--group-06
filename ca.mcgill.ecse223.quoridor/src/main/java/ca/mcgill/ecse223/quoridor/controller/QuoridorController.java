@@ -459,7 +459,6 @@ public class QuoridorController {
 		Tile oldTile = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile();
 		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setTargetTile(targetTile);
 		if(!wallIsValid()) {
-			System.out.println("Failure");
 			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setTargetTile(oldTile);
 			return false;
 		}
@@ -1113,8 +1112,8 @@ public class QuoridorController {
 			}
 		}
 		
-		Tile whiteStartTile = quoridor.getBoard().getTile(4);	// White starting tile
-		Tile blackStartTile = quoridor.getBoard().getTile(76);	// Black starting tile
+		Tile whiteStartTile = quoridor.getBoard().getTile(76);	// White starting tile
+		Tile blackStartTile = quoridor.getBoard().getTile(4);	// Black starting tile
 		
 		GamePosition cur = new GamePosition(0,
 											new PlayerPosition(whitePlayer, whiteStartTile),	// Move white player to initial position
