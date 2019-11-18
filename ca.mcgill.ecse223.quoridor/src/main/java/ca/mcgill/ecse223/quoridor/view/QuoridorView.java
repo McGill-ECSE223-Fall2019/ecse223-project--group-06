@@ -71,6 +71,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 	public JButton undoButton = new JButton("Undo");
 	private JButton exitButton = new JButton("Exit");
 	public JButton rotateButton=new JButton("Rotate Wall");
+	public JButton startPlayerMoveButton = new JButton("Player Move");
 	public JButton grabButton = new JButton("Grab Wall");
 	public JButton validateButton = new JButton("Validate Position");
 	public JPanel board;
@@ -402,6 +403,13 @@ public class QuoridorView extends JFrame implements KeyListener {
 					}
 				}
 		}});
+		startPlayerMoveButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.PlayerMove);
+				refresh();
+			}
+		});
 		rotateButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -527,6 +535,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 												 .addGroup(gameLayout.createSequentialGroup()
 											 			 			 .addComponent(grabButton) 
 											 			 			 .addComponent(rotateButton)
+											 			 			 .addComponent(startPlayerMoveButton)
 											 			 			 .addComponent(saveButton)
 											 			 			 .addComponent(undoButton)
 														  )
@@ -558,6 +567,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(grabButton) 
 				 													.addComponent(rotateButton)
+				 													.addComponent(startPlayerMoveButton)
 				 													.addComponent(saveButton)
 				 													.addComponent(undoButton)
 				 										)
@@ -911,6 +921,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 		if(grabButton.getActionListeners().length > 0)grabButton.removeActionListener(grabButton.getActionListeners()[0]);
 		if(rotateButton.getActionListeners().length > 0)rotateButton.removeActionListener(rotateButton.getActionListeners()[0]);
 		if(undoButton.getActionListeners().length > 0)undoButton.removeActionListener(undoButton.getActionListeners()[0]);
+		if(startPlayerMoveButton.getActionListeners().length > 0)startPlayerMoveButton.removeActionListener(startPlayerMoveButton.getActionListeners()[0]);
 	}
 	
 	//Just toggling radio buttons
