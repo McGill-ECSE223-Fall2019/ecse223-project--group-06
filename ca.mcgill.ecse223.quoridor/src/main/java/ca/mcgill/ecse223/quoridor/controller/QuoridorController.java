@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import javax.swing.Timer;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.MoveDirection;
 import ca.mcgill.ecse223.quoridor.features.InvalidInputException;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
@@ -345,7 +344,11 @@ public class QuoridorController {
 
 		
 
-	
+	/** Validate Position Feature 
+	 * Takes the given GamePosition and returns whether it is valid (no overlapping walls or blocked paths) 
+	 * @param loadPosition - position to validate
+	 * @return Whether the position is valid
+	 */
 	public static boolean validatePos(GamePosition loadPosition) {
 
 		if (loadPosition == null){
@@ -364,7 +367,10 @@ public class QuoridorController {
 		
 	}
 
-	
+	/** Validate Position Feature
+	 * Returns whether the current game position is valid (no overlapping walls or blocked paths);
+	 * @return Whether the position is valid
+	 */
 	public static boolean validatePosition() {
 			GamePosition position = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
 			if (position == null){
@@ -466,6 +472,10 @@ public class QuoridorController {
 	}
 	
 	//TODO: A* Algorithm
+	/** A method to check whether the current wall move candidate is in a valid position.
+	 * Useful for many features, such as move wall and drop wall
+	 * @return Whether the current wall move candidate is valid
+	 */
 	public static boolean wallIsValid() {
 		// loop through wall moves to see if any interfere with desired move to be made
 		// check to see if wall to be moved overlaps with players or is out of bounds
@@ -514,6 +524,11 @@ public class QuoridorController {
 		return true;
 		
 	}
+	
+	/** A helper method that searches for a conflcting wall and returns it if found
+	 *  Used for gherkin steps that require no conflicting walls exist
+	 * @return a wallmove conflicting with wall move candidate, or null if no such walls exist
+	 */
 	public static WallMove invalidWall() {
 		WallMove check = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
 		ArrayList<WallMove> existing = new ArrayList<WallMove>();
@@ -684,21 +699,9 @@ public class QuoridorController {
 		//Wall curWall = current.getWallMoveCandidate().getWallPlaced();
 		
 		
-		//View checks if it's valid for us
+		//Both View & MoveWall checks if it's valid for us
 		
 		//Remove Walls from stock and place on board - done in grab wall
-		/*
-		//If White
-		if(curPos.getPlayerToMove().equals(current.getWhitePlayer())) {
-			//Move the wall from the player stock to the board
-			curPos.removeWhiteWallsInStock(curWall);
-			curPos.addWhiteWallsOnBoard(curWall);
-		//If Black
-		} else {
-			curPos.removeBlackWallsInStock(curWall);
-			curPos.addBlackWallsOnBoard(curWall);
-		}
-		*/
 		
 		//Add the move to game list
 		if(current.getMoves().size() > 0) {
@@ -708,37 +711,9 @@ public class QuoridorController {
 		}
 		current.addMove(current.getWallMoveCandidate());
 		
-		//Done in complete move, RIGHT?
-		//Update currentPosition to include new wall //TODO: See if switch does it
-		/*
-		//Add current pos to game's array
-		current.addPosition(curPos);
+		//Adding the current position to the games list and all that is taken care of 
+		//in complete move (now at least)
 		
-		//Create a new current Pos
-		GamePosition newPos;
-		if(curPos.getPlayerToMove().equals(current.getWhitePlayer())) {
-			PlayerPosition white = new PlayerPosition(current.getWhitePlayer(), curPos.getWhitePosition().getTile());
-			PlayerPosition black = new PlayerPosition(current.getBlackPlayer(), curPos.getBlackPosition().getTile());
-			newPos = new GamePosition(curPos.getId() + 1, 
-									  white, black, 
-						   		      current.getBlackPlayer(), 
-									  QuoridorApplication.getQuoridor().getCurrentGame() );
-		} else {
-			PlayerPosition white = new PlayerPosition(current.getWhitePlayer(), curPos.getWhitePosition().getTile());
-			PlayerPosition black = new PlayerPosition(current.getBlackPlayer(), curPos.getBlackPosition().getTile());
-			newPos = new GamePosition(curPos.getId() + 1, 
-					  white, black, 
-		   		      current.getWhitePlayer(), 
-					  QuoridorApplication.getQuoridor().getCurrentGame() );
-		}
-		current.setCurrentPosition(newPos);
-		*/
-		
-		/*
-		//Set move type/wallmove cand. to null
-		current.setWallMoveCandidate(null);
-		current.setMoveMode(null);
-		*/
 		
 		completeMove(curPos.getPlayerToMove());
 	}
@@ -1025,7 +1000,7 @@ public class QuoridorController {
 			return false;
 		}
 		else{
-			List wallsOnBoard = position.getBlackWallsOnBoard();
+			List<Wall> wallsOnBoard = position.getBlackWallsOnBoard();
 			Integer row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
 			Integer column = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
 			Direction direction = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection();
@@ -1186,6 +1161,11 @@ public class QuoridorController {
 		}
 	}
 	
+	/** Method used for gherkin scenarios to set the current player position to an intial tile
+	 * Bypasses all checks for validity
+	 * @param row - row to move current player to
+	 * @param col - column to move current player to
+	 */
 	public static void tpPlayer(int row, int col) {
 		
 		GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
@@ -1199,6 +1179,15 @@ public class QuoridorController {
 			curPos.setBlackPosition(pos);
 		}
 	}
+	
+	/** The public move pawn method visible to the View.
+	 * 	Takes in a change in position (both of which must be <= to 1 in magnitude)
+	 * 	And attempts to move the pawn in that direction.
+	 * 	If it is impossible, returns false
+	 * @param rChange - change in row being attempted
+	 * @param cChange - change in column being attempted
+	 * @return whether the pawn moved succesfully
+	 */
 	public static boolean movePlayer(int rChange, int cChange) {		
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() !=
 				MoveMode.PlayerMove) return false;
@@ -1224,6 +1213,12 @@ public class QuoridorController {
 		return false;
 	}
 	
+	/** A query method to see whether a tile a specific offset from the current player
+	 *  is occupied by the opponent.
+	 * @param rChange - row offset to check
+	 * @param cChange - column offset to check
+	 * @return whether the tile in this direction (offset) has the opponent
+	 */
 	public static boolean hasOpponent(int rChange, int cChange) {
 		PlayerPosition pPos;
 		PlayerPosition oPos;
@@ -1245,6 +1240,14 @@ public class QuoridorController {
 		return false;
 	}
 	
+	/** A private method to take a single step in any (none diagonal) direction
+	 *  Called by movePawn only when the attempted move is not diagonal
+	 *  and there is no opponent in the way. Has a built in check for whether 
+	 *  a wall is impeding the motion
+	 * @param rChange - row offset to step Pawn in (-1, 0, or 1)
+	 * @param cChange - column offset to step Pawn in (-1, 0, or 1)
+	 * @return whether the step was successful
+	 */
 	private static boolean stepPawn(int rChange, int cChange) {
 
 		GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
@@ -1297,6 +1300,14 @@ public class QuoridorController {
 		return true;
 	}
 	
+	/** A private method to make a jump in any (none diagonal) direction
+	 *  Called by movePawn only when the attempted move is not diagonal
+	 *  and there is an opponent in the way. Has a built in check for whether 
+	 *  a wall is impeding the motion
+	 * @param rChange - row offset to jump Pawn in (-2, 0, or 2)
+	 * @param cChange - column offset to jump Pawn in (-2, 0, or 2)
+	 * @return whether the step was successful
+	 */
 	private static boolean jumpPawn(int rChange, int cChange) {
 
 		//You could implement this by seeing if you can move (noWallBlock()) towards the direction
@@ -1439,8 +1450,15 @@ public class QuoridorController {
 		return true;
 	}
 	
+	/** A private method to take a diagonal jump
+	 *  Called by movePawn only when the attempted move is diagonal
+	 *  and there is an opponent AND wall in the way. Has a built in check for whether 
+	 *  a wall is impeding the motion
+	 * @param rChange - row offset to jump Pawn in (-1 or 1)
+	 * @param cChange - column offset to step Pawn in (-1 or 1)
+	 * @return whether the step was successful
+	 */
 	private static boolean diagonalMove(int rChange, int cChange) {
-		//Ok what do I want to do?
 		//Basically, a diagonal move must cross a pawn. I'll do a check
 		//To make sure that a opponent tile - player tile == rChange or cChange
 		//If it's == rChange, I want to make sure the opponent pawn can move 
@@ -1532,8 +1550,8 @@ public class QuoridorController {
 		return false;
 	}
 	
-	/** Helper method that is essentially a copy of stepMove 
-	 *  with an arbitrary player.
+	/** Helper method that checks to see whether a wall is in the way of a player 
+	 * 	movement for an arbitrary player
 	 *  Note, this does not account for an opponent in the way of the move
 	 * @param p - player to check move for
 	 * @param rChange - change in player row
@@ -1617,7 +1635,13 @@ public class QuoridorController {
 		}
 		return true;
 	}
-	
+	/** A method to be used by the view. Takes an array of size corresponding
+	 *  to the number of tiles and marks the tiles the current player is allowed to move to as
+	 *  true. To be used when move pawn is clicked.
+	 *  Note, currently Quoridor checks whether a motion is part of allowed tiles
+	 *  before attempting a move. This means the validity of a move is being checked twice
+	 * @param allowed - a boolean array with tiles the current player can move to marked as true
+	 */
 	public static void findAllowedTiles(boolean[] allowed) {
 		if(allowed.length != 81) return;
 		

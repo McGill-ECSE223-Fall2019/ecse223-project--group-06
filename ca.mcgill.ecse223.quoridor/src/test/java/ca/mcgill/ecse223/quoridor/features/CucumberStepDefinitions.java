@@ -6,18 +6,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.event.WindowEvent;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.Notification;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+
 import org.junit.Assert;
+
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
@@ -26,11 +26,9 @@ import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
-import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
-import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
@@ -45,12 +43,8 @@ import io.cucumber.java.en.When;
 public class CucumberStepDefinitions {
 
 	private QuoridorView view = new QuoridorView();
-	private Quoridor quoridor;
-	private Board board;
-	private Player player1;
-	private Player player2;
+
 	private Player currentPlayer;
-	private Game game;
 	private WallMove aWallMove;
 	
 	// ***********************************************
@@ -172,7 +166,6 @@ public class CucumberStepDefinitions {
 				    view.newGame.doClick();
 				    
 				} catch (InvalidInputException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}
@@ -267,6 +260,11 @@ public class CucumberStepDefinitions {
 		public void i_initiate_to_load_a_saved_game(String filename) {
 			load = QuoridorController.loadGame(filename, true);
 		}
+		@When("I initiate to load a game in {string}")
+		public void iInitiateToLoadAGameIn(String filename) {
+			load = QuoridorController.loadGame(filename, true);
+		}
+		
 		/**
 		*Feature: Load Position
 		*@Author Hongshuo Zhou
@@ -1558,7 +1556,7 @@ public class CucumberStepDefinitions {
 			
 			return playersList;
 		}
-
+/* Not needed anymore since we have start gae and load game
 		private void createAndStartGame(ArrayList<Player> players) {
 			Quoridor quoridor = QuoridorApplication.getQuoridor();
 			Tile player1StartPos = quoridor.getBoard().getTile(4);
@@ -1584,5 +1582,6 @@ public class CucumberStepDefinitions {
 
 			game.setCurrentPosition(gamePosition);
 		}
-			}
+		*/
+}
 			

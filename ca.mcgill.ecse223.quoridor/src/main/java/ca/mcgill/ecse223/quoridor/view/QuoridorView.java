@@ -86,6 +86,7 @@ public class QuoridorView extends JFrame{
 	public int whiteSeconds;
 	public Timer blackTimer;
 	public int blackSeconds;
+	//TODO: Add a JLabel that updates with the buttons and displays controls.
 	
 	public boolean[] outlineTile = new boolean[81];
 	
@@ -452,6 +453,7 @@ public class QuoridorView extends JFrame{
 				if(wall != null) {
 					getContentPane().remove(wall);
 					wall = null;
+					QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(null);
 				}
 				if(board.getMouseListeners().length ==0) board.addMouseListener(boardMouseListener);
 				board.requestFocus();
@@ -485,6 +487,7 @@ public class QuoridorView extends JFrame{
 		JLabel black = new JLabel("Color: Black");	
 		gameLayout = new GroupLayout(getContentPane());
 		board = new JPanel() {
+			private static final long serialVersionUID = 4202341228982165L;
 			@Override
 			public void paintComponent(Graphics g) {
 				//TODO: Make this so it doesn't overide walls on the screen
@@ -593,14 +596,16 @@ public class QuoridorView extends JFrame{
 														 			 .addComponent(p1Turn)
 														  )
 												 .addGroup(gameLayout.createSequentialGroup()
-											 			 			 .addComponent(grabButton) 
-											 			 			 .addComponent(rotateButton)
-											 			 			 .addComponent(saveButton)
-											 			 			 .addComponent(undoButton)
+		 															 .addComponent(grabButton) 
+		 															 .addComponent(moveButton)
 														  )
 												 .addGroup(gameLayout.createSequentialGroup()
-											 			 			 .addComponent(moveButton)
-														 			 .addComponent(validateButton)
+		 															 .addComponent(rotateButton)
+		 															 .addComponent(undoButton)
+		 															 .addComponent(validateButton)
+														  )
+												 .addGroup(gameLayout.createSequentialGroup()
+																	 .addComponent(saveButton)
 																	 .addComponent(exitButton));
 		
 		GroupLayout.Group vertical = gameLayout.createSequentialGroup()
@@ -626,13 +631,15 @@ public class QuoridorView extends JFrame{
 				 										)
 				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(grabButton) 
+				 													.addComponent(moveButton)
+				 										)
+				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(rotateButton)
-				 													.addComponent(saveButton)
 				 													.addComponent(undoButton)
+				 													.addComponent(validateButton)
 				 										)
 												.addGroup(gameLayout.createParallelGroup()
-																	.addComponent(moveButton)
-																	.addComponent(validateButton)
+																	.addComponent(saveButton)
 																	.addComponent(exitButton));
 		
 		
@@ -739,6 +746,7 @@ public class QuoridorView extends JFrame{
 	//This is just to refresh the screen with any changes to the components
 	public void refresh() {
 		if(board != null) board.repaint();
+		
 		SwingUtilities.updateComponentTreeUI(this);
 		pack();
 	}
@@ -746,6 +754,7 @@ public class QuoridorView extends JFrame{
 	
 	//Displays red text on the screen with a given message
 	public void notifyInvalid(String message) {
+		
 		notification.setText(message);
 		notification.setForeground(Color.RED);
 		notification.setVisible(true);
