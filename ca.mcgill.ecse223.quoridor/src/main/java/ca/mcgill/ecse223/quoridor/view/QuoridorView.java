@@ -393,8 +393,13 @@ public class QuoridorView extends JFrame implements KeyListener {
 					wall.addMouseMotionListener(mouseListener);
 					refresh();
 				} else {
-					System.out.println("Grab wall returned false");
-					notifyInvalid("No walls in stock");
+					if(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
+						notifyInvalid("Can only grab 1 wall at a time");
+					}
+					else {
+						System.out.println("Grab wall returned false");
+						notifyInvalid("No walls in stock");
+					}
 				}
 		}});
 		rotateButton.addActionListener(new java.awt.event.ActionListener() {

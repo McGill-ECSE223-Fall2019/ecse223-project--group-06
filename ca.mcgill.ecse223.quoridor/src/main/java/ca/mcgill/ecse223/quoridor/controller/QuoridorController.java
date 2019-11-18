@@ -593,44 +593,47 @@ public class QuoridorController {
 
 	public static boolean grabWall() {
 		// will take in a wall and create a wall move object with some default values
-		WallMove newMove;
-		Player curPlayer;
-		int nrWalls;
-		Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
-		GamePosition curPos = curGame.getCurrentPosition();
-		
-		curGame.setMoveMode(MoveMode.WallMove);
-		
-		if(curPos.getPlayerToMove().equals(curGame.getBlackPlayer())) {
-			curPlayer = curGame.getBlackPlayer();
-			nrWalls = curPos.numberOfBlackWallsInStock();
-			
-		} else {
-			curPlayer = curGame.getWhitePlayer();
-			nrWalls = curPos.numberOfWhiteWallsInStock();
-		}
-		
-		
-		if(nrWalls > 0) {
-			newMove = new WallMove(curGame.getMoves().size()+1, 
-											curGame.getMoves().size()/2+1, 
-											curPlayer, 
-											defaultTile(curPlayer), 
-											curGame, 
-											Direction.Vertical, 
-											curPos.getPlayerToMove().getWall(nrWalls-1));
-			
-			curGame.setWallMoveCandidate(newMove);
-			
-			if(curPlayer.equals(curGame.getBlackPlayer())) {
-				curPos.removeBlackWallsInStock(newMove.getWallPlaced());
-				curPos.addBlackWallsOnBoard(newMove.getWallPlaced());
+		if(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate() == false) {
+			WallMove newMove;
+			Player curPlayer;
+			int nrWalls;
+			Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
+			GamePosition curPos = curGame.getCurrentPosition();
+
+			curGame.setMoveMode(MoveMode.WallMove);
+
+			if(curPos.getPlayerToMove().equals(curGame.getBlackPlayer())) {
+				curPlayer = curGame.getBlackPlayer();
+				nrWalls = curPos.numberOfBlackWallsInStock();
+
 			} else {
-				curPos.removeWhiteWallsInStock(newMove.getWallPlaced());
-				curPos.addWhiteWallsOnBoard(newMove.getWallPlaced());
+				curPlayer = curGame.getWhitePlayer();
+				nrWalls = curPos.numberOfWhiteWallsInStock();
 			}
-			return true;
+
+
+			if(nrWalls > 0) {
+				newMove = new WallMove(curGame.getMoves().size()+1, 
+						curGame.getMoves().size()/2+1, 
+						curPlayer, 
+						defaultTile(curPlayer), 
+						curGame, 
+						Direction.Vertical, 
+						curPos.getPlayerToMove().getWall(nrWalls-1));
+
+				curGame.setWallMoveCandidate(newMove);
+
+				if(curPlayer.equals(curGame.getBlackPlayer())) {
+					curPos.removeBlackWallsInStock(newMove.getWallPlaced());
+					curPos.addBlackWallsOnBoard(newMove.getWallPlaced());
+				} else {
+					curPos.removeWhiteWallsInStock(newMove.getWallPlaced());
+					curPos.addWhiteWallsOnBoard(newMove.getWallPlaced());
+				}
+				return true;
+			}
 		}
+		
 		return false;
 	}
 
