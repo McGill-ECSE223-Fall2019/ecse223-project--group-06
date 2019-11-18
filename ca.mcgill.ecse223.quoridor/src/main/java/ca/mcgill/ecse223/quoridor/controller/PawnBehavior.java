@@ -137,12 +137,6 @@ public class PawnBehavior
     switch (aPawnSM)
     {
       case PlayerMove:
-        if (!(isLegalStep(getDir()))&&!(isLegalJump(getDir())))
-        {
-          setPawnSM(PawnSM.PlayerMove);
-          wasEventProcessed = true;
-          break;
-        }
         if (isLegalStep(getDir()))
         {
         // line 30 "../../../../../PawnStateMachine.ump"
@@ -287,7 +281,7 @@ public class PawnBehavior
 				curPos.setWhitePosition(pos);
 		} else {
 				targetRow = blackRow + rChange;
-				targetCol = blackCol + rChange;
+				targetCol = blackCol + cChange;
 				PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(blackRow + rChange, blackCol + cChange));
 				curPos.setBlackPosition(pos);
 		}
@@ -366,10 +360,10 @@ public class PawnBehavior
 			if(toCheckPos[1] + 1 == existingPos[1] && toCheckPos[0] == existingPos[0]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), 1, 0);
 		} else if(dir.equals(MoveDirection.East)) {
-			if(toCheckPos[0] - 1 == existingPos[0] && toCheckPos[1] == existingPos[1]) return false;
+			if(toCheckPos[0] + 1 == existingPos[0] && toCheckPos[1] == existingPos[1]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), 0, 1);
 		} else if(dir.equals(MoveDirection.West)) {
-			if(toCheckPos[0] + 1 == existingPos[0] && toCheckPos[1] == existingPos[1]) return false;
+			if(toCheckPos[0] - 1 == existingPos[0] && toCheckPos[1] == existingPos[1]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), 0, -1);
 		}
 		
@@ -393,7 +387,7 @@ public class PawnBehavior
 			if(dir == MoveDirection.North) rChange = -2;
 			else if(dir == MoveDirection.South) rChange = 2;
 			else if(dir == MoveDirection.East) cChange = 2;
-			else if(dir == MoveDirection.South) rChange = -2;
+			else if(dir == MoveDirection.West) cChange = -2;
 			if(curPos.getPlayerToMove().equals(white)) {
 				//Moving left or right wall check
 				if(cChange != 0) {
