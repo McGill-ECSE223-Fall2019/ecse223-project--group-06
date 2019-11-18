@@ -12,7 +12,7 @@ public class PawnBehavior
   // ENUMERATIONS
   //------------------------
 
-  public enum MoveDirection { East, South, West, North }
+  public enum MoveDirection { East, South, West, North, NorthEast, NorthWest, SouthWest, SouthEast }
 
   //------------------------
   // MEMBER VARIABLES
@@ -153,6 +153,14 @@ public class PawnBehavior
           wasEventProcessed = true;
           break;
         }
+        if (isLegalDiag(getDir()))
+        {
+        // line 32 "../../../../../PawnStateMachine.ump"
+          moveDiag(dir);
+          setPawnSM(PawnSM.Idle);
+          wasEventProcessed = true;
+          break;
+        }
         break;
       default:
         // Other states do respond to this event
@@ -210,7 +218,54 @@ public class PawnBehavior
     player = null;
   }
 
-  // line 42 "../../../../../PawnStateMachine.ump"
+  // line 41 "../../../../../PawnStateMachine.ump"
+  public void moveDiag(MoveDirection dir){
+    GamePosition curPos = currentGame.getCurrentPosition();
+		Player white = currentGame.getWhitePlayer();
+
+		int whiteCol = curPos.getWhitePosition().getTile().getColumn();
+		int whiteRow = curPos.getWhitePosition().getTile().getRow();
+		int blackCol = curPos.getBlackPosition().getTile().getColumn();
+		int blackRow = curPos.getBlackPosition().getTile().getRow();
+		
+		int rChange = 0, cChange = 0;
+		if(dir == MoveDirection.NorthEast) {
+			rChange = -1;
+			cChange = 1;
+		} else if (dir == MoveDirection.NorthWest) {
+			rChange = -1;
+			cChange = -1;
+		} else if(dir == MoveDirection.SouthEast) {
+			rChange = 1;
+			cChange = 1;
+		} else if (dir == MoveDirection.SouthWest) {
+			rChange = 1;
+			cChange = -1;
+		}
+		int targetRow, targetCol;
+		if(curPos.getPlayerToMove().equals(white)) {
+				targetRow = whiteRow + rChange;
+				targetCol = whiteCol + cChange;
+				PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(whiteRow + rChange, whiteCol + cChange));
+				curPos.setWhitePosition(pos);
+		} else {
+				targetRow = blackRow + rChange;
+				targetCol = blackCol + rChange;
+				PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(blackRow + rChange, blackCol + cChange));
+				curPos.setBlackPosition(pos);
+		}
+		
+		JumpMove move = new JumpMove(currentGame.getMoves().size()+1, 
+									 currentGame.getMoves().size()/2+1, 
+									 curPos.getPlayerToMove(),
+									 QuoridorController.findTile(targetRow, targetCol),
+									 currentGame);
+									 
+		currentGame.addMove(move);
+		QuoridorController.completeMove(curPos.getPlayerToMove());
+  }
+
+  // line 87 "../../../../../PawnStateMachine.ump"
   public void moveStep(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -253,7 +308,7 @@ public class PawnBehavior
 		QuoridorController.completeMove(curPos.getPlayerToMove());
   }
 
-  // line 86 "../../../../../PawnStateMachine.ump"
+  // line 131 "../../../../../PawnStateMachine.ump"
   public void moveJump(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -300,7 +355,7 @@ public class PawnBehavior
   /**
    * Returns the current row number of the pawn
    */
-  // line 132 "../../../../../PawnStateMachine.ump"
+  // line 177 "../../../../../PawnStateMachine.ump"
   public int getCurrentPawnRow(){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -316,7 +371,7 @@ public class PawnBehavior
   /**
    * Returns the current column number of the pawn
    */
-  // line 143 "../../../../../PawnStateMachine.ump"
+  // line 188 "../../../../../PawnStateMachine.ump"
   public int getCurrentPawnColumn(){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -332,7 +387,7 @@ public class PawnBehavior
   /**
    * Returns if it is legal to step in the given direction
    */
-  // line 154 "../../../../../PawnStateMachine.ump"
+  // line 199 "../../../../../PawnStateMachine.ump"
   public boolean isLegalStep(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -374,7 +429,7 @@ public class PawnBehavior
   /**
    * Returns if it is legal to jump in the given direction
    */
-  // line 191 "../../../../../PawnStateMachine.ump"
+  // line 236 "../../../../../PawnStateMachine.ump"
   public boolean isLegalJump(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 			Player white = currentGame.getWhitePlayer();
@@ -388,6 +443,8 @@ public class PawnBehavior
 			else if(dir == MoveDirection.South) rChange = 2;
 			else if(dir == MoveDirection.East) cChange = 2;
 			else if(dir == MoveDirection.West) cChange = -2;
+			else return false;
+			
 			if(curPos.getPlayerToMove().equals(white)) {
 				//Moving left or right wall check
 				if(cChange != 0) {
@@ -492,9 +549,119 @@ public class PawnBehavior
 
 
   /**
+   * Returns if it is legal to jump in the given direction
+   */
+  // line 355 "../../../../../PawnStateMachine.ump"
+  public boolean isLegalDiag(MoveDirection dir){
+    GamePosition curPos = currentGame.getCurrentPosition();
+		Player white = currentGame.getWhitePlayer();
+		
+		Player toMove;
+		Player oppo;
+		
+		int col, row;
+		if(curPos.getPlayerToMove().equals(white)) {
+			col = curPos.getWhitePosition().getTile().getColumn();
+			row = curPos.getWhitePosition().getTile().getRow();
+			
+			toMove = white;
+			oppo = currentGame.getBlackPlayer();
+		} else {
+			col = curPos.getBlackPosition().getTile().getColumn();
+			row = curPos.getBlackPosition().getTile().getRow();
+			
+			oppo = white;
+			toMove = currentGame.getBlackPlayer();
+		}
+
+		//Tiles are drawn by row then by column. 0= row1 col1, 
+		
+		//Checking the has opponent first
+		
+		//Check down
+		if(QuoridorController.hasOpponent(1, 0)) {
+			if(QuoridorController.noWallBlock(toMove, 1, 0)) {
+				if(QuoridorController.noWallBlock(oppo, 1, 0) ) {
+					return false;
+				} else {
+					if(QuoridorController.noWallBlock(oppo, 0, -1)) {
+						//Jump diagonal- check left
+						if(dir != MoveDirection.SouthWest) return false;
+						
+					} 
+					else if(QuoridorController.noWallBlock(oppo, 0, 1)) {
+						//Jump diagonal- check right
+						if(dir != MoveDirection.SouthEast) return false;
+					}
+				}
+			}
+					
+		//Check up
+		} else if(QuoridorController.hasOpponent(-1, 0)) {
+			if(QuoridorController.noWallBlock(toMove, -1, 0)) {
+				if(QuoridorController.noWallBlock(oppo, -1, 0) ) {
+					return false;
+				} else {
+					if(QuoridorController.noWallBlock(oppo, 0, -1)) {
+						//Jump diagonal- check left
+						if(dir != MoveDirection.NorthWest) return false;
+						
+					} 
+					else if(QuoridorController.noWallBlock(oppo, 0, 1)) {
+						//Jump diagonal- check right
+						if(dir != MoveDirection.NorthEast) return false;
+					}
+				}
+			}
+			
+			
+		//Check right
+		} else if(QuoridorController.hasOpponent(0, 1)) {
+			if(QuoridorController.noWallBlock(toMove, 0, 1)) {
+				if(QuoridorController.noWallBlock(oppo, 0, 1) ) {
+					//Jump straight allowed
+					return false;	
+				} else {
+					if(QuoridorController.noWallBlock(oppo, -1, 0)) {
+						//Jump diagonal- check up
+						if(dir != MoveDirection.NorthEast) return false;
+						
+					} 
+					else if(QuoridorController.noWallBlock(oppo, 1, 0)) {
+						//Jump diagonal- check down
+						if(dir != MoveDirection.SouthEast) return false;
+					}
+				}
+			}
+			
+			
+		//Check left
+		} else if(QuoridorController.hasOpponent(0, -1)) {
+			if(QuoridorController.noWallBlock(toMove, 0, -1)) {
+				if(QuoridorController.noWallBlock(oppo, 0, -1) ) {
+					//Jump straight allowed
+					return false;
+				} else {
+					if(QuoridorController.noWallBlock(oppo, -1, 0)) {
+						//Jump diagonal- check up
+						if(dir != MoveDirection.NorthWest) return false;
+						
+					} 
+					else if(QuoridorController.noWallBlock(oppo, 1, 0)) {
+						//Jump diagonal- check down
+						if(dir != MoveDirection.SouthWest) return false;
+					}
+				}
+			}
+		}
+		return true;
+  }
+
+
+  /**
    * Action to be called when an illegal move is attempted
    */
-  // line 307 "../../../../../PawnStateMachine.ump"
+  // line 461 "../../../../../PawnStateMachine.ump"
   public void illegalMove(){
     //Taken care of in view?
     	//throw new RuntimeException("this is a illegal move");

@@ -1124,6 +1124,7 @@ public class QuoridorView extends JFrame{
 		}
 	}
 	public void movePlayer(int rChange, int cChange) {
+		
 		if(rChange == -1) {
 			white.setDir(MoveDirection.North);
 			black.setDir(MoveDirection.North);
@@ -1136,6 +1137,20 @@ public class QuoridorView extends JFrame{
 		} else if (cChange == -1) {
 			white.setDir(MoveDirection.West);
 			black.setDir(MoveDirection.West);
+		}
+		
+		if(rChange == -1 && cChange == -1) {
+			white.setDir(MoveDirection.NorthWest);
+			black.setDir(MoveDirection.NorthWest);
+		}else if(rChange == -1 && cChange == 1) {
+			white.setDir(MoveDirection.NorthEast);
+			black.setDir(MoveDirection.NorthEast);
+		} else if(rChange == 1 && cChange == -1) {
+			white.setDir(MoveDirection.SouthWest);
+			black.setDir(MoveDirection.SouthWest);
+		} else if(rChange == 1 && cChange == 1) {
+			white.setDir(MoveDirection.SouthEast);
+			black.setDir(MoveDirection.SouthEast);
 		}
 		
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
