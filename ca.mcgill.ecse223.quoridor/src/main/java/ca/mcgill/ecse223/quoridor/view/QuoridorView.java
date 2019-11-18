@@ -74,6 +74,7 @@ public class QuoridorView extends JFrame{
 	public JButton undoButton = new JButton("Undo");
 	private JButton exitButton = new JButton("Exit");
 	public JButton rotateButton=new JButton("Rotate Wall");
+	public JButton startPlayerMoveButton = new JButton("Player Move");
 	public JButton grabButton = new JButton("Grab Wall");
 	public JButton moveButton = new JButton("Move Pawn");
 	public JButton validateButton = new JButton("Validate Position");
@@ -447,6 +448,7 @@ public class QuoridorView extends JFrame{
 					}
 				}
 		}});
+
 		moveButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -598,6 +600,12 @@ public class QuoridorView extends JFrame{
 														 			 .addComponent(p1Turn)
 														  )
 												 .addGroup(gameLayout.createSequentialGroup()
+
+											 			 			 .addComponent(grabButton) 
+											 			 			 .addComponent(rotateButton)
+											 			 			 .addComponent(saveButton)
+											 			 			 .addComponent(undoButton)
+
 		 															 .addComponent(grabButton) 
 		 															 .addComponent(moveButton)
 														  )
@@ -605,6 +613,7 @@ public class QuoridorView extends JFrame{
 		 															 .addComponent(rotateButton)
 		 															 .addComponent(undoButton)
 		 															 .addComponent(validateButton)
+
 														  )
 												 .addGroup(gameLayout.createSequentialGroup()
 																	 .addComponent(saveButton)
@@ -637,6 +646,7 @@ public class QuoridorView extends JFrame{
 				 										)
 				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(rotateButton)
+				 													.addComponent(saveButton)
 				 													.addComponent(undoButton)
 				 													.addComponent(validateButton)
 				 										)
@@ -1028,6 +1038,7 @@ public class QuoridorView extends JFrame{
 		if(undoButton.getActionListeners().length > 0)undoButton.removeActionListener(undoButton.getActionListeners()[0]);
 		if(board.getMouseListeners().length > 0)board.removeMouseListener(board.getMouseListeners()[0]);
 		if(board.getKeyListeners().length > 0)board.removeKeyListener(board.getKeyListeners()[0]);
+
 	}
 	
 	//Just toggling radio buttons
