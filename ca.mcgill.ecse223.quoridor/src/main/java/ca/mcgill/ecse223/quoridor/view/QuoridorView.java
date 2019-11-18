@@ -341,6 +341,7 @@ public class QuoridorView extends JFrame implements KeyListener {
 		setTitle("Quoridor");
 		
 		QuoridorController.initializeBoard();
+		
 		whiteTimer = QuoridorController.runwhiteclock(this);
 		blackTimer = QuoridorController.runblackclock(this);
 		
@@ -391,10 +392,10 @@ public class QuoridorView extends JFrame implements KeyListener {
 					wall.addMouseListener(mouseListener);
 					wall.addMouseMotionListener(mouseListener);
 					refresh();
-				}
-				else {
+				} else {
+					System.out.println("Grab wall returned false");
 					notifyInvalid("No walls in stock");
-			}
+				}
 		}});
 		rotateButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
@@ -479,16 +480,12 @@ public class QuoridorView extends JFrame implements KeyListener {
 				}
 				if(whitePos != null) {
 					g.setColor(new Color(255, 255, 255));
-					System.out.print("\nWHITE ROW: " + whitePos.getTile().getRow());
-					System.out.print("\nWHITE COL: " + whitePos.getTile().getColumn());
 					g.fillOval( whitePos.getTile().getRow() * 40 - 35, 
 								whitePos.getTile().getColumn() * 40 - 35, 
 								25, 25);
 				}
 				if(blackPos != null) {
 					g.setColor(new Color(0, 0, 0));
-					System.out.print("\nBLACK ROW: " + blackPos.getTile().getRow());
-					System.out.print("\nBLACK COL: " + blackPos.getTile().getColumn());
 					g.fillOval( blackPos.getTile().getRow() * 40 - 35, 
 								blackPos.getTile().getColumn() * 40 - 35, 
 								25, 25);
@@ -619,12 +616,14 @@ public class QuoridorView extends JFrame implements KeyListener {
 	public void updateView() {
 		if(p1Turn.isSelected()) {
 			whiteSeconds--;
-			p1Time.setText("Time: "+(whiteSeconds / 60)+" m " + (whiteSeconds % 60) +" s ");
+			p1Time.setText("Time: " + (whiteSeconds / 60) + " m " + (whiteSeconds % 60) +" s ");
+			if(QuoridorApplication.getQuoridor().hasCurrentGame())
 			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(whiteSeconds * 1000));
 		} else {
 			blackSeconds--;
 			p2Time.setText("Time: "+(blackSeconds / 60)+" m " + (blackSeconds % 60) +" s ");
-			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setRemainingTime(new Time(blackSeconds * 1000));
+			if(QuoridorApplication.getQuoridor().hasCurrentGame())
+				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setRemainingTime(new Time(blackSeconds * 1000));
 		}
 		refresh();
 	}
@@ -731,9 +730,10 @@ public class QuoridorView extends JFrame implements KeyListener {
 				String name = gameName.getText();
 				if(name.equals("")) {
 					name = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat";
-				} else if(name.length() <=  4 ||
-						!name.substring(name.length() - 4, name.length()).equals(".dat")) {
-					
+		
+				} else if(name.length() <=  4 || 
+						(!name.substring(name.length() - 4, name.length()).equals(".dat") &&
+						!name.substring(name.length() - 4, name.length()).equals(".mov"))) {
 					name += ".dat";
 				}
 				fileName = name;
@@ -742,6 +742,20 @@ public class QuoridorView extends JFrame implements KeyListener {
 					layout.replace(gameNameExplain, notification);
 					layout.replace(saveButton, yesButton);
 					layout.replace(exitButton, noButton);
+					
+					layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+														.addComponent(notification)
+														.addGroup(layout.createSequentialGroup()
+																		.addComponent(yesButton)
+																		.addComponent(noButton)));
+					layout.setVerticalGroup(layout.createSequentialGroup()
+													.addComponent(notification)
+													.addGroup(layout.createParallelGroup()
+																	.addComponent(yesButton)
+																	.addComponent(noButton)));
+					
+					
+					
 					SwingUtilities.updateComponentTreeUI(confirmFrame);
 					confirmFrame.pack();
 				} else {	
@@ -937,11 +951,10 @@ public class QuoridorView extends JFrame implements KeyListener {
 				}
 				QuoridorController.dropWall();
 				switchPlayerButton();
-				refresh();
 			} else {
 				notifyInvalid("Invalid Wall Placement");
-				refresh();
 			}
+			refresh();
 		}
 	}
 	public void RotateWall() {
@@ -949,6 +962,40 @@ public class QuoridorView extends JFrame implements KeyListener {
 			QuoridorController.rotateWall();
 			refresh();
 		}
+	}
+	public void movePlayer(int rChange, int cChange) {
+		//Check if diagonal
+		if(Math.abs(rChange) == 1 && Math.abs(cChange) == 1
+			&& QuoridorController.movePlayer( rChange, cChange, "diagonal")) {
+			switchPlayerButton();
+			refresh();
+			System.out.println("Went diagonal succesfully!");
+			return;
+		}
+		
+		//Otherwise proceed with jump/step Check
+		if(!QuoridorController.hasOpponent(rChange, cChange)) {
+			//If one is 0 and one is a 1 step move	
+			if((Math.abs(rChange) == 0 || Math.abs(cChange) == 0) 
+				&& (Math.abs(rChange)==1 || Math.abs(cChange) == 1) 
+				&& QuoridorController.movePlayer( rChange, cChange, "step"))
+			{
+				switchPlayerButton();
+			} else {
+				notifyInvalid("Invalid Player Move");
+			}
+		} else {
+			//If either one is 0 and the other is 1 step or both are 1 step
+			
+			if((Math.abs(rChange) <= 1 && Math.abs(cChange) <= 1) 
+			   && QuoridorController.movePlayer( rChange, cChange, "jump")) {
+				switchPlayerButton();
+			} else {
+				notifyInvalid("Invalid Player Move");
+			}
+		}
+
+		refresh();
 	}
 
 }
