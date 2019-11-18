@@ -1089,6 +1089,7 @@ public class CucumberStepDefinitions {
 		
 		/**
 		 * Feature: Move Pawn
+		 * @author Yanis Jallouli
 		 */
 		
 		
@@ -1395,6 +1396,7 @@ public class CucumberStepDefinitions {
 		
 		/**
 		 * Feature: Jump Pawn
+		 * @author Yanis Jallouli
 		 */
 		
 		@And("The opponent is located at {int}:{int}")
