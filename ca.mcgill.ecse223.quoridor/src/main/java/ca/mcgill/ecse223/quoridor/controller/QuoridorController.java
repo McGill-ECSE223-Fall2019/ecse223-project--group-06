@@ -171,7 +171,7 @@ public class QuoridorController {
 			return false;
 		}
 		//read line for both players
-		File file = new File("src/../" + filename + ".dat" );
+		File file = new File(filename);
 		String PlayerOneLine = new String();
 		String PlayerTwoLine = new String();
 		BufferedReader reader;
@@ -222,6 +222,7 @@ public class QuoridorController {
 		wposition = new PlayerPosition(wPlayer, wTile);
 
 		initializeBoard();
+		
 		GamePosition loadPosition = game.getCurrentPosition();
 		
 		loadPosition.setPlayerToMove(playerToMove);
@@ -981,20 +982,51 @@ public class QuoridorController {
 											new PlayerPosition(blackPlayer, blackStartTile),	// Move black player to initial position
 											whitePlayer,
 											game);
-		quoridor.getCurrentGame().setCurrentPosition(cur);	
+			
 		
-		game.getCurrentPosition().setPlayerToMove(whitePlayer);	// White players plays first
+		cur.setPlayerToMove(whitePlayer);	// White players plays first
 
 		// Add missing walls in white stock until 10
-		for (int whiteWallInStock = game.getCurrentPosition().getWhiteWallsInStock().size(); whiteWallInStock < 10; whiteWallInStock++) {
-			try{game.getCurrentPosition().addWhiteWallsInStock(new Wall(whiteWallInStock, whitePlayer));}
-			catch(Exception e) {break;}
+		
+		for (int whiteWallInStock = cur.numberOfWhiteWallsInStock(); whiteWallInStock < 10; whiteWallInStock++) {
+			boolean hasWall = true;
+			try {quoridor.getCurrentGame().getWhitePlayer().getWall(whiteWallInStock);} catch(Exception e) {hasWall = false;}
+			if(!hasWall || quoridor.getCurrentGame().getWhitePlayer().getWall(whiteWallInStock) == null) {
+				
+				try{quoridor.getCurrentGame().getWhitePlayer().addWall(whiteWallInStock);}
+				catch(Exception e) {
+					Wall.getWithId(whiteWallInStock).delete();
+					quoridor.getCurrentGame().getWhitePlayer().addWall(whiteWallInStock);
+				}
+				
+				cur.addWhiteWallsInStock(quoridor.getCurrentGame().getWhitePlayer().getWall(whiteWallInStock));
+				
+			} else {
+				cur.addWhiteWallsInStock(quoridor.getCurrentGame().getWhitePlayer().getWall(whiteWallInStock));
+			}
+			
+			
 		}
 		// Add missing walls in black stock until 10
-		for (int blackWallInStock = game.getCurrentPosition().getBlackWallsInStock().size(); blackWallInStock < 10; blackWallInStock++) {
-			try{game.getCurrentPosition().addBlackWallsInStock(new Wall(blackWallInStock + 10, blackPlayer));}
-			catch(Exception e) {break;}
+		
+		for (int blackWallInStock = cur.numberOfBlackWallsInStock(); blackWallInStock < 10; blackWallInStock++) {
+			boolean hasWall = true;
+			try {quoridor.getCurrentGame().getBlackPlayer().getWall(blackWallInStock);} catch(Exception e) {hasWall = false;}
+			if(!hasWall || quoridor.getCurrentGame().getBlackPlayer().getWall(blackWallInStock) == null) {
+				
+				try{quoridor.getCurrentGame().getBlackPlayer().addWall(blackWallInStock + 10);}
+				catch(Exception e) {
+					Wall.getWithId(blackWallInStock + 10).delete();
+					quoridor.getCurrentGame().getBlackPlayer().addWall(blackWallInStock + 10);
+				}
+				cur.addBlackWallsInStock(quoridor.getCurrentGame().getBlackPlayer().getWall(blackWallInStock));
+			} else {
+				cur.addBlackWallsInStock(quoridor.getCurrentGame().getBlackPlayer().getWall(blackWallInStock));
+			}
+			
 		}
+		
+		quoridor.getCurrentGame().setCurrentPosition(cur);
 	}
 	
 	/** 
