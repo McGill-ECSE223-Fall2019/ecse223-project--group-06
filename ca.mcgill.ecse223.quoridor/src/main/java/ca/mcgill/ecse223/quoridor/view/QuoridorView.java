@@ -377,6 +377,8 @@ public class QuoridorView extends JFrame{
 										QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile();
 					int rChange = row - pToMove.getRow();
 					int cChange = col - pToMove.getColumn();
+					if(Math.abs(rChange) == 2) rChange /=2;
+					if(Math.abs(cChange) == 2) cChange /=2;
 					movePlayer(rChange, cChange);
 				} else {
 					notifyInvalid("Invalid Player Move");
