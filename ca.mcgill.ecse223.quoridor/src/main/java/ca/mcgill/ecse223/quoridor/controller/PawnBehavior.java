@@ -234,7 +234,13 @@ public class PawnBehavior
     currentGame = null;
     player = null;
   }
-
+  
+  /**
+   * Makes the pawn jump diagonally towards the direction 'dir' specified
+   * Feature: JumpPawn
+   * @param dir - Move direction where the pawn wants to jump diagonally to
+   * @author Yanis Jallouli
+   */
   // line 45 "../../../../../PawnStateMachine.ump"
   public void moveDiag(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
@@ -282,6 +288,12 @@ public class PawnBehavior
 		QuoridorController.completeMove(curPos.getPlayerToMove());
   }
 
+  /**
+   * Makes the pawn move one step towards the direction 'dir' specified
+   * Feature: MovePawn
+   * @param dir - Move direction where the pawn wants to move one step to
+   * @author Yanis Jallouli
+   */
   // line 91 "../../../../../PawnStateMachine.ump"
   public void moveStep(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
@@ -325,6 +337,12 @@ public class PawnBehavior
 		QuoridorController.completeMove(curPos.getPlayerToMove());
   }
 
+  /**
+   * Makes the pawn jump towards the direction 'dir' specified
+   * Feature: JumpPawn
+   * @param dir - Move direction where the pawn wants to jump to
+   * @author Yanis Jallouli
+   */
   // line 135 "../../../../../PawnStateMachine.ump"
   public void moveJump(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
