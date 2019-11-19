@@ -139,7 +139,7 @@ public class PawnBehavior
       case PlayerMove:
         if (isLegalStep(getDir()))
         {
-        // line 30 "../../../../../PawnStateMachine.ump"
+        // line 34 "../../../../../PawnStateMachine.ump"
           moveStep(dir);
           setPawnSM(PawnSM.Idle);
           wasEventProcessed = true;
@@ -147,7 +147,7 @@ public class PawnBehavior
         }
         if (isLegalJump(getDir()))
         {
-        // line 31 "../../../../../PawnStateMachine.ump"
+        // line 35 "../../../../../PawnStateMachine.ump"
           moveJump(dir);
           setPawnSM(PawnSM.Idle);
           wasEventProcessed = true;
@@ -155,7 +155,7 @@ public class PawnBehavior
         }
         if (isLegalDiag(getDir()))
         {
-        // line 32 "../../../../../PawnStateMachine.ump"
+        // line 36 "../../../../../PawnStateMachine.ump"
           moveDiag(dir);
           setPawnSM(PawnSM.Idle);
           wasEventProcessed = true;
@@ -172,6 +172,23 @@ public class PawnBehavior
   private void setPawnSM(PawnSM aPawnSM)
   {
     pawnSM = aPawnSM;
+
+    // entry actions and do activities
+    switch(pawnSM)
+    {
+      case Idle:
+        // line 16 "../../../../../PawnStateMachine.ump"
+        if(currentGame != null) currentGame.setMoveMode(null);
+        break;
+      case WallMove:
+        // line 25 "../../../../../PawnStateMachine.ump"
+        currentGame.setMoveMode(Game.MoveMode.WallMove);
+        break;
+      case PlayerMove:
+        // line 32 "../../../../../PawnStateMachine.ump"
+        currentGame.setMoveMode(Game.MoveMode.PlayerMove);
+        break;
+    }
   }
   /* Code from template association_GetOne */
   public Game getCurrentGame()
@@ -218,7 +235,7 @@ public class PawnBehavior
     player = null;
   }
 
-  // line 41 "../../../../../PawnStateMachine.ump"
+  // line 45 "../../../../../PawnStateMachine.ump"
   public void moveDiag(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -265,7 +282,7 @@ public class PawnBehavior
 		QuoridorController.completeMove(curPos.getPlayerToMove());
   }
 
-  // line 87 "../../../../../PawnStateMachine.ump"
+  // line 91 "../../../../../PawnStateMachine.ump"
   public void moveStep(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -308,7 +325,7 @@ public class PawnBehavior
 		QuoridorController.completeMove(curPos.getPlayerToMove());
   }
 
-  // line 131 "../../../../../PawnStateMachine.ump"
+  // line 135 "../../../../../PawnStateMachine.ump"
   public void moveJump(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -355,7 +372,7 @@ public class PawnBehavior
   /**
    * Returns the current row number of the pawn
    */
-  // line 177 "../../../../../PawnStateMachine.ump"
+  // line 181 "../../../../../PawnStateMachine.ump"
   public int getCurrentPawnRow(){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -371,7 +388,7 @@ public class PawnBehavior
   /**
    * Returns the current column number of the pawn
    */
-  // line 188 "../../../../../PawnStateMachine.ump"
+  // line 192 "../../../../../PawnStateMachine.ump"
   public int getCurrentPawnColumn(){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -387,7 +404,7 @@ public class PawnBehavior
   /**
    * Returns if it is legal to step in the given direction
    */
-  // line 199 "../../../../../PawnStateMachine.ump"
+  // line 203 "../../../../../PawnStateMachine.ump"
   public boolean isLegalStep(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
@@ -408,16 +425,20 @@ public class PawnBehavior
 			existingPos[1] = curPos.getWhitePosition().getTile().getRow();
 		}
 		//0 = column, 1 = row
-		if(dir.equals(MoveDirection.North)) {
+		if(dir == MoveDirection.North) {
+			if(toCheckPos[1] == 1) return false;
 			if(toCheckPos[1] - 1 == existingPos[1] && toCheckPos[0] == existingPos[0]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), -1, 0);
-		} else if(dir.equals(MoveDirection.South)) {
+		} else if(dir == MoveDirection.South) {
+			if(toCheckPos[1] == 9) return false;
 			if(toCheckPos[1] + 1 == existingPos[1] && toCheckPos[0] == existingPos[0]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), 1, 0);
-		} else if(dir.equals(MoveDirection.East)) {
+		} else if(dir == MoveDirection.East) {
+			if(toCheckPos[0] == 9) return false;
 			if(toCheckPos[0] + 1 == existingPos[0] && toCheckPos[1] == existingPos[1]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), 0, 1);
-		} else if(dir.equals(MoveDirection.West)) {
+		} else if(dir == MoveDirection.West) {
+			if(toCheckPos[0] == 1) return false;
 			if(toCheckPos[0] - 1 == existingPos[0] && toCheckPos[1] == existingPos[1]) return false;
 			return QuoridorController.noWallBlock(curPos.getPlayerToMove(), 0, -1);
 		}
@@ -429,7 +450,7 @@ public class PawnBehavior
   /**
    * Returns if it is legal to jump in the given direction
    */
-  // line 236 "../../../../../PawnStateMachine.ump"
+  // line 244 "../../../../../PawnStateMachine.ump"
   public boolean isLegalJump(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 			Player white = currentGame.getWhitePlayer();
@@ -446,9 +467,10 @@ public class PawnBehavior
 			else return false;
 			
 			if(curPos.getPlayerToMove().equals(white)) {
+				
 				//Moving left or right wall check
 				if(cChange != 0) {
-					if(blackRow != whiteRow || blackCol != (whiteCol + cChange / 2) ) return false;
+					if(blackRow != whiteRow || blackCol != (whiteCol + (cChange / 2) ) ) return false;
 					whiteCol += cChange;
 					if(whiteCol < 1 || whiteCol > 9) return false;
 					for(WallMove w : QuoridorController.getWalls()) {
@@ -469,8 +491,8 @@ public class PawnBehavior
 					}	
 				}
 				//Moving up or down wall check
-				if(rChange != 0) {
-					if(blackCol != whiteCol || blackRow != (whiteRow + rChange / 2) ) return false;
+				else if(rChange != 0) {
+					if(blackCol != whiteCol || blackRow != (whiteRow + (rChange / 2) ) ) return false;
 					whiteRow += rChange;
 					if(whiteRow < 1 || whiteRow > 9) return false;
 					for(WallMove w : QuoridorController.getWalls()) {
@@ -494,9 +516,10 @@ public class PawnBehavior
 				
 				if((blackRow == whiteRow) && (blackCol == whiteCol)) return false;
 			} else {
+
 				//Moving left or right wall check
 				if(cChange != 0) {
-					if(blackRow != whiteRow || whiteCol != (blackCol + cChange / 2) ) return false;
+					if(blackRow != whiteRow || whiteCol != (blackCol + (cChange / 2) ) ) return false;
 					blackCol += cChange;
 					if(blackCol < 1 || blackCol > 9) return false;
 					for(WallMove w : QuoridorController.getWalls()) {
@@ -519,8 +542,8 @@ public class PawnBehavior
 					}	
 				}
 				//Moving up or down wall check
-				if(rChange != 0) {
-					if(blackCol != whiteCol || whiteRow != (blackRow + rChange / 2) ) return false;
+				else if(rChange != 0) {
+					if(blackCol != whiteCol || whiteRow != (blackRow + (rChange / 2) ) ) return false;
 					blackRow += rChange;
 					if(blackRow < 1 || blackRow > 9) return false;
 					for(WallMove w : QuoridorController.getWalls()) {
@@ -551,16 +574,17 @@ public class PawnBehavior
   /**
    * Returns if it is legal to jump in the given direction
    */
-  // line 355 "../../../../../PawnStateMachine.ump"
+  // line 365 "../../../../../PawnStateMachine.ump"
   public boolean isLegalDiag(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
 		Player white = currentGame.getWhitePlayer();
 		
 		Player toMove;
 		Player oppo;
-		
+
 		int col, row;
 		if(curPos.getPlayerToMove().equals(white)) {
+		
 			col = curPos.getWhitePosition().getTile().getColumn();
 			row = curPos.getWhitePosition().getTile().getRow();
 			
@@ -573,11 +597,23 @@ public class PawnBehavior
 			oppo = white;
 			toMove = currentGame.getBlackPlayer();
 		}
+		
+		if (dir == MoveDirection.NorthEast) {
+			if(col==9 || row ==1) return false;
+		} else if(dir == MoveDirection.NorthWest) {
+			if(col==1 || row ==1) return false;
+		} else if(dir == MoveDirection.SouthEast) {
+			if(col==9 || row ==9) return false;
+		} else if(dir == MoveDirection.SouthWest) {
+			if(col==1 || row ==9) return false;
+		} else {
+			return false;
+		}
 
 		//Tiles are drawn by row then by column. 0= row1 col1, 
 		
 		//Checking the has opponent first
-		
+		boolean correct = false;
 		//Check down
 		if(QuoridorController.hasOpponent(1, 0)) {
 			if(QuoridorController.noWallBlock(toMove, 1, 0)) {
@@ -586,16 +622,15 @@ public class PawnBehavior
 				} else {
 					if(QuoridorController.noWallBlock(oppo, 0, -1)) {
 						//Jump diagonal- check left
-						if(dir != MoveDirection.SouthWest) return false;
+						if(dir == MoveDirection.SouthWest) return true;
 						
 					} 
-					else if(QuoridorController.noWallBlock(oppo, 0, 1)) {
+					if(QuoridorController.noWallBlock(oppo, 0, 1)) {
 						//Jump diagonal- check right
-						if(dir != MoveDirection.SouthEast) return false;
+						if(dir == MoveDirection.SouthEast) return true;
 					}
 				}
-			}
-					
+			} 
 		//Check up
 		} else if(QuoridorController.hasOpponent(-1, 0)) {
 			if(QuoridorController.noWallBlock(toMove, -1, 0)) {
@@ -604,17 +639,15 @@ public class PawnBehavior
 				} else {
 					if(QuoridorController.noWallBlock(oppo, 0, -1)) {
 						//Jump diagonal- check left
-						if(dir != MoveDirection.NorthWest) return false;
+						if(dir == MoveDirection.NorthWest) return true;
 						
 					} 
-					else if(QuoridorController.noWallBlock(oppo, 0, 1)) {
+					if(QuoridorController.noWallBlock(oppo, 0, 1)) {
 						//Jump diagonal- check right
-						if(dir != MoveDirection.NorthEast) return false;
+						if(dir == MoveDirection.NorthEast) return true;
 					}
 				}
-			}
-			
-			
+			} 
 		//Check right
 		} else if(QuoridorController.hasOpponent(0, 1)) {
 			if(QuoridorController.noWallBlock(toMove, 0, 1)) {
@@ -624,17 +657,14 @@ public class PawnBehavior
 				} else {
 					if(QuoridorController.noWallBlock(oppo, -1, 0)) {
 						//Jump diagonal- check up
-						if(dir != MoveDirection.NorthEast) return false;
-						
+						if(dir != MoveDirection.NorthEast) return true;
 					} 
-					else if(QuoridorController.noWallBlock(oppo, 1, 0)) {
+					if(QuoridorController.noWallBlock(oppo, 1, 0)) {
 						//Jump diagonal- check down
-						if(dir != MoveDirection.SouthEast) return false;
+						if(dir != MoveDirection.SouthEast) return true;
 					}
 				}
 			}
-			
-			
 		//Check left
 		} else if(QuoridorController.hasOpponent(0, -1)) {
 			if(QuoridorController.noWallBlock(toMove, 0, -1)) {
@@ -644,24 +674,23 @@ public class PawnBehavior
 				} else {
 					if(QuoridorController.noWallBlock(oppo, -1, 0)) {
 						//Jump diagonal- check up
-						if(dir != MoveDirection.NorthWest) return false;
-						
+						if(dir != MoveDirection.NorthWest) return true;
 					} 
-					else if(QuoridorController.noWallBlock(oppo, 1, 0)) {
+					if(QuoridorController.noWallBlock(oppo, 1, 0)) {
 						//Jump diagonal- check down
-						if(dir != MoveDirection.SouthWest) return false;
+						if(dir != MoveDirection.SouthWest) return true;
 					}
 				}
 			}
 		}
-		return true;
+		return false;
   }
 
 
   /**
    * Action to be called when an illegal move is attempted
    */
-  // line 461 "../../../../../PawnStateMachine.ump"
+  // line 477 "../../../../../PawnStateMachine.ump"
   public void illegalMove(){
     //Taken care of in view?
     	//throw new RuntimeException("this is a illegal move");

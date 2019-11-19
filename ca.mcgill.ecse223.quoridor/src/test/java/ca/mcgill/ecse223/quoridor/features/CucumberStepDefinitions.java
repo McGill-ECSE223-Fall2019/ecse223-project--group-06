@@ -20,6 +20,7 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.MoveDirection;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -1271,28 +1272,17 @@ public class CucumberStepDefinitions {
 		
 		@When("Player {string} initiates to move {string}")
 		public void playerIntiatesToMove(String player, String side) {
-			int rChange = 0, cChange = 0;
-			if(side.equals("up"))			rChange = -1;
-			else if(side.equals("down")) 	rChange = 1;
-			else if(side.equals("left")) 	cChange = -1;
-			else if(side.equals("right")) 	cChange = 1;
-			else if(side.equals("upleft")) {
-				cChange = -1;
-				rChange = -1;
-			}
-			else if(side.equals("upright")) {
-				cChange = 1;
-				rChange = -1;
-			}
-			else if(side.equals("downleft")) {
-				cChange = -1;
-				rChange = 1;
-			}
-			else if(side.equals("downright")) {
-				cChange = 1;
-				rChange = 1;
-			}
-			view.movePlayer(rChange, cChange);
+			view.moveButton.doClick(); //Sets the move mode
+			
+			if(side.equals("up")) 				view.movePlayer(MoveDirection.North);
+			else if(side.equals("down")) 		view.movePlayer(MoveDirection.South);
+			else if(side.equals("left")) 		view.movePlayer(MoveDirection.West);
+			else if(side.equals("right")) 		view.movePlayer(MoveDirection.East);
+			else if(side.equals("upleft")) 		view.movePlayer(MoveDirection.NorthWest);
+			else if(side.equals("upright")) 	view.movePlayer(MoveDirection.NorthEast);
+			else if(side.equals("downleft")) 	view.movePlayer(MoveDirection.SouthWest);
+			else if(side.equals("downright"))	view.movePlayer(MoveDirection.SouthEast);
+
 		}
 		
 		@Then("The move {string} shall be {string}")
