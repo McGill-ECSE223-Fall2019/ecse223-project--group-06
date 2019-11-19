@@ -403,6 +403,10 @@ public class PawnBehavior
 
   /**
    * Returns if it is legal to step in the given direction
+   * Feature: MovePawn
+   * @param dir - Move direction where the pawn wants to move one step to
+   * @return boolean - whether the move is legal or not
+   * @author Yanis Jallouli
    */
   // line 203 "../../../../../PawnStateMachine.ump"
   public boolean isLegalStep(MoveDirection dir){
@@ -449,6 +453,10 @@ public class PawnBehavior
 
   /**
    * Returns if it is legal to jump in the given direction
+   * Feature: JumpPawn
+   * @param dir - Move direction where the pawn wants to jump to
+   * @return boolean - whether the jump is legal or not
+   * @author Yanis Jallouli
    */
   // line 244 "../../../../../PawnStateMachine.ump"
   public boolean isLegalJump(MoveDirection dir){
@@ -572,7 +580,11 @@ public class PawnBehavior
 
 
   /**
-   * Returns if it is legal to jump in the given direction
+   * Returns if it is legal to jump diagonally in the given direction
+   * Feature: JumpPawn
+   * @param dir - Move direction where the pawn wants to jump diagonally to
+   * @return boolean - whether the diagonal jump is legal or not
+   * @author Yanis Jallouli
    */
   // line 365 "../../../../../PawnStateMachine.ump"
   public boolean isLegalDiag(MoveDirection dir){
