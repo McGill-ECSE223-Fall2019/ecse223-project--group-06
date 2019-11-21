@@ -6,20 +6,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.awt.event.WindowEvent;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.Notification;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+
 import org.junit.Assert;
+
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.MoveDirection;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -29,7 +30,6 @@ import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
-import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
@@ -44,12 +44,8 @@ import io.cucumber.java.en.When;
 public class CucumberStepDefinitions {
 
 	private QuoridorView view = new QuoridorView();
-	private Quoridor quoridor;
-	private Board board;
-	private Player player1;
-	private Player player2;
+
 	private Player currentPlayer;
-	private Game game;
 	private WallMove aWallMove;
 	
 	// ***********************************************
@@ -171,7 +167,6 @@ public class CucumberStepDefinitions {
 				    view.newGame.doClick();
 				    
 				} catch (InvalidInputException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 		}
@@ -266,6 +261,11 @@ public class CucumberStepDefinitions {
 		public void i_initiate_to_load_a_saved_game(String filename) {
 			load = QuoridorController.loadGame(filename, true);
 		}
+		@When("I initiate to load a game in {string}")
+		public void iInitiateToLoadAGameIn(String filename) {
+			load = QuoridorController.loadGame(filename, true);
+		}
+		
 		/**
 		*Feature: Load Position
 		*@Author Hongshuo Zhou
@@ -856,13 +856,13 @@ public class CucumberStepDefinitions {
 
 		@Then("White's pawn shall be in its initial position")
 		public void whitesPawnShallBeInItsInitialPosition() {
-			assertEquals(1, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
+			assertEquals(9, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow());
 			assertEquals(5, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getColumn());
 		}
 
 		@Then("Black's pawn shall be in its initial position")
 		public void blacksPawnShallBeInItsInitialPosition() {
-			assertEquals(9, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow());
+			assertEquals(1, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow());
 			assertEquals(5, QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getColumn());
 		}
 
@@ -1090,6 +1090,7 @@ public class CucumberStepDefinitions {
 		
 		/**
 		 * Feature: Move Pawn
+		 * @author Yanis Jallouli
 		 */
 		
 		
@@ -1271,28 +1272,17 @@ public class CucumberStepDefinitions {
 		
 		@When("Player {string} initiates to move {string}")
 		public void playerIntiatesToMove(String player, String side) {
-			int rChange = 0, cChange = 0;
-			if(side.equals("up"))			rChange = -1;
-			else if(side.equals("down")) 	rChange = 1;
-			else if(side.equals("left")) 	cChange = -1;
-			else if(side.equals("right")) 	cChange = 1;
-			else if(side.equals("upleft")) {
-				cChange = -1;
-				rChange = -1;
-			}
-			else if(side.equals("upright")) {
-				cChange = 1;
-				rChange = -1;
-			}
-			else if(side.equals("downleft")) {
-				cChange = -1;
-				rChange = 1;
-			}
-			else if(side.equals("downright")) {
-				cChange = 1;
-				rChange = 1;
-			}
-			view.movePlayer(rChange, cChange);
+			view.moveButton.doClick(); //Sets the move mode
+			
+			if(side.equals("up")) 				view.movePlayer(MoveDirection.North);
+			else if(side.equals("down")) 		view.movePlayer(MoveDirection.South);
+			else if(side.equals("left")) 		view.movePlayer(MoveDirection.West);
+			else if(side.equals("right")) 		view.movePlayer(MoveDirection.East);
+			else if(side.equals("upleft")) 		view.movePlayer(MoveDirection.NorthWest);
+			else if(side.equals("upright")) 	view.movePlayer(MoveDirection.NorthEast);
+			else if(side.equals("downleft")) 	view.movePlayer(MoveDirection.SouthWest);
+			else if(side.equals("downright"))	view.movePlayer(MoveDirection.SouthEast);
+
 		}
 		
 		@Then("The move {string} shall be {string}")
@@ -1396,6 +1386,7 @@ public class CucumberStepDefinitions {
 		
 		/**
 		 * Feature: Jump Pawn
+		 * @author Yanis Jallouli
 		 */
 		
 		@And("The opponent is located at {int}:{int}")
@@ -1557,7 +1548,7 @@ public class CucumberStepDefinitions {
 			
 			return playersList;
 		}
-
+/* Not needed anymore since we have start gae and load game
 		private void createAndStartGame(ArrayList<Player> players) {
 			Quoridor quoridor = QuoridorApplication.getQuoridor();
 			Tile player1StartPos = quoridor.getBoard().getTile(4);
@@ -1583,5 +1574,6 @@ public class CucumberStepDefinitions {
 
 			game.setCurrentPosition(gamePosition);
 		}
-			}
+		*/
+}
 			
