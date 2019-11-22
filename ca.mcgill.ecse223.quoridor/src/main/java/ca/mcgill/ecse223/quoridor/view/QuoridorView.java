@@ -37,12 +37,14 @@ import javax.swing.event.MouseInputListener;
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.PawnBehavior;
 import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.MoveDirection;
+import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.PawnSM;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Tile;
+import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 public class QuoridorView extends JFrame{
 	private static final long serialVersionUID = -4426310869335015542L;
@@ -72,6 +74,8 @@ public class QuoridorView extends JFrame{
 	public JRadioButton p1Turn = new JRadioButton("White Turn", true); //Don't put an action listener on this!
 	public JRadioButton p2Turn = new JRadioButton("Black Turn", false); //                ||
 	public JLabel notification = new JLabel(); //To use for any errors, make sure it's being cleared though
+	public JLabel explanation = new JLabel("<html><center>Press 'g' to grab a wall"
+										+  "<br>Or press 'm' to move</center></html>", SwingConstants.CENTER);
 	public JFrame confirmFrame = new JFrame("Confirmation");
 	public JButton saveButton = new JButton("Save");
 	public JButton undoButton = new JButton("Undo");
@@ -83,7 +87,9 @@ public class QuoridorView extends JFrame{
 	public JButton validateButton = new JButton("Validate Position");
 	public JPanel board;
 	private MouseListener boardMouseListener;
-	private JPanel wall;
+	private MouseInputListener wallMouseListener;
+	private JPanel wall = new JPanel();
+	private Point origin;
 	private GroupLayout gameLayout;
 	private String fileName; //Just used to store save file name- eclipse get angry otherwise
 	public Timer whiteTimer;
@@ -368,6 +374,9 @@ public class QuoridorView extends JFrame{
 		whiteTimer = QuoridorController.runwhiteclock(this);
 		blackTimer = QuoridorController.runblackclock(this);
 		
+		
+		
+		
 		boardMouseListener = new MouseListener() {
 			
 			public void mouseEntered(MouseEvent e) {}
@@ -379,36 +388,42 @@ public class QuoridorView extends JFrame{
 				col++;
 				int row = e.getY() / 40; 
 				row++;
+				//Tile of current player to move
+				Tile pToMove = QuoridorController.getCurrentPlayerTile();
 				//Should only be outlined if in player move mode
-				if(outlineTile[(col-1) + (row-1) * 9]) {
-					//Tile of current player to move
-					Tile pToMove = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
-							QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) ? 
-									QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile() :
-										QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile();
-					int rChange = row - pToMove.getRow();
-					int cChange = col - pToMove.getColumn();
-					if(Math.abs(rChange) == 2) rChange /=2;
-					if(Math.abs(cChange) == 2) cChange /=2;
-					if(rChange > 0) {
-						if(cChange > 0) movePlayer(MoveDirection.SouthEast);
-						else if (cChange < 0) movePlayer(MoveDirection.SouthWest);
-						else movePlayer(MoveDirection.South);
-					} else if(rChange < 0) {
-						if(cChange > 0) movePlayer(MoveDirection.NorthEast);
-						else if (cChange < 0) movePlayer(MoveDirection.NorthWest);
-						else movePlayer(MoveDirection.North);
-					} else {
-						if(cChange > 0) movePlayer(MoveDirection.East);
-						else movePlayer(MoveDirection.West);
-					}
+				PawnBehavior toMove = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
+						QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) ? 
+								white : black;
+				if(toMove.getPawnSM() == PawnSM.PlayerMove) {
+					if(outlineTile[(col-1) + (row-1) * 9]) {
 
-				} else {
-					notifyInvalid("Invalid Player Move");
+						int rChange = row - pToMove.getRow();
+						int cChange = col - pToMove.getColumn();
+						if(Math.abs(rChange) == 2) rChange /=2;
+						if(Math.abs(cChange) == 2) cChange /=2;
+						if(rChange > 0) {
+							if(cChange > 0) movePlayer(MoveDirection.SouthEast);
+							else if (cChange < 0) movePlayer(MoveDirection.SouthWest);
+							else movePlayer(MoveDirection.South);
+						} else if(rChange < 0) {
+							if(cChange > 0) movePlayer(MoveDirection.NorthEast);
+							else if (cChange < 0) movePlayer(MoveDirection.NorthWest);
+							else movePlayer(MoveDirection.North);
+						} else {
+							if(cChange > 0) movePlayer(MoveDirection.East);
+							else movePlayer(MoveDirection.West);
+						}
+
+					} else {
+						notifyInvalid("Invalid Player Move");
+					}
+				}else if(QuoridorController.findTile(row, col).equals(pToMove)) {
+					moveButton.doClick();
 				}
 			}
 			
 		};
+		
 		
 		
 		saveButton.addActionListener(new java.awt.event.ActionListener() {
@@ -439,36 +454,42 @@ public class QuoridorView extends JFrame{
 				refresh();
 			}
 		});
+		
+		//TODO: Figure out why it stops rotating / dropping walls
 		grabButton.addActionListener(new java.awt.event.ActionListener() {
+			
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				//TODO: Implement Grab Wall	
-				//I figured out a way. Put the wall on in the game's candidate wall
-				//And call refresh. It should work
-				
-				
+
+				notification.setVisible(false);
 				if(QuoridorController.grabWall()) {
+					
+					if(board.getMouseListeners().length !=0) board.removeMouseListener(boardMouseListener);
 					
 					if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 							QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
-						white.initGrab();
+						white.initGrab(); //Update state machines
 					} else {
 						black.initGrab();
 					}
 					
+					
 					if(wall != null) getContentPane().remove(wall);
 					if(board.getMouseListeners().length != 0) board.removeMouseListener(boardMouseListener);
 					wall = new JPanel();
-					
 					wall.setBounds(47, 60, 5, 75);
 					wall.setBackground(Color.BLACK);
 					wall.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 					getContentPane().add(wall,JLayeredPane.DRAG_LAYER);
-					MouseEventListener mouseListener = new MouseEventListener(wall);
-					wall.addMouseListener(mouseListener);
-					wall.addMouseMotionListener(mouseListener);
 					
+					if(wall.getMouseListeners().length ==0)
+					wall.addMouseListener(wallMouseListener);
+					if(wall.getMouseMotionListeners().length ==0)
+					wall.addMouseMotionListener(wallMouseListener);
 					
+					explanation.setText("<html><center>Click and Drag to move the wall! Enter to Drop"
+							+ 			"<br>Press 'r' or select the Rotate Button to rotate</center></html>");
+					explanation.setVisible(true);
 					Arrays.fill(outlineTile, false);
 					refresh();
 				} else {
@@ -484,14 +505,14 @@ public class QuoridorView extends JFrame{
 		moveButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(
-						MoveMode.PlayerMove);
+				notification.setVisible(false);
+				
 				if(wall != null) {
 					getContentPane().remove(wall);
 					wall = null;
 					QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(null);
 				}
-				if(board.getMouseListeners().length ==0) board.addMouseListener(boardMouseListener);
+				
 				board.requestFocus();
 				QuoridorController.findAllowedTiles(outlineTile);
 				refresh();
@@ -501,8 +522,9 @@ public class QuoridorView extends JFrame{
 				} else {
 					black.initMove();
 				}
-				//TODO: Make tiles a player can move to become outlined and add
-						//a mouse listener so they can click their choice.
+				explanation.setText("Select a highlighted tile to move to that position!");
+				explanation.setVisible(true);
+				pack();
 			}
 		});
 		rotateButton.addActionListener(new java.awt.event.ActionListener() {
@@ -518,6 +540,12 @@ public class QuoridorView extends JFrame{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//TODO: Implement Validate Position- you can set the text of notification to tell user
 				//Remember to set the notification to visible
+				if(!QuoridorController.pathExists(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove())) {
+					notifyInvalid("Invalid Quoridor Position");
+				} else {
+					notifyValid("Quoridor Position is Valid");
+				}
+				
 				refresh();
 			}
 		});
@@ -585,7 +613,6 @@ public class QuoridorView extends JFrame{
 					public void keyTyped(KeyEvent e) {}
 					public void keyPressed(KeyEvent e) {}
 					public void keyReleased(KeyEvent e) {
-						
 						if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 							DropWall();
 						} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
@@ -606,11 +633,80 @@ public class QuoridorView extends JFrame{
 							}
 						} else if (e.getKeyCode() == KeyEvent.VK_R) {
 							RotateWall();
+						} else if (e.getKeyCode() == KeyEvent.VK_G) {
+							grabButton.doClick();
+						} else if (e.getKeyCode() == KeyEvent.VK_M) {
+							moveButton.doClick();
 						}
 						
 					}
 				});	
-		
+		wallMouseListener = new MouseInputListener() {
+			@Override
+		    public void mouseClicked(MouseEvent e) {}
+		    @Override
+		    public void mousePressed(MouseEvent e) {
+		      origin.x = e.getX(); 
+		      origin.y = e.getY();
+		      
+		    }
+		 
+		    @Override
+		    public void mouseReleased(MouseEvent e) {
+		    	board.requestFocusInWindow();
+		    }
+		    @Override
+		    public void mouseEntered(MouseEvent e) {
+		    	
+		    }    
+		    @Override
+		    public void mouseExited(MouseEvent e) {}
+		 
+		    @Override
+		    public void mouseDragged(MouseEvent e) {
+		      Point p = wall.getLocation();
+		      int relX, relY;
+		      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+		    	  relX = p.x + (e.getX() - origin.x) - board.getX() - 15;
+			      relY = p.y + (e.getY() - origin.y) - board.getY() - 15;
+		      } else {
+		    	  relX = p.x + (e.getX() - origin.x) - board.getX() -15;
+			      relY = p.y + (e.getY() - origin.y) - board.getY() - 15;
+		      }
+		      
+		      if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
+		    		  == GameStatus.Running &&
+		    		  QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
+		    	  int row = relY / 40 + 1;
+		    	  int col = relX / 40 + 1;
+		    	  if(row < 1 || row > 9) return;
+		    	  if(col < 1 || col > 9) return;
+		    	  if(!QuoridorController.moveWall(QuoridorController.findTile(row, col))) {
+		    		  return;
+		    	  }
+		    	  row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+		    	  col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+			      refresh(); 
+			      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+			    	  wall.setLocation( 
+						        board.getX() - 5 + col*40, 
+						        board.getY() + row * 40 - 40);
+			      } else {
+			    	  wall.setLocation( 
+						        board.getX() + col*40 - 40, 
+						        board.getY() - 5 + row * 40);
+			      }
+			     
+		      }
+		    }
+		 
+		    @Override
+		    public void mouseMoved(MouseEvent e) { }
+		};
+		wall.addMouseMotionListener(wallMouseListener);
+		wall.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+		origin = new Point(board.getX(), board.getY());
+		board.addMouseListener(boardMouseListener);
 		
 		
 		//Just throwing everything in layout in an organized way
@@ -648,7 +744,9 @@ public class QuoridorView extends JFrame{
 														  )
 												 .addGroup(gameLayout.createSequentialGroup()
 															.addComponent(saveButton)
-															.addComponent(exitButton));
+															.addComponent(exitButton)
+														  )
+												 .addComponent(explanation);
 		
 		GroupLayout.Group vertical = gameLayout.createSequentialGroup()
 				 								.addGroup(gameLayout.createParallelGroup()
@@ -682,7 +780,9 @@ public class QuoridorView extends JFrame{
 				 										)
 												.addGroup(gameLayout.createParallelGroup()
 																	.addComponent(saveButton)
-																	.addComponent(exitButton));
+																	.addComponent(exitButton)
+														 )
+												.addComponent(explanation);
 		
 		
 		
@@ -693,81 +793,7 @@ public class QuoridorView extends JFrame{
 		pack();
 	}
 	
-	class MouseEventListener implements MouseInputListener{
-		Point origin;
-		JPanel wall;
-		public MouseEventListener(JPanel wall) {
-			this.wall=wall;
-			
-			origin = new Point(board.getX(), board.getY());
-		}
-		 @Override
-		    public void mouseClicked(MouseEvent e) {}
-		 
-		    /**
-		    * Â¼Ã‡Ã‚Â¼ÃŠÃ³Â±ÃªÂ°Â´Ã�Ã‚ÃŠÂ±ÂµÃ„ÂµÃ£
-		    */
-		    @Override
-		    public void mousePressed(MouseEvent e) {
-		      origin.x = e.getX(); 
-		      origin.y = e.getY();
-		      
-		    }
-		 
-		    @Override
-		    public void mouseReleased(MouseEvent e) {}
-		    @Override
-		    public void mouseEntered(MouseEvent e) {
-		    	this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-		    }    
-		    @Override
-		    public void mouseExited(MouseEvent e) {
-		    	this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		    }
-		 
-		    @Override
-		    public void mouseDragged(MouseEvent e) {
-		      board.requestFocus();
-		      Point p = this.wall.getLocation();
-		      int relX, relY;
-		      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-		    	  relX = p.x + (e.getX() - origin.x) - board.getX() - 15;
-			      relY = p.y + (e.getY() - origin.y) - board.getY()  + 15;
-		      } else {
-		    	  relX = p.x + (e.getX() - origin.x) - board.getX() + 15;
-			      relY = p.y + (e.getY() - origin.y) - board.getY() - 15;
-		      }
-		      
-		      if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
-		    		  == GameStatus.Running &&
-		    		  QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
-		    	  int row = relY / 40 + 1;
-		    	  int col = relX / 40 + 1;
-		    	  if(row < 1 || row > 9) return;
-		    	  if(col < 1 || col > 9) return;
-		    	  if(!QuoridorController.moveWall(QuoridorController.findTile(row, col))) {
-		    		  return;
-		    	  }
-		    	  row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
-		    	  col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
-			      refresh(); 
-			      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-			    	  this.wall.setLocation( 
-						        board.getX() - 5 + col*40, 
-						        board.getY() + row * 40 - 40);
-			      } else {
-			    	  this.wall.setLocation( 
-						        board.getX() + col*40 - 40, 
-						        board.getY() - 5 + row * 40);
-			      }
-			     
-		      }
-		    }
-		 
-		    @Override
-		    public void mouseMoved(MouseEvent e) { }
-		     
-		  }
+	
 	//Not implemented, but eventually was where I was planning on doing the timer stuff.
 	//I just don't know how
 	public void updateView() {
@@ -799,6 +825,14 @@ public class QuoridorView extends JFrame{
 		
 		notification.setText(message);
 		notification.setForeground(Color.RED);
+		notification.setVisible(true);
+		refresh();
+	}
+	//Displays red text on the screen with a given message
+	public void notifyValid(String message) {
+		
+		notification.setText(message);
+		notification.setForeground(Color.GREEN);
 		notification.setVisible(true);
 		refresh();
 	}
@@ -1060,7 +1094,6 @@ public class QuoridorView extends JFrame{
 	//This will clear the action listers assigned to the various buttons
 	private void clearActionListeners() {
 		//Clear action listeners
-		//TODO: Remove all the ifs once all button actions are implemented
 		if(newGame.getActionListeners().length > 0)newGame.removeActionListener(newGame.getActionListeners()[0]);
 		if(loadGame.getActionListeners().length > 0)loadGame.removeActionListener(loadGame.getActionListeners()[0]);
 		if(saveButton.getActionListeners().length > 0)saveButton.removeActionListener(saveButton.getActionListeners()[0]);
@@ -1070,7 +1103,7 @@ public class QuoridorView extends JFrame{
 		if(undoButton.getActionListeners().length > 0)undoButton.removeActionListener(undoButton.getActionListeners()[0]);
 		if(board.getMouseListeners().length > 0)board.removeMouseListener(board.getMouseListeners()[0]);
 		if(board.getKeyListeners().length > 0)board.removeKeyListener(board.getKeyListeners()[0]);
-
+		if(wall.getMouseMotionListeners().length > 0)wall.removeMouseMotionListener(wall.getMouseMotionListeners()[0]);
 	}
 	
 	//Just toggling radio buttons
@@ -1084,18 +1117,22 @@ public class QuoridorView extends JFrame{
 			p1Turn.setSelected(true);
 			p2Turn.setSelected(false);
 		}
+		explanation.setText("<html><center>Press 'g' to grab a wall"
+						+  "<br>Or press 'm' to move</center></html>");;
+		
+		if(board.getMouseListeners().length ==0) board.addMouseListener(boardMouseListener);
 		refresh();
 	}
 	
 	public void DropWall() {
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-			if(QuoridorController.wallIsValid()) {
+			if(QuoridorController.wallIsValid() && QuoridorController.dropWall()) {
 				
 				JPanel newWall = new JPanel();
-				int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
-		    	int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+				int row = ((WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMoves().get(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1)).getTargetTile().getRow();
+		    	int col = ((WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMoves().get(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1)).getTargetTile().getColumn();
 			    refresh(); 
-			    if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+			    if(((WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMoves().get(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1)).getWallDirection() == Direction.Vertical) {
 			    	
 			    	newWall.setSize(5, 75);
 			    	newWall.setLocation( 
@@ -1121,22 +1158,27 @@ public class QuoridorView extends JFrame{
 					p2Walls.setText("Walls: " + Integer.toString(numWalls - 1));
 				}
 				
-				
-				QuoridorController.dropWall();
 				switchPlayerButton();
 			} else {
+				if(wall.getMouseMotionListeners().length == 0) wall.addMouseMotionListener(wallMouseListener);
+				wall.requestFocusInWindow();
 				notifyInvalid("Invalid Wall Placement");
 			}
 			
 		}
 	}
 	public void RotateWall() {
+		
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
 			QuoridorController.rotateWall();
 			if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Horizontal) {
-				if(wall != null) wall.setBounds(wall.getX() - 35, wall.getY() + 35, 75, 5);
+				if(wall != null) {
+					wall.setBounds(wall.getX() - 35, wall.getY() + 35, 75, 5);
+				}
 			} else {
-				if(wall != null) wall.setBounds(wall.getX() + 35, wall.getY() - 35, 5, 75);
+				if(wall != null) {
+					wall.setBounds(wall.getX() + 35, wall.getY() - 35, 5, 75);
+				}
 			}
 			
 			refresh();
@@ -1155,13 +1197,6 @@ public class QuoridorView extends JFrame{
 			if(black.move()) switchPlayerButton();
 			else notifyInvalid("Invalid Player Move");
 		}
-		/*
-		if(QuoridorController.movePlayer(rChange, cChange)) {
-			switchPlayerButton();
-		} else {
-			notifyInvalid("Invalid Player Move");
-		}
-		*/
 
 	}
 

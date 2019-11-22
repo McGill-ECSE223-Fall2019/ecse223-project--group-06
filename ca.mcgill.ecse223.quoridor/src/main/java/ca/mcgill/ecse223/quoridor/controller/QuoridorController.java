@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -375,15 +376,12 @@ public class QuoridorController {
 			GamePosition position = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
 			if (position == null){
 				return false;
-			}
-			else{
+			} else{
 				if(position.getBlackPosition().getTile() == position.getWhitePosition().getTile()) {
 					return false;
 				}
 				
 				for(Move m : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
-					
-					
 					if (m instanceof WallMove) {
 						ArrayList<WallMove> existing = new ArrayList<WallMove>();
 						WallMove check = (WallMove) m;
@@ -432,7 +430,11 @@ public class QuoridorController {
 						}	
 					}
 				}
-
+				
+				if(aStar(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) == null 
+				|| aStar(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) == null)
+					return false;
+					
 				return true;
 			}
 		
@@ -471,7 +473,18 @@ public class QuoridorController {
 		return true;
 	}
 	
-	//TODO: A* Algorithm
+
+	public static boolean pathExists(Player p) {		
+		return (aStar(p) != null);
+	}
+	public static boolean pathExists() {
+		if(aStar(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) == null 
+	    || aStar(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer()) == null) {
+			return false;
+		}
+		return true;
+	}
+	
 	/** A method to check whether the current wall move candidate is in a valid position.
 	 * Useful for many features, such as move wall and drop wall
 	 * @return Whether the current wall move candidate is valid
@@ -614,8 +627,8 @@ public class QuoridorController {
 			int nrWalls;
 			Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
 			GamePosition curPos = curGame.getCurrentPosition();
-
-			curGame.setMoveMode(MoveMode.WallMove);
+			
+			QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.WallMove);
 
 			if(curPos.getPlayerToMove().equals(curGame.getBlackPlayer())) {
 				curPlayer = curGame.getBlackPlayer();
@@ -692,16 +705,13 @@ public class QuoridorController {
 	 * Updates game position with candidate wall move 
 	 * @author Yanis Jallouli
 	 */
-	public static void dropWall() {
+	public static boolean dropWall() {
 		
 		Game current = QuoridorApplication.getQuoridor().getCurrentGame();
 		GamePosition curPos = current.getCurrentPosition();
-		//Wall curWall = current.getWallMoveCandidate().getWallPlaced();
-		
 		
 		//Both View & MoveWall checks if it's valid for us
 		
-		//Remove Walls from stock and place on board - done in grab wall
 		
 		//Add the move to game list
 		if(current.getMoves().size() > 0) {
@@ -709,13 +719,16 @@ public class QuoridorController {
 		} else {
 			current.getWallMoveCandidate().setPrevMove(null);
 		}
-		current.addMove(current.getWallMoveCandidate());
+
 		
+		if(!pathExists())  {
+			return false;
+		}
 		//Adding the current position to the games list and all that is taken care of 
 		//in complete move (now at least)
-		
-		
+		current.addMove(current.getWallMoveCandidate());
 		completeMove(curPos.getPlayerToMove());
+		return true;
 	}
 	
 	/** Move Is Registered
@@ -1635,6 +1648,84 @@ public class QuoridorController {
 		}
 		return true;
 	}
+	
+	
+	/** Private Helper method that checks to see whether a wall of a specific step 
+	 *  Note, this does not account for an opponent in the way of the move
+	 *  Also note- this one checks the wall move candidate as well
+	 * @param p - player to check move for
+	 * @param rChange - change in player row
+	 * @param cChange - change in player column
+	 * @return boolean- move is allowed
+	 */
+	private static boolean noWallBlockFrom(int curR, int curC, int rChange, int cChange) {
+		//Moving left or right wall check
+		if(cChange != 0) {
+			curC += cChange;
+			if(curC < 1 || curC > 9) return false;
+			for(WallMove w : QuoridorController.getWalls()) {
+				if(w.getWallDirection() == Direction.Vertical) {
+					//og position + change
+					int checkCol = curC - cChange + (int) (cChange-0.1); //if 1 -> 0
+
+					if(w.getTargetTile().getColumn() == checkCol && (w.getTargetTile().getRow() == curR || w.getTargetTile().getRow() == curR - 1)) {
+						return false;
+					}
+				}
+				//Horizontal Wall can't block right/left path
+			}
+			WallMove w = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+			if(w.getWallDirection() == Direction.Vertical) {
+				//og position + change
+				int checkCol = curC - cChange + (int) (cChange-0.1); //if 1 -> 0
+
+				if(w.getTargetTile().getColumn() == checkCol && (w.getTargetTile().getRow() == curR || w.getTargetTile().getRow() == curR - 1)) {
+					return false;
+				}
+			}
+			
+		}
+		//Moving up or down wall check
+		if(rChange != 0) {
+			curR += rChange;
+			if(curR < 1 || curR > 9) return false;
+			for(WallMove w : QuoridorController.getWalls()) {
+				
+				if(w.getWallDirection() == Direction.Horizontal) {
+					//og position + change
+					int checkRow = curR - rChange +  (int) (rChange-0.1); //if 1 -> 0
+
+					if(w.getTargetTile().getRow() == checkRow && (w.getTargetTile().getColumn() == curC || w.getTargetTile().getColumn() == curC - 1)) {
+						return false;
+					}
+				}
+				//Vertical Wall can't block up/down path
+			}
+			
+			WallMove w = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+			if(w.getWallDirection() == Direction.Horizontal) {
+				//og position + change
+				int checkRow = curR - rChange +  (int) (rChange-0.1); //if 1 -> 0
+
+				if(w.getTargetTile().getRow() == checkRow && (w.getTargetTile().getColumn() == curC || w.getTargetTile().getColumn() == curC - 1)) {
+					return false;
+				}
+			}
+			
+		}
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/** A method to be used by the view. Takes an array of size corresponding
 	 *  to the number of tiles and marks the tiles the current player is allowed to move to as
 	 *  true. To be used when move pawn is clicked.
@@ -1775,6 +1866,140 @@ public class QuoridorController {
 				allowed[(col-2) + (row-1) * 9] = true;
 			}
 		}
+	}
+	
+	public static Tile getCurrentPlayerTile() {
+		return QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) ? 
+						QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile() :
+							QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile();
+	}
+	
+	
+	//Lol hopefully nobody cares about this too much.
+	//The class is super helpful for A* though
+	private static class Cell implements Comparable<Cell>{
+		private Cell parent;
+		//private int parentR, parentC; 
+		private int Row, Col;
+		//g = distance from start cell to current tile
+		//h = estimated distance from current tile to goal
+		//f = g+h
+		private int f,g,h;
+		
+		public int compareTo(Cell c) {
+			return (int) Math.signum(this.f - c.f);
+		}
+		
+		@Override
+		public boolean equals(Object c) {
+			if(c instanceof Cell) {
+				Cell p = (Cell) c;
+				return (p.Row == this.Row) && (p.Col == this.Col);
+			}
+			return false;
+		}
+	}
+	
+	private static Cell aStar(Player p) {
+		//Ok how to go about returning this stuff
+		Cell[][] cellDetails = new Cell[9][9]; 
+		for(int i = 0; i <9; i++) { 
+			for(int j = 0; j < 9; j++) {
+				Cell hi = new Cell();
+				hi.f = 2000; 	 hi.h = 1000; 		hi.g = 1000;
+				//hi.parentR = -1; hi.parentC = -1;
+				hi.parent = null;
+				hi.Row = i + 1;  hi.Col = j + 1;
+				cellDetails[i][j] = hi;
+			}
+		
+		}
+		
+		Tile curTile;
+		int goalRow = p.equals(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) ? 1 : 9;
+		if(p.equals(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
+			curTile = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile();
+		} else {
+			curTile = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile();
+		}
+		
+		//A list of all possible options for the next step (tiles to update)
+		PriorityQueue<Cell> open = new PriorityQueue<>();
+		//A list of tiles already checked through/updated
+		ArrayList<Cell> closed = new ArrayList<>();
+	
+		
+		int curRow = curTile.getRow() - 1; 		int curCol = curTile.getColumn() - 1;
+		cellDetails[curRow][curCol].f = 0;
+		cellDetails[curRow][curCol].g = 0;
+		cellDetails[curRow][curCol].h = 0;
+		cellDetails[curRow][curCol].parent = null;
+		//cellDetails[curRow][curCol].parentR = curRow + 1;
+		//cellDetails[curRow][curCol].parentC = curCol + 1;
+		cellDetails[curRow][curCol].Row = curRow + 1;
+		cellDetails[curRow][curCol].Col = curCol + 1;
+		
+		open.add(cellDetails[curRow][curCol]);
+		int count = 0;
+		
+		//Random Upper Limit
+		while(!open.isEmpty() && count < 100) {
+			count++;
+			Cell q = open.poll(); //Returns 'best' tile in q (smallest f)
+			if(q.Row == goalRow) return q; //Found the Target!
+			closed.add(q);
+			
+			//Check successors
+			neighbors: for(int i = 0; i <4; i++ ) {
+				//Return indices of neighbors
+				//-1 to everything for the array thing
+				int tmpRow, tmpCol;
+				if(i<2) {
+					tmpRow = q.Row - 1; //Don't change row
+					tmpCol = q.Col + 2*i  -2; //-1 or 1
+				} else {
+					tmpCol = q.Col - 1; //Don't change col
+					tmpRow = q.Row  + 2 *(i%2)  - 2; //-1 or 1
+				}
+				
+				if(tmpRow > 8 || tmpRow < 0 || tmpCol > 8 || tmpCol < 0) continue neighbors;
+				if(!noWallBlockFrom(q.Row, q.Col, tmpRow+1 - q.Row, tmpCol+1 - q.Col)) continue neighbors;
+				
+				Cell suc = cellDetails[tmpRow][tmpCol]; 
+				int newG = q.g + 1;	
+				
+				boolean isClosed = closed.contains(suc);
+				
+				//IE if open contains suc
+				//Basically refresh open if it's better, or add to open if the thing doesn't have it
+				if(open.remove(suc)) {
+					if(newG < suc.g && !isClosed) { //If new is better, update it and add
+						//suc.parentC = q.Col;
+						//suc.parentR = q.Row;
+						suc.parent = q;
+						suc.g = newG;
+						suc.h = Math.abs(suc.Row - goalRow); //Distance from row to target row
+						suc.f = suc.g + suc.h;
+					}
+					//Don't update it if the newG is greater
+					open.add(suc);
+				} else {
+					//suc.parentC = q.Col;
+					//suc.parentR = q.Row;
+					suc.parent = q;
+					suc.g = newG;
+					suc.h = Math.abs(suc.Row - goalRow); //Distance from row to target row
+					suc.f = suc.g + suc.h;
+					open.add(suc);
+				}
+				
+				if(newG < suc.g && isClosed) {
+					closed.remove(closed.indexOf(suc));
+				}
+			}
+		}
+		return null;		
 	}
 	
 }
