@@ -99,7 +99,27 @@ public class QuoridorController {
 			current.getCurrentPosition().addWhiteWallsOnBoard(w);
 		}
 		
-		current.setWallMoveCandidate(null);
+		
+		
+		if(current.hasWallMoveCandidate()) {	
+			if(current.getMoveMode() == MoveMode.WallMove) {
+				int rn = current.getWallMoveCandidate().getRoundNumber();
+				int mn = current.getWallMoveCandidate().getMoveNumber();
+				Wall wallPlaced = current.getWallMoveCandidate().getWallPlaced();
+				Player moveEM = current.getWallMoveCandidate().getPlayer();
+				Tile t = current.getWallMoveCandidate().getTargetTile();
+				Direction dir = current.getWallMoveCandidate().getWallDirection();
+				
+				current.getWallMoveCandidate().delete();
+				
+				WallMove newMove = new WallMove(mn, rn, moveEM, t, current, dir, wallPlaced);
+				current.addMove(newMove);
+				current.setWallMoveCandidate(null);
+			} else {
+				current.getWallMoveCandidate().delete();
+				current.setWallMoveCandidate(null);
+			}
+		}
 		current.setMoveMode(null);
 
 		//QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(player.getNextPlayer());
@@ -478,8 +498,10 @@ public class QuoridorController {
 		return (aStar(p) != null);
 	}
 	public static boolean pathExists() {
-		if(aStar(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) == null 
-	    || aStar(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer()) == null) {
+		if(aStar(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) == null) {
+			return false;
+		}
+		else if (aStar(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer()) == null) {
 			return false;
 		}
 		return true;
@@ -660,8 +682,67 @@ public class QuoridorController {
 				}
 				return true;
 			}
+		} else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+			//If it has a wall move candidate and is transitioning
+			Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
+			GamePosition curPos = curGame.getCurrentPosition();
+			Player curPlayer = curPos.getPlayerToMove();
+			int nrWalls;
+			
+			if(curPlayer.equals(curGame.getBlackPlayer())) {
+				nrWalls = curPos.numberOfBlackWallsInStock();
+				if(nrWalls > 0) {
+					curPos.removeBlackWallsInStock(curGame.getWallMoveCandidate().getWallPlaced());
+					curPos.addBlackWallsOnBoard(curGame.getWallMoveCandidate().getWallPlaced());
+				}
+
+			} else {
+				nrWalls = curPos.numberOfWhiteWallsInStock();
+				if(nrWalls > 0) {
+					curPos.removeWhiteWallsInStock(curGame.getWallMoveCandidate().getWallPlaced());
+					curPos.addWhiteWallsOnBoard(curGame.getWallMoveCandidate().getWallPlaced());
+				}
+			}
+
+			return true;
 		}
 		
+		return false;
+	}
+	
+	public static boolean undoGrabWall() {
+		//TODO: New problem now. When i undo, it's not removing the wall move candidate from the game
+		//cool. But now when I switch players by move mode after undoing, isn't removing it?
+		//Well it can't. The wall is still marked as placed, even though it isn't
+		if(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate() != false) {
+			Player curPlayer;
+			int nrWalls;
+			Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
+			GamePosition curPos = curGame.getCurrentPosition();
+			
+			if(curPos.getPlayerToMove().equals(curGame.getBlackPlayer())) {
+				curPlayer = curGame.getBlackPlayer();
+				nrWalls = curPos.numberOfBlackWallsOnBoard();
+
+			} else {
+				curPlayer = curGame.getWhitePlayer();
+				nrWalls = curPos.numberOfWhiteWallsOnBoard();
+			}
+
+
+			if(nrWalls > 0) {
+
+				if(curPlayer.equals(curGame.getBlackPlayer())) {
+					curPos.addBlackWallsInStock(curGame.getWallMoveCandidate().getWallPlaced());
+					curPos.removeBlackWallsOnBoard(curGame.getWallMoveCandidate().getWallPlaced());
+				} else {
+					curPos.addWhiteWallsInStock(curGame.getWallMoveCandidate().getWallPlaced());
+					curPos.removeWhiteWallsOnBoard(curGame.getWallMoveCandidate().getWallPlaced());
+				}
+				
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -726,8 +807,10 @@ public class QuoridorController {
 		}
 		//Adding the current position to the games list and all that is taken care of 
 		//in complete move (now at least)
-		current.addMove(current.getWallMoveCandidate());
+		
+		
 		completeMove(curPos.getPlayerToMove());
+		
 		return true;
 	}
 	
@@ -1674,15 +1757,18 @@ public class QuoridorController {
 				}
 				//Horizontal Wall can't block right/left path
 			}
-			WallMove w = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
-			if(w.getWallDirection() == Direction.Vertical) {
-				//og position + change
-				int checkCol = curC - cChange + (int) (cChange-0.1); //if 1 -> 0
+			if(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
+				WallMove w = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+				if(w.getWallDirection() == Direction.Vertical) {
+					//og position + change
+					int checkCol = curC - cChange + (int) (cChange-0.1); //if 1 -> 0
 
-				if(w.getTargetTile().getColumn() == checkCol && (w.getTargetTile().getRow() == curR || w.getTargetTile().getRow() == curR - 1)) {
-					return false;
+					if(w.getTargetTile().getColumn() == checkCol && (w.getTargetTile().getRow() == curR || w.getTargetTile().getRow() == curR - 1)) {
+						return false;
+					}
 				}
 			}
+			
 			
 		}
 		//Moving up or down wall check
@@ -1701,17 +1787,17 @@ public class QuoridorController {
 				}
 				//Vertical Wall can't block up/down path
 			}
-			
-			WallMove w = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
-			if(w.getWallDirection() == Direction.Horizontal) {
-				//og position + change
-				int checkRow = curR - rChange +  (int) (rChange-0.1); //if 1 -> 0
+			if(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
+				WallMove w = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+				if(w.getWallDirection() == Direction.Horizontal) {
+					//og position + change
+					int checkRow = curR - rChange +  (int) (rChange-0.1); //if 1 -> 0
 
-				if(w.getTargetTile().getRow() == checkRow && (w.getTargetTile().getColumn() == curC || w.getTargetTile().getColumn() == curC - 1)) {
-					return false;
+					if(w.getTargetTile().getRow() == checkRow && (w.getTargetTile().getColumn() == curC || w.getTargetTile().getColumn() == curC - 1)) {
+						return false;
+					}
 				}
-			}
-			
+			}		
 		}
 		return true;
 	}
@@ -1902,13 +1988,12 @@ public class QuoridorController {
 	}
 	
 	private static Cell aStar(Player p) {
-		//Ok how to go about returning this stuff
+		//Initialize cells with row / col
 		Cell[][] cellDetails = new Cell[9][9]; 
 		for(int i = 0; i <9; i++) { 
 			for(int j = 0; j < 9; j++) {
 				Cell hi = new Cell();
 				hi.f = 2000; 	 hi.h = 1000; 		hi.g = 1000;
-				//hi.parentR = -1; hi.parentC = -1;
 				hi.parent = null;
 				hi.Row = i + 1;  hi.Col = j + 1;
 				cellDetails[i][j] = hi;
@@ -1929,77 +2014,99 @@ public class QuoridorController {
 		//A list of tiles already checked through/updated
 		ArrayList<Cell> closed = new ArrayList<>();
 	
-		
+		//Start parent cell
 		int curRow = curTile.getRow() - 1; 		int curCol = curTile.getColumn() - 1;
 		cellDetails[curRow][curCol].f = 0;
 		cellDetails[curRow][curCol].g = 0;
 		cellDetails[curRow][curCol].h = 0;
-		cellDetails[curRow][curCol].parent = null;
-		//cellDetails[curRow][curCol].parentR = curRow + 1;
-		//cellDetails[curRow][curCol].parentC = curCol + 1;
-		cellDetails[curRow][curCol].Row = curRow + 1;
-		cellDetails[curRow][curCol].Col = curCol + 1;
-		
 		open.add(cellDetails[curRow][curCol]);
-		int count = 0;
+		int count = 0; //This shouldn't be necessary, but I'm too lazy to make sure
 		
 		//Random Upper Limit
 		while(!open.isEmpty() && count < 100) {
 			count++;
-			Cell q = open.poll(); //Returns 'best' tile in q (smallest f)
+			
+			
+			Cell q = open.poll(); //Returns 'best' tile in q (smallest f)- aka least work to reach and closest
+			//aStarDisplay(open, closed, cellDetails, q);
 			if(q.Row == goalRow) return q; //Found the Target!
 			closed.add(q);
 			
+		
 			//Check successors
 			neighbors: for(int i = 0; i <4; i++ ) {
 				//Return indices of neighbors
 				//-1 to everything for the array thing
 				int tmpRow, tmpCol;
 				if(i<2) {
-					tmpRow = q.Row - 1; //Don't change row
-					tmpCol = q.Col + 2*i  -2; //-1 or 1
-				} else {
 					tmpCol = q.Col - 1; //Don't change col
-					tmpRow = q.Row  + 2 *(i%2)  - 2; //-1 or 1
+					tmpRow = q.Row+2*i-1   -1; //-1 or 1
+				} else {
+					tmpRow = q.Row - 1; //Don't change row
+					tmpCol = q.Col+2*(i%2)-1   -1; //-1 or 1
 				}
 				
 				if(tmpRow > 8 || tmpRow < 0 || tmpCol > 8 || tmpCol < 0) continue neighbors;
 				if(!noWallBlockFrom(q.Row, q.Col, tmpRow+1 - q.Row, tmpCol+1 - q.Col)) continue neighbors;
 				
 				Cell suc = cellDetails[tmpRow][tmpCol]; 
-				int newG = q.g + 1;	
+				
 				
 				boolean isClosed = closed.contains(suc);
+				
+				int newG = q.g + 1; //Testing this out
+				
+				if(newG < suc.g && isClosed) {
+					System.out.println("Problem");
+					//closed.remove(closed.indexOf(suc));
+				} else if(isClosed) {
+					continue neighbors;
+				}
+				//If it's here, it ain't on the closed list
+				
+				
 				
 				//IE if open contains suc
 				//Basically refresh open if it's better, or add to open if the thing doesn't have it
 				if(open.remove(suc)) {
 					if(newG < suc.g && !isClosed) { //If new is better, update it and add
-						//suc.parentC = q.Col;
-						//suc.parentR = q.Row;
 						suc.parent = q;
 						suc.g = newG;
-						suc.h = Math.abs(suc.Row - goalRow); //Distance from row to target row
+						suc.h = 2*Math.abs(suc.Row - goalRow); //Distance from row to target row
 						suc.f = suc.g + suc.h;
+						open.add(suc);
 					}
-					//Don't update it if the newG is greater
 					open.add(suc);
+	
 				} else {
-					//suc.parentC = q.Col;
-					//suc.parentR = q.Row;
+					//If it isn't in open list
 					suc.parent = q;
 					suc.g = newG;
-					suc.h = Math.abs(suc.Row - goalRow); //Distance from row to target row
+					suc.h = 2*Math.abs(suc.Row - goalRow); //Distance from row to target row
 					suc.f = suc.g + suc.h;
 					open.add(suc);
 				}
 				
-				if(newG < suc.g && isClosed) {
-					closed.remove(closed.indexOf(suc));
-				}
+				
 			}
 		}
 		return null;		
+	}
+	
+	private static void aStarDisplay(PriorityQueue<Cell> openList, ArrayList<Cell> closedList, Cell[][] Tiles, Cell q) {
+		//i=row, j= column
+		System.out.println();
+		for(int i = 0; i < 9; i++) {
+			for(int j = 0; j <9; j++) {
+				if(Tiles[i][j].equals(q)) System.out.print("Q");
+				else if(closedList.contains(Tiles[i][j])) System .out.print("X");
+				else if (openList.contains(Tiles[i][j])) System.out.print("O");
+				else System.out.print("-");
+			}
+			System.out.println();
+		}
+			
+		System.out.println();
 	}
 	
 }

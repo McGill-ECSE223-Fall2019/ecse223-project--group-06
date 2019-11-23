@@ -80,19 +80,20 @@ public class CucumberStepDefinitions {
 
 		@Given("The following walls exist:")
 		public void theFollowingWallsExist(io.cucumber.datatable.DataTable dataTable) {
-			Quoridor quoridor = QuoridorApplication.getQuoridor();
+			
+			//Quoridor quoridor = QuoridorApplication.getQuoridor();
 			List<Map<String, String>> valueMaps = dataTable.asMaps();
-			// keys: wrow, wcol, wdir
-			Player[] players = { quoridor.getCurrentGame().getWhitePlayer(), quoridor.getCurrentGame().getBlackPlayer() };
-			int playerIdx = 0;
-			int wallIdxForPlayer = 0;
+			//// keys: wrow, wcol, wdir
+			//Player[] players = { quoridor.getCurrentGame().getWhitePlayer(), quoridor.getCurrentGame().getBlackPlayer() };
+			//int playerIdx = 0;
+			//int wallIdxForPlayer = 0;
 			for (Map<String, String> map : valueMaps) {
 				Integer wrow = Integer.decode(map.get("wrow"));
 				Integer wcol = Integer.decode(map.get("wcol"));
 				// Wall to place
 				// Walls are placed on an alternating basis wrt. the owners
 				//Wall wall = Wall.getWithId(playerIdx * 10 + wallIdxForPlayer);
-				Wall wall = players[playerIdx].getWall(wallIdxForPlayer); // above implementation sets wall to null
+				//Wall wall = players[playerIdx].getWall(wallIdxForPlayer); // above implementation sets wall to null
 
 				String dir = map.get("wdir");
 
@@ -107,10 +108,12 @@ public class CucumberStepDefinitions {
 				default:
 					throw new IllegalArgumentException("Unsupported wall direction was provided");
 				}
-				new WallMove(0, 1, players[playerIdx], quoridor.getBoard().getTile((wrow - 1) * 9 + wcol - 1), quoridor.getCurrentGame(), direction, wall);
+				/*
+				WallMove move = new WallMove(0, 1, players[playerIdx], QuoridorController.findTile(wrow, wcol), quoridor.getCurrentGame(), direction, wall);
 				if (playerIdx == 0) {
 					quoridor.getCurrentGame().getCurrentPosition().removeWhiteWallsInStock(wall);
 					quoridor.getCurrentGame().getCurrentPosition().addWhiteWallsOnBoard(wall);
+					
 				} else {
 					quoridor.getCurrentGame().getCurrentPosition().removeBlackWallsInStock(wall);
 					quoridor.getCurrentGame().getCurrentPosition().addBlackWallsOnBoard(wall);
@@ -118,6 +121,15 @@ public class CucumberStepDefinitions {
 				wallIdxForPlayer = wallIdxForPlayer + playerIdx;
 				playerIdx++;
 				playerIdx = playerIdx % 2;
+				*/
+				view.grabButton.doClick();
+				QuoridorController.moveWall(QuoridorController.findTile(wrow, wcol));
+				if(direction == Direction.Horizontal) {
+					view.rotateButton.doClick();
+				}
+				
+				view.DropWall();
+				
 			}
 			System.out.println();
 
@@ -674,7 +686,6 @@ public class CucumberStepDefinitions {
 
 		@And("The wall candidate is at the {string} edge of the board")
 		public void atTheSide(String side) {
-			//System.out.println(side + QuoridorController.isSide(aWallMove));
 			QuoridorController.isSide(aWallMove);
 		}
 
@@ -703,7 +714,10 @@ public class CucumberStepDefinitions {
 			toCheck.setTargetTile(QuoridorController.findTile(row, col));
 			
 			if(!QuoridorController.wallIsValid()) {
-				QuoridorApplication.getQuoridor().getCurrentGame().getMoves().remove(QuoridorController.invalidWall());
+				//QuoridorApplication.getQuoridor().getCurrentGame().getMoves().remove(QuoridorController.invalidWall());
+				//QuoridorApplication.getQuoridor().getCurrentGame().removeMove(QuoridorController.invalidWall());
+				
+				QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().indexOf(QuoridorController.invalidWall())).setTargetTile(null);
 			}
 		}
 		
@@ -1325,13 +1339,9 @@ public class CucumberStepDefinitions {
 			//Last move added to Positions was white
 			if(toCheck.equals(
 					QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
-				System.out.println("Target White Position: " + curPos.getWhitePosition().getTile().getRow() + " " + curPos.getWhitePosition().getTile().getColumn());
-				System.out.println("Vs: " + row + " " + col);
 				Assert.assertTrue(curPos.getWhitePosition().getTile().getRow() == row && curPos.getWhitePosition().getTile().getColumn() == col);
 			//Last move added to positions was black
 			} else {
-				System.out.println("Target Black Position: " + curPos.getBlackPosition().getTile().getRow() + " " + curPos.getBlackPosition().getTile().getColumn());
-				System.out.println("Vs: " + row + " " + col);
 				Assert.assertTrue(curPos.getBlackPosition().getTile().getRow() == row && curPos.getBlackPosition().getTile().getColumn() == col);
 			}
 			
@@ -1340,6 +1350,7 @@ public class CucumberStepDefinitions {
 		
 		@And("The next player to move shall become {string}")
 		public void theNextPlayerToMoveShallBecome(String player) {
+			//TODO: This quite randomly and rarely comes out to a null pointer (I think somewhere in the get player). Find out why
 			if(player.equals("white")) {
 				Assert.assertTrue(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 						QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())
@@ -1365,6 +1376,7 @@ public class CucumberStepDefinitions {
 			}
 			
 			if(!exists) {
+				//TODO: See if we can't get this working
 				/*
 				QuoridorController.grabWall();
 				QuoridorController.moveWall(QuoridorController.findTile(row, col));
@@ -1465,7 +1477,68 @@ public class CucumberStepDefinitions {
 				}
 			}
 		}
+		
+		///////////////////////////////////////////////////////////////////////////////
+		
+		/** 
+		 * Feature: Check If Path Exists
+		 * @author Yanis Jallouli
+		 */
 
+		
+		@Given("A {string} wall move candidate exists at position {int}:{int}")
+		public void aDirWallMoveCandidateExistsAtPosRowCol(String dir, int row, int col) {
+			//I checked, this is working just fine
+			view.grabButton.doClick();
+			if(dir.equals("horizontal")) view.rotateButton.doClick();
+			QuoridorController.moveWall(QuoridorController.findTile(row, col));
+		}
+		
+		@And("The black player is located at {int}:{int}")
+		public void theBlackPlayerIsAtRowCol(int row, int col) {
+			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+			Player black = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+			
+			PlayerPosition pos = new PlayerPosition(black, QuoridorController.findTile(row, col));
+			curPos.setBlackPosition(pos);
+			
+		}
+		
+		@And("The white player is located at {int}:{int}")
+		public void theWhitePlayerIsAtRowCol(int row, int col) {
+			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+			Player white = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+			
+			PlayerPosition pos = new PlayerPosition(white, QuoridorController.findTile(row, col));
+			curPos.setWhitePosition(pos);
+		}
+		
+		@When("Check path existence is initiated")
+		public void checkPathExistenceIsInitiated() {
+			view.validateButton.doClick();
+		}
+		
+		@Then("Path is available for {string} player\\(s)")
+		public void pathIsAvailableForResultPlayers(String result) {
+			if(result.equals("white")) {
+				Assert.assertTrue(view.notification.getText().equals("Invalid Black Quoridor Position"));
+			} else if (result.equals("black")) {
+				Assert.assertTrue(view.notification.getText().equals("Invalid White Quoridor Position"));
+			} else if (result.equals("none")) {
+				Assert.assertTrue(view.notification.getText().equals("Both Players' Quoridor Positions Are Invalid"));
+			} else {
+				Assert.assertTrue(view.notification.getText().equals("Quoridor Position is Valid"));
+			}
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// ***********************************************

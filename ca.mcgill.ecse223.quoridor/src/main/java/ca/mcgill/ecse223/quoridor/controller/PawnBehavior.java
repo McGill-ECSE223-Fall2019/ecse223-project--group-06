@@ -234,13 +234,7 @@ public class PawnBehavior
     currentGame = null;
     player = null;
   }
-  
-  /**
-   * Makes the pawn jump diagonally towards the direction 'dir' specified
-   * Feature: JumpPawn
-   * @param dir - Move direction where the pawn wants to jump diagonally to
-   * @author Yanis Jallouli
-   */
+
   // line 45 "../../../../../PawnStateMachine.ump"
   public void moveDiag(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
@@ -288,12 +282,6 @@ public class PawnBehavior
 		QuoridorController.completeMove(curPos.getPlayerToMove());
   }
 
-  /**
-   * Makes the pawn move one step towards the direction 'dir' specified
-   * Feature: MovePawn
-   * @param dir - Move direction where the pawn wants to move one step to
-   * @author Yanis Jallouli
-   */
   // line 91 "../../../../../PawnStateMachine.ump"
   public void moveStep(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
@@ -337,12 +325,6 @@ public class PawnBehavior
 		QuoridorController.completeMove(curPos.getPlayerToMove());
   }
 
-  /**
-   * Makes the pawn jump towards the direction 'dir' specified
-   * Feature: JumpPawn
-   * @param dir - Move direction where the pawn wants to jump to
-   * @author Yanis Jallouli
-   */
   // line 135 "../../../../../PawnStateMachine.ump"
   public void moveJump(MoveDirection dir){
     GamePosition curPos = currentGame.getCurrentPosition();
@@ -421,10 +403,6 @@ public class PawnBehavior
 
   /**
    * Returns if it is legal to step in the given direction
-   * Feature: MovePawn
-   * @param dir - Move direction where the pawn wants to move one step to
-   * @return boolean - whether the move is legal or not
-   * @author Yanis Jallouli
    */
   // line 203 "../../../../../PawnStateMachine.ump"
   public boolean isLegalStep(MoveDirection dir){
@@ -471,10 +449,6 @@ public class PawnBehavior
 
   /**
    * Returns if it is legal to jump in the given direction
-   * Feature: JumpPawn
-   * @param dir - Move direction where the pawn wants to jump to
-   * @return boolean - whether the jump is legal or not
-   * @author Yanis Jallouli
    */
   // line 244 "../../../../../PawnStateMachine.ump"
   public boolean isLegalJump(MoveDirection dir){
@@ -598,11 +572,7 @@ public class PawnBehavior
 
 
   /**
-   * Returns if it is legal to jump diagonally in the given direction
-   * Feature: JumpPawn
-   * @param dir - Move direction where the pawn wants to jump diagonally to
-   * @return boolean - whether the diagonal jump is legal or not
-   * @author Yanis Jallouli
+   * Returns if it is legal to jump in the given direction
    */
   // line 365 "../../../../../PawnStateMachine.ump"
   public boolean isLegalDiag(MoveDirection dir){
@@ -687,11 +657,11 @@ public class PawnBehavior
 				} else {
 					if(QuoridorController.noWallBlock(oppo, -1, 0)) {
 						//Jump diagonal- check up
-						if(dir != MoveDirection.NorthEast) return true;
+						if(dir == MoveDirection.NorthEast) return true;
 					} 
 					if(QuoridorController.noWallBlock(oppo, 1, 0)) {
 						//Jump diagonal- check down
-						if(dir != MoveDirection.SouthEast) return true;
+						if(dir == MoveDirection.SouthEast) return true;
 					}
 				}
 			}
@@ -704,11 +674,11 @@ public class PawnBehavior
 				} else {
 					if(QuoridorController.noWallBlock(oppo, -1, 0)) {
 						//Jump diagonal- check up
-						if(dir != MoveDirection.NorthWest) return true;
+						if(dir == MoveDirection.NorthWest) return true;
 					} 
 					if(QuoridorController.noWallBlock(oppo, 1, 0)) {
 						//Jump diagonal- check down
-						if(dir != MoveDirection.SouthWest) return true;
+						if(dir == MoveDirection.SouthWest) return true;
 					}
 				}
 			}
