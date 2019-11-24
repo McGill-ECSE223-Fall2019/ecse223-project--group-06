@@ -200,17 +200,23 @@ public class QuoridorController {
 	 * @throws InvalidInputException
 	 * This method starts the new game and check existing game
 	 */
-	public static void startGame() throws InvalidInputException {
-		
+	public static void startGame(){
+		//QuoridorApplication.getQuoridor().setCurrentGame(null);
+		if (QuoridorApplication.getQuoridor().getCurrentGame() != null) {
+			QuoridorApplication.getQuoridor().getCurrentGame().delete();
+		}
+
 		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
 			Game newGame = new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
 			QuoridorApplication.getQuoridor().setCurrentGame(newGame);
-			Player white = new Player(new Time(0), new User("qoihgpqidvp bfqqg...", QuoridorApplication.getQuoridor()), 0, Direction.Vertical);
-			Player black = new Player(new Time(0), new User("agbawgbawifwagikbakwbja", QuoridorApplication.getQuoridor()), 1, Direction.Vertical);
+			Player white = new Player(new Time(0), new User("qoihgpqi" + QuoridorApplication.getQuoridor().getUsers().size(), QuoridorApplication.getQuoridor()), 0, Direction.Vertical);
+			Player black = new Player(new Time(0), new User("agbawgbawifwagikbakwbja" + QuoridorApplication.getQuoridor().getUsers().size(), QuoridorApplication.getQuoridor()), 1, Direction.Vertical);
 			QuoridorApplication.getQuoridor().getCurrentGame().setWhitePlayer(white);
 			QuoridorApplication.getQuoridor().getCurrentGame().setBlackPlayer(black);
+			
+			
 		} else {
-          throw new InvalidInputException("Running game exist");
+          System.err.println("Running Game Existing");
 		}
 	}
 
@@ -220,29 +226,27 @@ public class QuoridorController {
 	 * @return Whether the game successfully loaded
 	 * @param filename - name of game file
 	 */
-	public static Boolean loadGame(String filename, boolean status) {
-		try {
-			startGame();
-			User white = findUserName("User1");
-			User black = findUserName("User2");
-			if (white == null){
-				createUser("User1");
-				white = findUserName("User1");
-			}
-			if (black == null){
-				createUser("User2");
-				black = findUserName("User2");
-			}
-			setTotaltime(1, 30);
-			runwhiteclock(new QuoridorView());
-			runblackclock(new QuoridorView());
-
-		} catch (InvalidInputException e) {
-			e.printStackTrace();
+	public static Boolean loadGame(String filename) {
+			
+		startGame();
+		User white = findUserName("User1");
+		User black = findUserName("User2");
+		if (white == null){
+			createUser("User1");
+			white = findUserName("User1");
 		}
+		if (black == null){
+			createUser("User2");
+			black = findUserName("User2");
+		}
+		setTotaltime(1, 30);
+		runwhiteclock(new QuoridorView());
+		runblackclock(new QuoridorView());
+		
 		if(!containsFile(filename)) {
 			return false;
 		}
+		initializeBoard();
 		//read line for both players
 		File file = new File(filename);
 		String PlayerOneLine = new String();
@@ -264,6 +268,7 @@ public class QuoridorController {
 		String blackline;
 		String whiteline;
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		
 		int wCol,wRow,bCol,bRow;
 		Tile bTile,wTile;
 		PlayerPosition bposition,wposition;
@@ -298,7 +303,7 @@ public class QuoridorController {
 		
 		wposition = new PlayerPosition(wPlayer, wTile);
 
-		initializeBoard();
+		
 		
 		GamePosition loadPosition = game.getCurrentPosition();
 		
@@ -308,11 +313,13 @@ public class QuoridorController {
 
 		if(validatePos(loadPosition)){
 			game.setCurrentPosition(loadPosition);
-			loadWalls(blackline,bPlayer);
-			loadWalls(whiteline,wPlayer);
+			if(!loadWalls(blackline,bPlayer)) return false;
+			if(!loadWalls(whiteline,wPlayer)) return false;
 			if(!validatePosition()) {
 				return false;
 			}
+			QuoridorApplication.getQuoridor().getCurrentGame().setWallMoveCandidate(null);
+			QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(null);
 			return true;
 		}else{
 			return false;
@@ -325,7 +332,7 @@ public class QuoridorController {
 	 * @param input - inputline
 	 * @param player - player
 	 */
-		public static void loadWalls(String input, Player player) {
+	public static boolean loadWalls(String input, Player player) {
 		//initialize game
 		Game myGame = QuoridorApplication.getQuoridor().getCurrentGame();
 		Wall wall;
@@ -351,6 +358,7 @@ public class QuoridorController {
 			}else{
 				direction = Direction.Vertical;
 			}
+			if(row < 1 || row > 8 || column <1 || column > 8) return false;
 			Tile tile = QuoridorApplication.getQuoridor().getBoard().getTile((row-1)*9+column-1);
 			QuoridorApplication.getQuoridor().getCurrentGame().addMove(new WallMove(counter, 0, player, tile, myGame, direction, wall));
 			if (player.hasGameAsBlack()){
@@ -360,7 +368,7 @@ public class QuoridorController {
 			}
 		}
 		QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(position);
-
+		return true;
 		}
 
 		
@@ -670,7 +678,7 @@ public class QuoridorController {
 						curGame, 
 						Direction.Vertical, 
 						curPos.getPlayerToMove().getWall(nrWalls-1));
-
+				
 				curGame.setWallMoveCandidate(newMove);
 
 				if(curPlayer.equals(curGame.getBlackPlayer())) {
@@ -683,7 +691,7 @@ public class QuoridorController {
 				return true;
 			}
 		} else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-			//If it has a wall move candidate and is transitioning
+			//If it has a wall move candidate and is transitioning- takes care of stock problem
 			Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
 			GamePosition curPos = curGame.getCurrentPosition();
 			Player curPlayer = curPos.getPlayerToMove();
@@ -711,9 +719,6 @@ public class QuoridorController {
 	}
 	
 	public static boolean undoGrabWall() {
-		//TODO: New problem now. When i undo, it's not removing the wall move candidate from the game
-		//cool. But now when I switch players by move mode after undoing, isn't removing it?
-		//Well it can't. The wall is still marked as placed, even though it isn't
 		if(QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate() != false) {
 			Player curPlayer;
 			int nrWalls;
@@ -754,7 +759,7 @@ public class QuoridorController {
 	public static Tile defaultTile(Player curPlayer) {
 		if(curPlayer.equals(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()))
 			return QuoridorApplication.getQuoridor().getBoard().getTile(0);
-		return QuoridorApplication.getQuoridor().getBoard().getTile(80);
+		return QuoridorApplication.getQuoridor().getBoard().getTile(70);
 	}
 	
 	/**
@@ -1167,6 +1172,7 @@ public class QuoridorController {
 	 * @param board - board object that is going to be initialize
 	 */
 	public static void initializeBoard() {
+		
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
 		Player whitePlayer = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
@@ -1174,6 +1180,7 @@ public class QuoridorController {
 		
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		// Fill board
+		quoridor.setBoard(null);
 		if(quoridor.getBoard() == null) {	
 			Board board = new Board(quoridor);
 			for (int i = 1; i <= 9; i++) { // rows
@@ -1181,7 +1188,9 @@ public class QuoridorController {
 					board.addTile(i, j);
 				}
 			}
+			quoridor.setBoard(board);
 		}
+	
 		
 		Tile whiteStartTile = quoridor.getBoard().getTile(76);	// White starting tile
 		Tile blackStartTile = quoridor.getBoard().getTile(4);	// Black starting tile
@@ -1236,6 +1245,7 @@ public class QuoridorController {
 		}
 		
 		quoridor.getCurrentGame().setCurrentPosition(cur);
+		
 	}
 	
 	/** 

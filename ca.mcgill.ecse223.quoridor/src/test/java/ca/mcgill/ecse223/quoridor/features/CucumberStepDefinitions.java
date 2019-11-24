@@ -173,15 +173,10 @@ public class CucumberStepDefinitions {
 	*/
 	@When("A new game is being initialized")
 	public void a_new_game_is_being_initialized() {
-				try {
-					QuoridorController.startGame();
-					view.initLoadScreen();
-				    view.newGame.doClick();
-				    
-				} catch (InvalidInputException e) {
-					e.printStackTrace();
-				}
-		}
+		QuoridorController.startGame();
+		view.initLoadScreen();
+	    view.newGame.doClick();
+	}
 	/**
 	*Feature:Start a new game 
 	*@Author Hongshuo Zhou
@@ -271,11 +266,11 @@ public class CucumberStepDefinitions {
 
 		@When("I initiate to load a saved game {string}")
 		public void i_initiate_to_load_a_saved_game(String filename) {
-			load = QuoridorController.loadGame(filename, true);
+			load = QuoridorController.loadGame(filename);
 		}
 		@When("I initiate to load a game in {string}")
 		public void iInitiateToLoadAGameIn(String filename) {
-			load = QuoridorController.loadGame(filename, true);
+			load = QuoridorController.loadGame(filename);
 		}
 		
 		/**
