@@ -384,7 +384,7 @@ public class QuoridorController {
 			return false;
 		}
 		else{
-			if(loadPosition.getBlackPosition().getTile() == loadPosition.getWhitePosition().getTile()) {
+			if(loadPosition.getBlackPosition().getTile().equals(loadPosition.getWhitePosition().getTile())) {
 				return false;
 			}
 			for(Wall w : loadPosition.getWhiteWallsOnBoard()) {
@@ -402,69 +402,69 @@ public class QuoridorController {
 	 */
 	public static boolean validatePosition() {
 			GamePosition position = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
-			if (position == null){
+			if (position == null) return false;
+			
+			if(position.getBlackPosition().getTile().equals(position.getWhitePosition().getTile())) {
 				return false;
-			} else{
-				if(position.getBlackPosition().getTile() == position.getWhitePosition().getTile()) {
-					return false;
+			}
+			
+			for(WallMove check : QuoridorController.getWalls()) {
+				ArrayList<WallMove> existing = new ArrayList<WallMove>();
+				for(WallMove p : QuoridorController.getWalls()) {
+					if (!p.equals(check)) existing.add(p);
 				}
 				
-				for(Move m : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
-					if (m instanceof WallMove) {
-						ArrayList<WallMove> existing = new ArrayList<WallMove>();
-						WallMove check = (WallMove) m;
-						for(Move p : QuoridorApplication.getQuoridor().getCurrentGame().getMoves()) {
-							if (p instanceof WallMove && !p.equals(m)) existing.add((WallMove) p);
-						}
-						
-						if(check.getWallDirection() == Direction.Horizontal) {
-							if(check.getTargetTile().getColumn() == 9) return false;
-							for(WallMove ex : existing) {
-								//Horizontal check- Horizontal placed
-								if(ex.getWallDirection() == Direction.Horizontal) {
-									
-									if(ex.getTargetTile().getRow() == check.getTargetTile().getRow()) {
-										if(Math.abs(ex.getTargetTile().getColumn() - check.getTargetTile().getColumn()) < 2 ) {
-											return false;
-										}
-									}
-								//Horizontal check- Vertical Place
-								} else {
-									if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
-											&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
-												return false;
-									}
-								}
-							}	
-							
-						} else {
-							if(check.getTargetTile().getRow() == 1) return false;
-							for(WallMove ex : existing) {
-								//Vertical check- Horizontal placed
-								if(ex.getWallDirection() == Direction.Horizontal) {
-									if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
-									&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
-										return false;
-									}
-								//Vertical check- Vertical Place
-								} else {
-									if(ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
-												if(Math.abs(ex.getTargetTile().getRow() - check.getTargetTile().getRow()) < 2 ) {
-													return false;
-												}
-									}
+				if(check.getWallDirection() == Direction.Horizontal) {
+					if(check.getTargetTile().getColumn() > 8 || check.getTargetTile().getColumn() < 1) return false;
+					for(WallMove ex : existing) {
+						System.out.println("HH EXRC= " + ex.getTargetTile().getRow() + ex.getTargetTile().getColumn() + " CHRC= " + check.getTargetTile().getRow() + check.getTargetTile().getColumn());
+						//Horizontal check- Horizontal placed
+						if(ex.getWallDirection() == Direction.Horizontal) {
+							System.out.println("HH EXRC= " + ex.getTargetTile().getRow() + ex.getTargetTile().getColumn() + " CHRC= " + check.getTargetTile().getRow() + check.getTargetTile().getColumn());
+							if(ex.getTargetTile().getRow() == check.getTargetTile().getRow()) {
+								if(Math.abs(ex.getTargetTile().getColumn() - check.getTargetTile().getColumn()) < 2 ) {
+									return false;
 								}
 							}
-						}	
-					}
-				}
-				
-				if(aStar(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) == null 
-				|| aStar(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) == null)
-					return false;
+							
+						//Horizontal check- Vertical Place
+						} else {
+							System.out.println("VH EXRC= " + ex.getTargetTile().getRow() + ex.getTargetTile().getColumn() + " CHRC= " + check.getTargetTile().getRow() + check.getTargetTile().getColumn());
+							if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
+									&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+										return false;
+							}
+						}
+					}	
 					
-				return true;
+				} else {
+					if(check.getTargetTile().getRow() > 8 || check.getTargetTile().getRow() < 1) return false;
+					for(WallMove ex : existing) {
+						//Vertical check- Horizontal placed
+						if(ex.getWallDirection() == Direction.Horizontal) {
+							System.out.println("HV EXRC= " + ex.getTargetTile().getRow() + ex.getTargetTile().getColumn() + " CHRC= " + check.getTargetTile().getRow() + check.getTargetTile().getColumn());
+							if(ex.getTargetTile().getRow() == check.getTargetTile().getRow() 
+							&& ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+								return false;
+							}
+						//Vertical check- Vertical Place
+						} else {
+							System.out.println("VV EXRC= " + ex.getTargetTile().getRow() + ex.getTargetTile().getColumn() + " CHRC= " + check.getTargetTile().getRow() + check.getTargetTile().getColumn());System.out.println("HH EXRC= " + ex.getTargetTile().getRow() + ex.getTargetTile().getColumn() + " CHRC= " + check.getTargetTile().getRow() + check.getTargetTile().getColumn());
+							if(ex.getTargetTile().getColumn() == check.getTargetTile().getColumn()) {
+								if(Math.abs(ex.getTargetTile().getRow() - check.getTargetTile().getRow()) < 2 ) {
+									return false;
+								}
+							}
+						}
+					}
+				}	
 			}
+			/* done separately in view
+			if(aStar(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()) == null 
+			|| aStar(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer()) == null)
+				return false;
+				*/
+			return true;
 		
 	}
 	//////////////////////////////////////////////////////////////
@@ -499,6 +499,11 @@ public class QuoridorController {
 			return false;
 		}
 		return true;
+	}
+	
+	
+	public static void tpWall(Tile targetTile) {
+		QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setTargetTile(targetTile);
 	}
 	
 
@@ -812,7 +817,7 @@ public class QuoridorController {
 		}
 		//Adding the current position to the games list and all that is taken care of 
 		//in complete move (now at least)
-		
+		System.out.println("Wall added to row: " + current.getWallMoveCandidate().getTargetTile().getRow() + " COl: " + current.getWallMoveCandidate().getTargetTile().getColumn());
 		
 		completeMove(curPos.getPlayerToMove());
 		
@@ -1010,6 +1015,7 @@ public class QuoridorController {
 	 */
 	public static boolean containsFile(String filepath) {
 		//String workDirectory = System.getProperty("user.dir");
+		if(filepath ==null || filepath.equals("")) return false;
 		File file = new File(filepath);
 		return file.exists();
 	}
@@ -1030,14 +1036,16 @@ public class QuoridorController {
 		try {
 			//Goes to the last line of the scanner
 			Scanner scan = new Scanner(fil);
-			scan.useDelimiter(Pattern.compile("."));
+			scan.useDelimiter(Pattern.compile(" "));
 			//I have two empty lines. One in the middle and one at the end
-			while(scan.hasNextLine()) {
-				scan.nextLine();
-				if(scan.hasNextInt()) {
-					moveNumber = scan.nextInt();
-				}
+			if(scan.hasNextLine()) scan.nextLine();
+			if(scan.hasNextLine()) scan.nextLine();
+			if(scan.hasNextLine()) scan.nextLine();
+			while(scan.hasNext()) {
+				scan.next();
+				moveNumber++;
 			}
+			if(moveNumber != 0) moveNumber--; //One of the next things will be the /n probably
 			
 			scan.close();
 			
@@ -1045,17 +1053,22 @@ public class QuoridorController {
 			e.printStackTrace();
 			return false;
 		}
+		
 		int realMoveNum = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
+		
 		if(realMoveNum == moveNumber) {
 			//This is to combat the "File is up to date but not modified('updated')"
 			//Essentially I'm setting last mod to 0 when we update, or a high number when we don't
 			//TODO: Remove this once we don't need Gherkin
-			if(fil.lastModified() > 10000) {	
+			if(fil.lastModified() > 10000) {
+				System.out.println("Last Modified: " + fil.lastModified());
 				return false;
 			}
 			
 			return true;
 		} else {
+			System.out.println("Real Move Number: " + realMoveNum);
+			System.out.println("Move Number Found: " + realMoveNum);
 			return false;
 		}
 
@@ -1256,14 +1269,13 @@ public class QuoridorController {
 	 * @param wall - wall object that is going to be rotated
 	 */
 	public static void rotateWall() {
+		if(!QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) return;
 		if (QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection().equals(Direction.Vertical)) {
 			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(Direction.Horizontal);
 			
-		} else if (QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection().equals(Direction.Horizontal)) {
+		} else {
 			QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().setWallDirection(Direction.Vertical);
 			
-		} else {
-			throw new java.lang.UnsupportedOperationException();
 		}
 	}
 	

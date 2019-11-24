@@ -123,12 +123,20 @@ public class CucumberStepDefinitions {
 				playerIdx = playerIdx % 2;
 				*/
 				view.grabButton.doClick();
-				QuoridorController.moveWall(QuoridorController.findTile(wrow, wcol));
+				if(!QuoridorController.moveWall(QuoridorController.findTile(wrow, wcol))) {
+					QuoridorController.tpWall(QuoridorController.findTile(wrow, wcol));
+				};
 				if(direction == Direction.Horizontal) {
 					view.rotateButton.doClick();
 				}
-				
-				view.DropWall();
+				if(QuoridorController.wallIsValid()) {
+					System.out.println("Wall was valid");
+					view.DropWall();
+				} else {
+					QuoridorController.dropWall();
+					System.out.println("Wall was valid");
+				}	
+				System.out.println("Added a wall (or tried) at " + wrow + wcol);
 				
 			}
 			System.out.println();
@@ -1028,30 +1036,36 @@ public class CucumberStepDefinitions {
 
 		@When("Validation of the position is initiated")
 		public void validationOfThePositionIsInitiated() {
-			QuoridorController.validatePosition();
+			//QuoridorController.validatePosition();
+			view.validateButton.doClick();
 		}
 
 		@Then("The position shall be {string}")
 		public void thePositionShallBe(String string) {
 			if(QuoridorController.validatePosition()) {
-				string = "ok";
+				//string = "ok";
+				Assert.assertTrue(string.equals("ok"));
 			}
 			else {
-				string = "error";
+				Assert.assertFalse(string.equals("ok"));
 			}
 		}
 
 		@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
-		public void aGamePositionIsSuppliedWithWallCoordinate(Integer int1, Integer int2, String string) {		
+		public void aGamePositionIsSuppliedWithWallCoordinate(Integer row, Integer col, String string) {		
 			Direction directionGiven = null;
 
-			if(string == "vertical") {
+			if(string.equals("vertical")) {
 				directionGiven = Direction.Vertical;					
-			}
-			if(string == "horizontal") {
+			} else {
 				directionGiven = Direction.Horizontal;
 			}
 
+			view.grabButton.doClick();
+			QuoridorController.moveWall(QuoridorController.findTile(row, col));
+			if(directionGiven == Direction.Horizontal) view.rotateButton.doClick();
+			QuoridorController.dropWall();
+			/*
 			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
 				List<Wall> blackWalls =  QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsOnBoard();
 				Integer row;
@@ -1083,16 +1097,21 @@ public class CucumberStepDefinitions {
 					assertEquals(directionGiven, direction);
 				}
 			}
+			*/
 		}
 
 		@Then("The position shall be valid")
 		public void thePositionShallBeValid() {
-			assertEquals(true, QuoridorController.validatePosition());
+			Assert.assertTrue(view.notification.getText().equals("Quoridor Position is Valid"));
+			
+			//assertEquals(true, QuoridorController.validatePosition());
 		}
 
 		@Then("The position shall be invalid")
 		public void thePositionShallBeInvalid() {
-			assertEquals(false, QuoridorController.validPosition());
+			System.out.println("Notification: " + view.notification.getText());
+			Assert.assertTrue(view.notification.getText().equals("Invalid Quoridor Position"));
+			//assertEquals(false, QuoridorController.validPosition());
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////

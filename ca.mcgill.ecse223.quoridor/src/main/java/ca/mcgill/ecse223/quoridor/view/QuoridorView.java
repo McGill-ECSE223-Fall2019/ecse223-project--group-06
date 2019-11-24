@@ -67,6 +67,7 @@ public class QuoridorView extends JFrame{
 	public JButton useExistingBlack = new JButton("Use existing names");
 	public String userSelecting = "white";
 	public JList<String> userList;
+	JScrollPane filePane = new JScrollPane();
 		
 	public JLabel p1Name = new JLabel();
 	public JLabel p2Name = new JLabel();
@@ -128,13 +129,8 @@ public class QuoridorView extends JFrame{
 		layout.setHorizontalGroup(horizontal);
 		layout.setVerticalGroup(vertical);
 		
-		JScrollPane panelString = new JScrollPane();
-		
 		DefaultListModel<String> l = new DefaultListModel<>(); 
-		for(User r : QuoridorApplication.getQuoridor().getUsers()) {
-			l.addElement(r.getName());
-		}
-		System.out.println();
+		
 		File dir = new File(System.getProperty("user.dir"));
 		
 		File[] saveFiles = dir.listFiles();
@@ -159,10 +155,10 @@ public class QuoridorView extends JFrame{
 		loadGame.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				layout.setHorizontalGroup(layout.createSequentialGroup().addGroup(horizontal)
-						.addComponent(panelString));
-				layout.setVerticalGroup(layout.createParallelGroup().addGroup(vertical)
-					  .addComponent(panelString));
+				layout.setHorizontalGroup(layout.createParallelGroup().addGroup(horizontal)
+						.addComponent(filePane));
+				layout.setVerticalGroup(layout.createSequentialGroup().addGroup(vertical)
+					  .addComponent(filePane));
 				getContentPane().setLayout(layout);
 				pack();
 			}
@@ -179,6 +175,7 @@ public class QuoridorView extends JFrame{
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
 						if(QuoridorController.loadGame(fileList.getSelectedValue())) {
+							fileName = fileList.getSelectedValue();
 							p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
 							p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
 							
@@ -213,19 +210,19 @@ public class QuoridorView extends JFrame{
 								
 							}
 							board.requestFocusInWindow();
-							//TODO: Figure out why the mouse listener doesn't work when you load a game
+							
 						} else {
 							notifyInvalid("Load File Error- Invalid Position");
 							layout.setHorizontalGroup(layout.createSequentialGroup()
 															.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 																			.addGroup(horizontal)
 																			.addComponent(notification))
-															.addComponent(panelString));
+															.addComponent(filePane));
 							layout.setVerticalGroup(layout.createParallelGroup()
 													.addGroup(layout.createSequentialGroup()
 																	.addGroup(vertical)
 																	.addComponent(notification))
-													.addComponent(panelString));
+													.addComponent(filePane));
 
 							getContentPane().setLayout(layout);
 							pack();
@@ -233,9 +230,12 @@ public class QuoridorView extends JFrame{
 	
 						
 					}
+				if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+					confirmDeleteFile(fileList.getSelectedValue());
+				}
 			}
 		});
-        panelString.setViewportView(fileList);
+        filePane.setViewportView(fileList);
 		
 		
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {newGame, loadGame});
@@ -369,7 +369,108 @@ public class QuoridorView extends JFrame{
 				
 			}
 		});
-        pane.setViewportView(userList);
+        
+        
+		
+		DefaultListModel<String> listoo = new DefaultListModel<>(); 
+	
+		File dir = new File(System.getProperty("user.dir"));
+		
+		File[] saveFiles = dir.listFiles();
+		String name;
+		if(saveFiles != null) {
+			for(File f : saveFiles) {
+				name = f.getName();
+				if( name.length() > 4 && (name.substring(name.length() - 4, name.length()).equals(".dat") 
+					||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
+					listoo.addElement(f.getName());
+				}
+				
+			}
+		}
+        
+        //Load Game Button Definition
+
+		JList<String> fileList = new JList<String>(listoo);
+	    //Will work on enter
+	    
+	    fileList.addKeyListener(new java.awt.event.KeyListener() {
+			public void keyPressed(java.awt.event.KeyEvent evt) {}
+			public void keyTyped(java.awt.event.KeyEvent evt) {}
+			@Override
+			public void keyReleased(java.awt.event.KeyEvent evt) {
+				if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+						if(QuoridorController.loadGame(fileList.getSelectedValue())) {
+							p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
+							p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
+							
+							whiteSeconds = 60*10;
+							blackSeconds = 60*10;
+							p1Time.setText("Time: "+10+" m " + 0 +" s ");
+							p2Time.setText("Time: "+10+" m " + 0 +" s ");
+							
+							QuoridorController.setTotaltime(10, 0);
+							fileList.removeKeyListener(fileList.getKeyListeners()[0]);
+							initGame();
+							for(WallMove w : QuoridorController.getWalls()) {
+								
+								JPanel newWall = new JPanel();
+								int row = w.getTargetTile().getRow();
+						    	int col = w.getTargetTile().getColumn();
+							    refresh(); 
+							    if(w.getWallDirection() == Direction.Vertical) {
+							    	
+							    	newWall.setSize(5, 75);
+							    	newWall.setLocation( 
+										     board.getX() - 5 + col*40, 
+										     board.getY() + row * 40 - 40);
+							      } else {
+							    	  newWall.setSize(75, 5);
+							    	  newWall.setLocation( 
+										        board.getX() + col*40 - 40, 
+										        board.getY() - 5 + row * 40);
+							      }
+								newWall.setBackground(Color.BLACK);
+								getContentPane().add(newWall);
+								
+							}
+							board.requestFocusInWindow();
+						} else {
+							notifyInvalid("Load File Error- Invalid Position");
+							layout.setHorizontalGroup(layout.createSequentialGroup()
+															.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+																			.addGroup(horizontal)
+																			.addComponent(notification))
+															.addComponent(pane));
+							layout.setVerticalGroup(layout.createParallelGroup()
+													.addGroup(layout.createSequentialGroup()
+																	.addGroup(vertical)
+																	.addComponent(notification))
+													.addComponent(pane));
+
+							getContentPane().setLayout(layout);
+							pack();
+						}
+	
+						
+					}
+			}
+		});  
+        loadGame.removeActionListener(loadGame.getActionListeners()[0]);
+		loadGame.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				layout.setHorizontalGroup(layout.createSequentialGroup().addGroup(horizontal)
+						.addComponent(pane));
+				layout.setVerticalGroup(layout.createParallelGroup().addGroup(vertical)
+					  .addComponent(pane));
+				pane.setViewportView(fileList);
+				getContentPane().setLayout(layout);
+				pack();
+			}
+		});	
+        
+        
         
         //Define action for use existing button
 		useExistingWhite.addActionListener(new java.awt.event.ActionListener() {
@@ -381,6 +482,7 @@ public class QuoridorView extends JFrame{
 				layout.setVerticalGroup(layout.createParallelGroup().addGroup(vertical)
 																	  .addComponent(pane));
 				getContentPane().setLayout(layout);
+				pane.setViewportView(userList);
 				pack();
 				userSelecting = "white";
 			}
@@ -394,6 +496,7 @@ public class QuoridorView extends JFrame{
 				layout.setVerticalGroup(layout.createParallelGroup().addGroup(vertical)
 																	  .addComponent(pane));
 				getContentPane().setLayout(layout);
+				pane.setViewportView(userList);
 				pack();
 				userSelecting = "black";
 			}
@@ -520,7 +623,15 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Creates window prompting game name and confirming if it overrides
-				confirmSaveAction();
+				if(!QuoridorController.containsFile(fileName)) {
+					confirmSaveAction();
+				} else {
+					QuoridorController.savePosition(fileName);
+					File f = new File(fileName); 
+					f.setLastModified(0);
+					notifyValid("Saved Successfully");
+				}
+				
 				refresh();
 				board.requestFocusInWindow();
 			}
@@ -528,6 +639,7 @@ public class QuoridorView extends JFrame{
 		exitButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				System.out.println(fileName);
 				if(!QuoridorController.isUpdated(fileName)) {
 					confirmExitAction();
 				} else {
@@ -585,7 +697,6 @@ public class QuoridorView extends JFrame{
 					 wall.setLocation( 
 						        board.getX() - 5 + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn() *40, 
 						        board.getY() + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow() * 40 - 40);
-					 System.out.println("Wall Position Col: " + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn()+ " Row: " + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow());
 					
 					if(p1Turn.isSelected()) {
 						Integer numWalls = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
@@ -650,6 +761,7 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				board.requestFocusInWindow();
+				
 				RotateWall();
 				
 			}
@@ -657,6 +769,12 @@ public class QuoridorView extends JFrame{
 		validateButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				if(!QuoridorController.validatePosition()) {
+					notifyInvalid("Invalid Quoridor Position");
+					board.requestFocusInWindow();
+					refresh();
+					return;
+				}
 				
 				if(!QuoridorController.pathExists(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
 					if(!QuoridorController.pathExists(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
@@ -669,6 +787,7 @@ public class QuoridorView extends JFrame{
 				} else {
 					notifyValid("Quoridor Position is Valid");
 				}
+				
 				board.requestFocusInWindow();
 				refresh();
 			}
@@ -1103,6 +1222,7 @@ public class QuoridorView extends JFrame{
 				QuoridorController.savePosition(fileName);
 				File f = new File(fileName);
 				f.setLastModified(0); //TODO: Remove all the f stuff
+				notifyValid("Saved Successfully");
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
@@ -1172,6 +1292,7 @@ public class QuoridorView extends JFrame{
 					QuoridorController.savePosition(fileName);
 					File f = new File(fileName); 
 					f.setLastModified(0);
+					notifyValid("Saved Successfully");
 					//Exit the frame
 					confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 				}
@@ -1302,6 +1423,156 @@ public class QuoridorView extends JFrame{
 	}
 	
 	
+	public void confirmDeleteFile(String fileName) {
+		confirmFrame.getContentPane().removeAll();
+		JLabel notification = new JLabel("<html><center>Are you sure you wish to delete this file?" +
+										"<br> Deleted Files can not be recovered.</center></html>", SwingConstants.CENTER);
+		notification.setForeground(Color.red);
+		JButton yesButton = new JButton("Yes");
+		yesButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				QuoridorController.deleteFile(fileName);	
+				
+				//Ah, that's why. This isn't running after the confirmDelete
+				File dir = new File(System.getProperty("user.dir"));
+				
+				File[] saveFiles = dir.listFiles();
+				String name;
+				DefaultListModel<String> l = new DefaultListModel<>();
+				l.clear();
+				if(saveFiles != null) {
+					for(File f : saveFiles) {
+						name = f.getName();
+						if( name.length() > 4 && (name.substring(name.length() - 4, name.length()).equals(".dat") 
+							||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
+							l.addElement(f.getName());
+						}
+						
+					}
+				}
+				JList<String> fileList = new JList<String>(l);
+				
+				 fileList.addKeyListener(new java.awt.event.KeyListener() {
+						public void keyPressed(java.awt.event.KeyEvent evt) {}
+						public void keyTyped(java.awt.event.KeyEvent evt) {}
+						@Override
+						public void keyReleased(java.awt.event.KeyEvent evt) {
+							if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+									if(QuoridorController.loadGame(fileList.getSelectedValue())) {
+										p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
+										p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
+										
+										whiteSeconds = 60*10;
+										blackSeconds = 60*10;
+										p1Time.setText("Time: "+10+" m " + 0 +" s ");
+										p2Time.setText("Time: "+10+" m " + 0 +" s ");
+										
+										QuoridorController.setTotaltime(10, 0);
+										fileList.removeKeyListener(fileList.getKeyListeners()[0]);
+										initGame();
+										for(WallMove w : QuoridorController.getWalls()) {
+											
+											JPanel newWall = new JPanel();
+											int row = w.getTargetTile().getRow();
+									    	int col = w.getTargetTile().getColumn();
+										    refresh(); 
+										    if(w.getWallDirection() == Direction.Vertical) {
+										    	
+										    	newWall.setSize(5, 75);
+										    	newWall.setLocation( 
+													     board.getX() - 5 + col*40, 
+													     board.getY() + row * 40 - 40);
+										      } else {
+										    	  newWall.setSize(75, 5);
+										    	  newWall.setLocation( 
+													        board.getX() + col*40 - 40, 
+													        board.getY() - 5 + row * 40);
+										      }
+											newWall.setBackground(Color.BLACK);
+											getContentPane().add(newWall);
+											
+										}
+										board.requestFocusInWindow();
+									} else {
+										GroupLayout layout = new GroupLayout(getContentPane());
+										getContentPane().setLayout(layout);
+										layout.setAutoCreateGaps(true);
+										layout.setAutoCreateContainerGaps(true);
+										GroupLayout.Group horizontal = layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+																			.addComponent(title)
+																			.addComponent(newGame)
+																			.addComponent(loadGame);
+										GroupLayout.Group vertical = layout.createSequentialGroup()
+												  						   .addComponent(title)
+												  						   .addComponent(newGame)
+												  						   .addComponent(loadGame);
+										
+										
+										notifyInvalid("Load File Error- Invalid Position");
+										layout.setHorizontalGroup(layout.createSequentialGroup()
+																		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+																						.addGroup(horizontal)
+																						.addComponent(notification))
+																		.addComponent(filePane));
+										layout.setVerticalGroup(layout.createParallelGroup()
+																.addGroup(layout.createSequentialGroup()
+																				.addGroup(vertical)
+																				.addComponent(notification))
+																.addComponent(filePane));
+
+										getContentPane().setLayout(layout);
+										pack();
+									}
+				
+									
+								}
+							if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+								confirmDeleteFile(fileList.getSelectedValue());
+							}
+						}
+					});
+				
+				
+				
+				filePane.setViewportView(fileList);
+				refresh();
+				
+				//Exit the frame
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+			}
+		});
+		JButton noButton = new JButton("No");
+		noButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				//Exit the frame
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+				
+			}
+		});
+		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+										.addComponent(notification)
+										.addGroup(layout.createSequentialGroup()
+												  .addComponent(yesButton)
+												  .addComponent(noButton)	   
+																	   ));
+		layout.setVerticalGroup(layout.createSequentialGroup()
+									  .addComponent(notification)
+									  .addGroup(layout.createParallelGroup()
+											  		  .addComponent(yesButton)
+											  		  .addComponent(noButton)	   
+							   ));
+		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
+		confirmFrame.getContentPane().setLayout(layout);
+		confirmFrame.pack();
+		confirmFrame.setVisible(true);
+	}
+	
+	
 	
 	
 	
@@ -1333,7 +1604,7 @@ public class QuoridorView extends JFrame{
 			p2Turn.setSelected(false);
 		}
 		explanation.setText("<html><center>Press 'g' to grab a wall"
-						+  "<br>Or press 'm' to move</center></html>");;
+						+  "<br>Or press 'm' to move</center></html>");
 		refresh();
 	}
 	
