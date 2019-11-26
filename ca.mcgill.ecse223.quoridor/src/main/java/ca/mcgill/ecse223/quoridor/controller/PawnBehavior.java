@@ -279,7 +279,7 @@ public class PawnBehavior
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
   }
 
   // line 91 "../../../../../PawnStateMachine.ump"
@@ -322,7 +322,7 @@ public class PawnBehavior
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
   }
 
   // line 135 "../../../../../PawnStateMachine.ump"
@@ -365,7 +365,7 @@ public class PawnBehavior
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
   }
 
 

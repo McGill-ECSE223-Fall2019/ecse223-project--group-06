@@ -84,7 +84,7 @@ class PawnBehavior {
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
 	}
 	
 	void moveStep(MoveDirection dir) {
@@ -126,7 +126,7 @@ class PawnBehavior {
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
 
 	}
 	
@@ -170,7 +170,7 @@ class PawnBehavior {
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
 
 	
 	}

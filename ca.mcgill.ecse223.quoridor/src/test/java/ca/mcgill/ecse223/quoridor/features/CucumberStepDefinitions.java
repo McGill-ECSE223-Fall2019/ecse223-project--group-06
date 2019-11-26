@@ -51,12 +51,14 @@ public class CucumberStepDefinitions {
 	// ***********************************************
 		// Background step definitions
 		// ***********************************************
-
+		
 		@Given("^The game is not running$")
 		public void theGameIsNotRunning() {
-			initQuoridorAndBoard();
-			createUsersAndPlayers("user1", "user2");
+			//initQuoridorAndBoard();
+			//createUsersAndPlayers("user1", "user2");
+			view.initLoadScreen();
 		}
+		
 
 		@Given("^The game is running$")
 		public void theGameIsRunning() {
@@ -488,13 +490,7 @@ public class CucumberStepDefinitions {
 		 */
 		@When("Player {string} completes his move")
 		public void player_blackplayer_completes_his_move(String color) {
-			if(color=="black") {
-			QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
-			}
-			else {
-			QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());	
-			}
-
+			QuoridorController.completeMove();
 		}
 		/**
 		 * Feature :Switch current player
@@ -868,7 +864,7 @@ public class CucumberStepDefinitions {
 		@Then("It shall be white player to move")
 		public void itShallBeWhitePlayerToMove() {
 			if(!view.p1Turn.isSelected())
-				QuoridorController.completeMove(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
+				QuoridorController.completeMove();
 		}
 
 		@Then("White's pawn shall be in its initial position")
