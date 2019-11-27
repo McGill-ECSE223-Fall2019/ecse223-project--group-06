@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 
@@ -271,15 +272,27 @@ public class CucumberStepDefinitions {
 		*Feature: Load Position
 		*@Author Hongshuo Zhou
 		*/
-		private Boolean load;
+		//private Boolean load;
 
 		@When("I initiate to load a saved game {string}")
 		public void i_initiate_to_load_a_saved_game(String filename) {
-			load = QuoridorController.loadGame(filename);
+			//load = QuoridorController.loadGame(filename);
+			view.loadGame.doClick();
+			//The unchecked cast should never be an issue. list is always a string JList
+			JList<String> list = ((JList<String>) view.filePane.getViewport().getComponent(0));
+			list.setSelectedValue(filename, true);
+			view.loadGame.doClick();
 		}
 		@When("I initiate to load a game in {string}")
 		public void iInitiateToLoadAGameIn(String filename) {
-			load = QuoridorController.loadGame(filename);
+			//load = QuoridorController.loadGame(filename);
+			view.loadGame.doClick();
+			//The unchecked cast should never be an issue. list is always a string JList
+			JList<String> list = ((JList<String>) view.filePane.getViewport().getComponent(0));
+			list.setSelectedValue(filename, true);
+			//TODO: some files don't exist!!!!!
+			
+			view.loadGame.doClick();
 		}
 		
 		/**
@@ -297,13 +310,14 @@ public class CucumberStepDefinitions {
 		*/
 		@Then("It shall be {string}'s turn")
 		public void it_shall_be_s_turn(String string) {
-			String currentcolor;
-			if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsBlack()) {
-				currentcolor = "black";
+			
+			if(string.equals("white")) {
+				Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), 
+						QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove());
 			}else {
-				currentcolor = "white";
+				Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), 
+						QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove());
 			}
-			assertEquals(string, currentcolor);
 		    
 		}
 		/**
@@ -396,7 +410,8 @@ public class CucumberStepDefinitions {
 		*/
 		@Then("The load shall return an error") 
 		public void the_load_shall_return_an_error() {
-		    assertFalse(load);
+		    //assertFalse(load);
+		    Assert.assertEquals("Load File Error- Invalid Position", view.notification.getText());
 		}
 		//***********************************************
 		//Set total thinking time
@@ -1721,6 +1736,41 @@ public class CucumberStepDefinitions {
 		@And("I shall be notified that finished games cannot be continued")
 		public void iShallBeNotifiedFinishedNoConituuuuDoDo() {
 			Assert.assertTrue(view.notification.getText().equals("Cannot continue a finished game"));
+		}
+		
+		
+		/** Feature: Load Game
+		 *  @author Matteo Nunez
+		 */
+		
+		@And("Each game move is valid")
+		public void eachGameMoveIsValid() {
+			//Ok I am not going through move by move removing invalid ones
+			if(view.notification.getText().equals("Load File Error- Invalid Position"))
+				System.err.println("Each game move was not valid");
+		}
+		
+		
+		@And("The game has no final results")
+		public void theGameHasNoFinalResults() {
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus() == GameStatus.Running) {
+				System.err.println("Game had a final result when it shouldn't");
+			}
+		}
+		
+		@And("The game to load has an invalid move")
+		public void theGameLoadHasInvalidMoooooove() {
+			//Ok I am not going through move by move removing invalid ones
+			if(!view.loadGame.isVisible())
+				System.err.println("Each game move was valid when it should not be");
+		}
+		
+		@Then("The game shall notify the user that the game file is invalid")
+		public void theGameShallNotifyUserFileInvalid() {
+			Assert.assertEquals("Load File Error- Invalid Position", view.notification.getText());
+			//TODO: I suppose make a file that has an end result- call it quoridor_test_game_3.mov
+			//Make 2 files without end results, and call them quoridor_test_game_1.mov/quoridor_test_game_2.mov
+			
 		}
 		
 		

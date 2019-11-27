@@ -273,6 +273,9 @@ public class QuoridorController {
 				
 				if(move.charAt(1) == '-') {
 					//TODO: How to communicate the game was ended? We don't!
+					if(move.charAt(0) == '0') QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
+					else if (move.charAt(0) == '1')QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+					else QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.Draw);
 					break;
 				}
 				//White move
@@ -287,7 +290,7 @@ public class QuoridorController {
 						Direction d = (move.charAt(2) == 'h') ? Direction.Horizontal : Direction.Vertical;
 						
 						aMove = new WallMove(moveNumber, 
-								moveNumber / 2, 
+								(moveNumber / 2)+1, 
 								game.getWhitePlayer(), 
 								findStringTile(move), 
 								game, 
@@ -295,7 +298,7 @@ public class QuoridorController {
 								wall);
 					} else {
 						aMove = new StepMove(moveNumber, 
-								moveNumber / 2, 
+								(moveNumber / 2)+1, 
 							    game.getWhitePlayer(), 
 								findStringTile(move), 
 								game);	
@@ -315,7 +318,7 @@ public class QuoridorController {
 						game.getCurrentPosition().addBlackWallsOnBoard(wall);
 						Direction d = (move.charAt(2) == 'h') ? Direction.Horizontal : Direction.Vertical;
 						aMove = new WallMove(moveNumber, 
-								moveNumber / 2, 
+								(moveNumber / 2)+1, 
 								game.getBlackPlayer(), 
 								findStringTile(move), 
 								game, 
@@ -324,7 +327,7 @@ public class QuoridorController {
 					} else { 
 						//Player Move
 						aMove = new StepMove(moveNumber, 
-								moveNumber / 2, 
+								(moveNumber / 2)+1, 
 							    game.getBlackPlayer(), 
 								findStringTile(move), 
 								game);
@@ -486,7 +489,7 @@ public class QuoridorController {
 		//End: #-#
 		//      ^
 		if(line.length() > 6 && line.charAt(6) == '-') return true;
-		else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() >= 1) {
+		else if (QuoridorApplication.getQuoridor().getCurrentGame() != null && QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() >= 1) {
 			//This part is purely for the sake of step definitions.
 			//The game should work fine without it. More than fine
 			Move m = QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1);
@@ -1211,23 +1214,24 @@ public class QuoridorController {
 	 */
 	public static boolean isUpdated(String filepath) {
 		if(filepath == null || !containsFile(filepath)) return false;
-		
-		
+
 		File fil = new File(filepath);
 		int moveNumber = 0;
 		
 		try {
 			//Goes to the last line of the scanner
 			Scanner scan = new Scanner(fil);
-			scan.useDelimiter(Pattern.compile(" "));
+			scan.useDelimiter(Pattern.compile(" |\n"));
 			//I have two empty lines. One in the middle and one at the end
 			if(scan.hasNextLine()) scan.nextLine();
 			if(scan.hasNextLine()) scan.nextLine();
 			if(scan.hasNextLine()) scan.nextLine();
 			while(scan.hasNext()) {
-				scan.next();
-				moveNumber++;
+				String line = scan.next();
+				if(line != "" && !line.contains("."))
+					moveNumber++;
 			}
+			
 			if(moveNumber != 0) moveNumber--; //One of the next things will be the /n probably
 			
 			scan.close();
@@ -1236,15 +1240,12 @@ public class QuoridorController {
 			e.printStackTrace();
 			return false;
 		}
-		
 		int realMoveNum = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
-		
 		if(realMoveNum == moveNumber) {
 			//This is to combat the "File is up to date but not modified('updated')"
 			//Essentially I'm setting last mod to 0 when we update, or a high number when we don't
 			//TODO: Remove this once we don't need Gherkin
 			if(fil.lastModified() > 10000) {
-				System.out.println("Last Modified: " + fil.lastModified());
 				return false;
 			}
 			
