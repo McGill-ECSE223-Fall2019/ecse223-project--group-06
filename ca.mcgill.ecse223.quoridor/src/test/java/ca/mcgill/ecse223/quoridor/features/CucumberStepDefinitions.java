@@ -34,6 +34,7 @@ import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
+import cucumber.api.Result;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -452,7 +453,7 @@ public class CucumberStepDefinitions {
 		/**
 		 * Feature :Switch current player
 		 * Xiangyu Li
-		 * @param color color oof player to stop clock
+		 * @param color color of player to stop clock
 		 */
 		@And("The clock of {string} is stopped")
 		public void the_clock_of_white_is_stopped(String color) {
@@ -1465,7 +1466,61 @@ public class CucumberStepDefinitions {
 				}
 			}
 		}
-
+		
+		/**
+		 * Feature: Report final result
+		 * @author xiangyu li
+		 */
+		@When("The game is no longer running")
+		public void TheGameIsNoLongerRunning() {
+			QuoridorController.Gameisfinished(QuoridorApplication.getQuoridor().getCurrentGame());
+		}
+		
+		@Then("The final result shall be displayed")
+		public void TheFinalResultShallBeDisplayed() {
+			
+		}
+		@And("White's clock shall not be counting down")
+		public void WhitesClockShallNotBeCountingDown() {	
+			QuoridorController.stopwhiteclock(view.whiteTimer);
+		}
+		@And("Black's clock shall not be counting down")
+		public void BlacksClockShallNotBeCountingDown(){
+			QuoridorController.stopblackclock(view.blackTimer);
+		}
+		@And("White shall be unable to move")
+		public void WhiteShallBeUnableToMove(){
+			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame());
+				}
+		@And("Black shall be unable to move")
+		public void BlackShallBeUnableToMove() {
+			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition());
+		}
+		
+		/**
+		 * Feature: ResignGame
+		 * @author xiangyu li
+		 */
+		@Given("Then game to move is {player}")
+		public void TheGameToMoveIs(Player player) {
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(player);
+		}
+		
+		@When("Player initates to resign")
+		public void PlayerInitatesToResign() {
+			view.resignButton.doClick();
+		}
+		
+		@Then("Game result shall be {result}")
+		public void GameResultShallBe (GameStatus result) {
+			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),result);
+		}
+		
+		@And("The game shall no longer be running")
+		public void TheGameShallNoLongerBeRunning() {
+			QuoridorController.Gameisfinished(QuoridorApplication.getQuoridor().getCurrentGame());
+			
+		}
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// ***********************************************

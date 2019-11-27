@@ -81,6 +81,7 @@ public class QuoridorView extends JFrame{
 	public JButton grabButton = new JButton("Grab Wall");
 	public JButton moveButton = new JButton("Move Pawn");
 	public JButton validateButton = new JButton("Validate Position");
+	public JButton resignButton = new JButton("Resign");
 	public JPanel board;
 	private MouseListener boardMouseListener;
 	private JPanel wall;
@@ -705,7 +706,7 @@ public class QuoridorView extends JFrame{
 		    public void mouseClicked(MouseEvent e) {}
 		 
 		    /**
-		    * Â¼Ã‡Ã‚Â¼ÃŠÃ³Â±ÃªÂ°Â´Ã�Ã‚ÃŠÂ±ÂµÃ„ÂµÃ£
+		    * 脗录脙鈥∶冣�毭偮济兣犆兟趁偮泵兟偮懊偮疵冿拷脙鈥毭兣犆偮泵偮得冣�灻偮得兟�
 		    */
 		    @Override
 		    public void mousePressed(MouseEvent e) {
