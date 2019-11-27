@@ -271,6 +271,10 @@ public class QuoridorController {
 				if(move.contains("\n")) move = move.substring(0, move.indexOf("\n") - 1);
 				if(move.length() == 0) continue;
 				
+				if(move.charAt(1) == '-') {
+					//TODO: How to communicate the game was ended? We don't!
+					break;
+				}
 				//White move
 				if(moveNumber % 2 == 1) {	
 					Move aMove;
@@ -403,6 +407,10 @@ public class QuoridorController {
 		}
 	
 	} 
+	
+	
+	
+	
 	/** load position Feature
 	 * Helper method for load walls
 	 * @author Hongshuo Zhou 
@@ -441,7 +449,7 @@ public class QuoridorController {
 			//TODO: Uncomment if not working?
 			
 			Tile tile = QuoridorApplication.getQuoridor().getBoard().getTile((row-1)*9+column-1);
-			QuoridorApplication.getQuoridor().getCurrentGame().addMove(new WallMove(counter, 0, player, tile, myGame, direction, wall));
+			QuoridorApplication.getQuoridor().getCurrentGame().addMove(new WallMove(counter + 1, 0, player, tile, myGame, direction, wall));
 			if (player.hasGameAsBlack()){
 				position.addBlackWallsOnBoard(wall);
 			}else{
@@ -453,14 +461,42 @@ public class QuoridorController {
 		return true;
 	}
 	
-	private static Tile findStringTile(String rC) {
+	public static Tile findStringTile(String rC) {
 		int Col = rC.charAt(0) - 'a';
 		int Row = rC.charAt(1) - '0';
 		Col += 1;
 		return findTile(Row, Col);
 	}
 	
-
+	
+	public static boolean isEnded(String fileName) {
+		if(fileName == null) return false;
+		if(!containsFile(fileName)) return false;
+		File file = new File(fileName);
+		String line = "";
+		try {
+			Scanner scan = new Scanner(file);
+			while(scan.hasNextLine()) {
+				line = scan.nextLine();
+			}
+			scan.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//End: #-#
+		//      ^
+		if(line.length() > 6 && line.charAt(6) == '-') return true;
+		else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() >= 1) {
+			//This part is purely for the sake of step definitions.
+			//The game should work fine without it. More than fine
+			Move m = QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1);
+			if(! (m instanceof StepMove)) return false;
+			if((m.getTargetTile().getRow() == 1 && m.getPlayer().equals(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer()))
+			|| (m.getTargetTile().getRow() == 9 && m.getPlayer().equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer()))) 
+				return true;
+		}
+		return false;
+	}
 		
 
 	/** Validate Position Feature 
@@ -907,7 +943,6 @@ public class QuoridorController {
 		}
 		//Adding the current position to the games list and all that is taken care of 
 		//in complete move (now at least)
-		System.out.println("Wall added to row: " + current.getWallMoveCandidate().getTargetTile().getRow() + " COl: " + current.getWallMoveCandidate().getTargetTile().getColumn());
 		
 		completeMove();
 		
@@ -1081,6 +1116,7 @@ public class QuoridorController {
 						
 					//PLAYERMOVE - print b5 or h7 or whatever other move was made
 					} else { 
+						
 						writePlayer(move, writer);
 						writer.print(" ");
 					}	
@@ -1095,6 +1131,13 @@ public class QuoridorController {
 						writer.println();
 					}			
 				}	
+			}
+			if(moves.size() %2 == 1) {
+				//If you ended after a white move
+				writer.println();
+			}
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus() != GameStatus.Running) {
+				writeEnd(writer);
 			}
 			if(writer.checkError() ) throw new IOException();
 			writer.close();
@@ -1134,6 +1177,17 @@ public class QuoridorController {
 		writer.print(move.getTargetTile().getRow());
 	}
 	
+	private static void writeEnd(PrintWriter writer) throws IOException {
+		GameStatus stat = QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
+		if(stat == GameStatus.WhiteWon) {
+			writer.println("End: 1-0");
+		} else if (stat == GameStatus.BlackWon) {
+			writer.println("End: 0-1");
+		} else {
+			writer.println("End: 1-1");
+		}
+
+	}
 	
 	
 	
@@ -1196,8 +1250,6 @@ public class QuoridorController {
 			
 			return true;
 		} else {
-			System.out.println("Real Move Number: " + realMoveNum);
-			System.out.println("Move Number Found: " + realMoveNum);
 			return false;
 		}
 
@@ -2274,10 +2326,53 @@ public class QuoridorController {
 			Game cur = QuoridorApplication.getQuoridor().getCurrentGame();
 			cur.getCurrentPosition().getBlackPosition().setTile(findTile(1, 5));
 			cur.getCurrentPosition().getWhitePosition().setTile(findTile(9, 5));
+			cur.getCurrentPosition().setPlayerToMove(cur.getWhitePlayer());
+			cur.setGameStatus(GameStatus.Replay);
 		}
 		
 		
 		return worked;
+	}
+	
+	public static void addReplayWallsBack(int fromMoveNum) {
+		Game curGame = QuoridorApplication.getQuoridor().getCurrentGame();
+		GamePosition curPos = curGame.getCurrentPosition();
+		List<Move> moveList = curGame.getMoves();
+		//Here's a problem. You can't delete from a list and then keep iterating
+		for(Move m : moveList) {
+			if(m instanceof WallMove) { // if WallMove
+				WallMove wall = (WallMove) m;
+				if(wall.getMoveNumber() > fromMoveNum) {
+					//Black made a wall move to add back
+					if(wall.getPlayer().equals(curGame.getBlackPlayer())) {
+						curPos.addBlackWallsInStock(wall.getWallPlaced());
+						curPos.removeBlackWallsOnBoard(wall.getWallPlaced());
+					} else {
+					//White made a wall move to add back
+						curPos.addWhiteWallsInStock(wall.getWallPlaced());
+						curPos.removeWhiteWallsOnBoard(wall.getWallPlaced());
+					}
+				}
+			}
+		}
+		//Ex. fromMoveNum = 1, moves size = 20, index of move 1 = 0
+		//You would want to iterate from index 1 to 19, deleting
+		int count = moveList.size();
+		
+		for(int i = fromMoveNum; i < count; i++) {
+			//Idk why wallMoves aren't getting removed properly, but they aren't :(
+			if(curGame.getMove(fromMoveNum) instanceof WallMove) {
+				WallMove wallP = (WallMove) curGame.getMove(fromMoveNum);
+				wallP.setWallPlaced(null);
+				wallP.delete();
+				curGame.removeMove(curGame.getMove(fromMoveNum));
+			} else {
+				StepMove stepP = (StepMove) curGame.getMove(fromMoveNum);
+				stepP.delete();
+				//curGame.getMove(fromMoveNum).delete();
+			}
+		}
+		
 	}
 	
 }

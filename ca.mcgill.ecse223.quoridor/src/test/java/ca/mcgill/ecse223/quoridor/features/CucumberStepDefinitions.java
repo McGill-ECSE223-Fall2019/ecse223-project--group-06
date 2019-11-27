@@ -19,17 +19,19 @@ import javax.swing.Timer;
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.MoveDirection;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
+import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
+import ca.mcgill.ecse223.quoridor.model.StepMove;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
@@ -132,13 +134,10 @@ public class CucumberStepDefinitions {
 					view.rotateButton.doClick();
 				}
 				if(QuoridorController.wallIsValid()) {
-					System.out.println("Wall was valid");
 					view.DropWall();
 				} else {
 					QuoridorController.dropWall();
-					System.out.println("Wall was valid");
 				}	
-				System.out.println("Added a wall (or tried) at " + wrow + wcol);
 				
 			}
 			System.out.println();
@@ -375,7 +374,7 @@ public class CucumberStepDefinitions {
 		*Feature: Load Position
 		*@Author Hongshuo Zhou
 		*/
-	    	@Then("Both players shall have {int} in their stacks")
+	    @Then("Both players shall have {int} in their stacks")
 		public void both_players_shall_have_in_their_stacks(Integer intx) {
 		    Integer blackwall = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfBlackWallsInStock();
 		    Integer whitewall = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsInStock();
@@ -1542,6 +1541,187 @@ public class CucumberStepDefinitions {
 		}
 		
 		
+		/** Enter Replay Mode
+		 * @author Yanis Jallouli
+		 */
+		
+		@When("I initiate replay mode")
+		public void iInitiateReplayMode() {
+			view.replayGame.doClick();
+			view.replayGame.doClick(); //Select file, I guess we'll just assume it's the top
+		}
+		
+		@Then("The game shall be in replay mode")
+		public void theGameShallBeInReplay() {
+			Assert.assertEquals(GameStatus.Replay, QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
+		}
+		
+		@Given("The game is replay mode")
+		public void theGameIsInReplayMode() {
+			theGameIsNotRunning();
+			view.replayGame.doClick();
+			view.replayGame.doClick(); //Select file, I guess we'll just assume it's the top
+		}
+		
+		@Given("The following moves have been played in game:")
+		public void theFollowingMovesHaveBeenPlayed(io.cucumber.datatable.DataTable dataTable) {
+			List<Map<String, String>> valueMaps = dataTable.asMaps();
+			// keys: mv, rnd, mov
+			Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+			for (Map<String, String> map : valueMaps) {
+				Integer moveNum = Integer.decode(map.get("mv"));
+				Integer roundNum = Integer.decode(map.get("rnd"));
+				String move = map.get("move");
+				
+				//White move
+				if(moveNum % 2 == 1) {	
+					Move aMove;
+
+					//Wall Move
+					if(move.length() == 3) {
+						if(move.charAt(1) == '-') {
+							//Here's the thing. I have a seperate method scanning the file every continue
+							//for whether it was ended. That eliminates a new variable.
+							//This way of doing step definitions is throwing me off.
+							aMove = new StepMove(moveNum, 
+									roundNum, 
+								    game.getWhitePlayer(), 
+								    QuoridorController.findTile(1, 5), 
+									game);
+							if(game.getMoves().size() == 0) aMove.setPrevMove(null);
+							else aMove.setPrevMove(game.getMove(game.getMoves().size() - 1));
+							game.addMove(aMove);
+							continue;
+						}
+						Wall wall = game.getCurrentPosition().getWhiteWallsInStock(0);
+						game.getCurrentPosition().removeWhiteWallsInStock(wall);
+						game.getCurrentPosition().addWhiteWallsOnBoard(wall);
+						Direction d = (move.charAt(2) == 'h') ? Direction.Horizontal : Direction.Vertical;
+						
+						aMove = new WallMove(moveNum, 
+								roundNum, 
+								game.getWhitePlayer(), 
+								QuoridorController.findStringTile(move), 
+								game, 
+								d,
+								wall);
+					} else {
+						aMove = new StepMove(moveNum, 
+								roundNum, 
+							    game.getWhitePlayer(), 
+							    QuoridorController.findStringTile(move), 
+								game);	
+					}
+					if(game.getMoves().size() == 0) aMove.setPrevMove(null);
+					else aMove.setPrevMove(game.getMove(game.getMoves().size() - 1));
+					
+					game.addMove(aMove);
+				} else {
+					//Black Move
+					Move aMove;
+
+					//Wall Move
+					if(move.length() == 3) {
+						if(move.charAt(1) == '-') {
+							//Here's the thing. I have a seperate method scanning the file every continue
+							//for whether it was ended. That eliminates a new variable.
+							//This way of doing step definitions is throwing me off.
+							aMove = new StepMove(moveNum, 
+									roundNum, 
+								    game.getWhitePlayer(), 
+								    QuoridorController.findTile(9, 5), 
+									game);
+							if(game.getMoves().size() == 0) aMove.setPrevMove(null);
+							else aMove.setPrevMove(game.getMove(game.getMoves().size() - 1));
+							game.addMove(aMove);
+							continue;
+						}
+						Wall wall = game.getCurrentPosition().getBlackWallsInStock(0);
+						game.getCurrentPosition().removeBlackWallsInStock(wall);
+						game.getCurrentPosition().addBlackWallsOnBoard(wall);
+						Direction d = (move.charAt(2) == 'h') ? Direction.Horizontal : Direction.Vertical;
+						aMove = new WallMove(moveNum, 
+								roundNum, 
+								game.getBlackPlayer(), 
+								QuoridorController.findStringTile(move), 
+								game, 
+								d,
+								wall);
+					} else { 
+						//Player Move
+						aMove = new StepMove(moveNum, 
+								roundNum, 
+							    game.getBlackPlayer(), 
+							    QuoridorController.findStringTile(move), 
+								game);
+							
+					}
+					if(game.getMoves().size() == 0) aMove.setPrevMove(null);
+					else aMove.setPrevMove(game.getMove(game.getMoves().size() - 1));
+					
+					game.addMove(aMove);
+				}
+			}
+			
+			QuoridorApplication.getQuoridor().setCurrentGame(game);
+			
+		}
+		
+		@And("The game does not have a final result")
+		public void theGameDoesNotHaveAFinalResult() {
+			//Should honestly be taken care of in the moves. What do you want here???
+			if(QuoridorController.isEnded(view.fileName)) {
+				System.err.println("Ya ended the game with moves for replay ya doofus");
+			}
+			
+		}
+		@And("The game has a final result")
+		public void theGameDoesHasAFinalResult() {
+			//Should honestly be taken care of in the moves. What do you want here???
+			if(!QuoridorController.isEnded(view.fileName)) {
+				System.err.println("Ya didn't be endeding the game with moves for replay ya doofus");
+			}
+		}
+		@And("The next move is {int}.{int}") 
+		public void theNextMoveIs(int mNum, int rNum) {
+			//if the next move is white- round num of curren is last - 1
+			if(mNum == 1)  {
+				rNum--;
+				mNum = 2;
+			}
+			view.roundNum.setText("Round: " + rNum);
+			view.moveNum.setText("Move: " + mNum);
+		}
+		
+		@When("I initiate to continue game")
+		public void iInitiateToContinueGame() {
+			view.continueButton.doClick();
+		}
+		
+		@And("The remaining moves of the game shall be removed")
+		public void theRemainingMovesOfTheGameShallBeRemoved() {
+			int rNum = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
+			int mNum = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
+			int currentMNum, currentRNum;
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() != 0) {
+				Move m = QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1);
+				currentMNum = m.getMoveNumber();
+				currentRNum = m.getRoundNumber();
+			} else {
+				currentMNum = 0;
+				currentRNum = 1; //This one might not work
+			}
+			
+			
+			
+			Assert.assertEquals(mNum, currentMNum);
+			Assert.assertEquals(rNum, currentRNum);
+		}
+		
+		@And("I shall be notified that finished games cannot be continued")
+		public void iShallBeNotifiedFinishedNoConituuuuDoDo() {
+			Assert.assertTrue(view.notification.getText().equals("Cannot continue a finished game"));
+		}
 		
 		
 		
