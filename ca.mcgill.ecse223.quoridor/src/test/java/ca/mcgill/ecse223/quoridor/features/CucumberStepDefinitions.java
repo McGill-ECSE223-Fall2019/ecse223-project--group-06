@@ -1816,15 +1816,18 @@ public class CucumberStepDefinitions {
 		}
 
 		@Then("White has {int} on stock")
-		public void whiteHasOnStock(int wallSize) {
-		    throw new cucumber.api.PendingException();
-		}
-
-		@Then("Black has {int} on stock")
-		public void blackHasOnStock(int wallSize) {
-		    throw new cucumber.api.PendingException();
+		public void whiteHasOnStock(int wallNumber) {
+			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+			int wallSize = curPos.numberOfWhiteWallsInStock();
+			Assert.assertEquals(wallSize, wallNumber);
 		}
 		
+		@Then("Black has {int} on stock")
+		public void blackHasOnStock(int wallNumber) {
+			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+			int wallSize = curPos.numberOfBlackWallsInStock();
+			Assert.assertEquals(wallSize, wallNumber);
+		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
