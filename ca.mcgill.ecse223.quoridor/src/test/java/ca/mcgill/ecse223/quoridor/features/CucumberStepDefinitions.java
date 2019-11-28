@@ -1573,7 +1573,7 @@ public class CucumberStepDefinitions {
 		}
 		
 		@Given("The game is replay mode")
-		public void theGameIsInReplayMode() {
+		public void theGameIsReplayMode() {
 			theGameIsNotRunning();
 			view.replayGame.doClick();
 			view.replayGame.doClick(); //Select file, I guess we'll just assume it's the top
@@ -1782,25 +1782,11 @@ public class CucumberStepDefinitions {
 		* @author Matteo Nunez
 		*/
 		
-//		@Given("The game is in replay mode")
-//		public void theGameIsInReplayMode() {
-//		    throw new cucumber.api.PendingException();
-//		}
-		
-		@Given("The following moves have been played in game:")
-		public void theFollowingMovesHaveBeenPlayedInGame(io.cucumber.datatable.DataTable dataTable) {
-		    // For automatic transformation, change DataTable to one of
-		    // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
-		    // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
-		    // Double, Byte, Short, Long, BigInteger or BigDecimal.
-		    //
-		    // For other transformations you can register a DataTableType.
-		    throw new cucumber.api.PendingException();
-		}
-		
-		@Given("The next move is {double}")
-		public void theNextMoveIs(Double double1) {
-		    throw new cucumber.api.PendingException();
+		@Given("The game is in replay mode")
+		public void theGameIsInReplayMode() {
+			theGameIsNotRunning();
+			view.replayGame.doClick();
+			view.replayGame.doClick();
 		}
 		
 		@When("Jump to start position is initiated")
@@ -1808,28 +1794,28 @@ public class CucumberStepDefinitions {
 		    throw new cucumber.api.PendingException();
 		}
 
-		@Then("The next move shall be {double}")
-		public void theNextMoveShallBe(Double double1) {
+		@Then("The next move shall be {int}.{int}")
+		public void theNextMoveShallBe(int move, int round) {
 		    throw new cucumber.api.PendingException();
 		}
 
-		@Then("White player's position shall be \\({double})")
-		public void whitePlayersPositionShallBe(Double double1) {
+		@Then("White player's position shall be \\({int},{int})")
+		public void whitePlayersPositionShallBe(int row, int col) {
 		    throw new cucumber.api.PendingException();
 		}
 		
-		@Then("Black player's position shall be \\({double})")
-		public void blackPlayersPositionShallBe(Double double1) {
+		@Then("Black player's position shall be \\({int},{int})")
+		public void blackPlayersPositionShallBe(int row, int col) {
 		    throw new cucumber.api.PendingException();
 		}
 
 		@Then("White has {int} on stock")
-		public void whiteHasOnStock() {
+		public void whiteHasOnStock(int wallSize) {
 		    throw new cucumber.api.PendingException();
 		}
 
 		@Then("Black has {int} on stock")
-		public void blackHasOnStock(Integer int1) {
+		public void blackHasOnStock(int wallSize) {
 		    throw new cucumber.api.PendingException();
 		}
 		
