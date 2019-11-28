@@ -1817,46 +1817,6 @@ public class CucumberStepDefinitions {
 		public void whitePlayersPositionShallBe(Double double1) {
 		    throw new cucumber.api.PendingException();
 		}
-
-//		@And("Player's new position shall be {int}:{int}") 
-//		public void playersNewPosShallBe(int row, int col) {
-//			GamePosition curPos;
-//			Player toCheck;
-//			
-//			curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
-//			
-//			//Move failed, check current position current player
-//			if(view.notification.isVisible()) {
-//				
-//				if(curPos.getPlayerToMove().equals(
-//						QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
-//					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
-//				} else {
-//					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
-//				}
-//			//Move succeeded, check current position- other player (since player moving has changed)
-//			} else {
-//				
-//				if(curPos.getPlayerToMove().equals(
-//						QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
-//					
-//					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
-//				} else {
-//					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
-//				}
-//			}
-//			
-//			//Last move added to Positions was white
-//			if(toCheck.equals(
-//					QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
-//				Assert.assertTrue(curPos.getWhitePosition().getTile().getRow() == row && curPos.getWhitePosition().getTile().getColumn() == col);
-//			//Last move added to positions was black
-//			} else {
-//				Assert.assertTrue(curPos.getBlackPosition().getTile().getRow() == row && curPos.getBlackPosition().getTile().getColumn() == col);
-//			}
-//			
-//			
-//		}
 		
 		@Then("Black player's position shall be \\({double})")
 		public void blackPlayersPositionShallBe(Double double1) {
