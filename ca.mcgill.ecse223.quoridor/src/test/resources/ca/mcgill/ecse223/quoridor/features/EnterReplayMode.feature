@@ -11,11 +11,11 @@ As a player, I wish to review a past game in replay mode to walk through the mov
     Given The following moves have been played in game:
       | mv | rnd | move |
       |  1 |   1 | e8   |
-      |  1 |   2 | e2   |
-      |  2 |   1 | e7   |
+      |  2 |   1 | e2   |
+      |  1 |   2 | e7   |
       |  2 |   2 | e3   |
-      |  3 |   1 | e3h  |
-      |  3 |   2 | e8h  |		
+      |  1 |   3 | e3h  |
+      |  2 |   3 | e8h  |		
 		And The game does not have a final result
 		And The next move is <movno>.<rndno> 
 		When I initiate to continue game
@@ -25,22 +25,22 @@ As a player, I wish to review a past game in replay mode to walk through the mov
 	
 		Examples: 
       | movno | rndno | player |
-      |     1 |     2 | black  | 
-			|     2 |     1 | white  | 
+      |     2 |     1 | black  | 
+			|     1 |     2 | white  | 
 			|     2 |     2 | black  | 
-			|     3 |     1 | white  | 
+			|     1 |     3 | white  | 
 			
 	Scenario Outline: Continue a finished game  
 		Given The game is replay mode
     Given The following moves have been played in game:
       | mv | rnd | move |
       |  1 |   1 | e8   |
-      |  1 |   2 | e2   |
-      |  2 |   1 | e7   |
+      |  2 |   1 | e2   |
+      |  1 |   2 | e7   |
       |  2 |   2 | e3   |
-      |  3 |   1 | e3h  |
-      |  3 |   2 | e8h  |		
-      |  4 |   1 | 0-1  |		
+      |  1 |   3 | e3h  |
+      |  2 |   3 | e8h  |		
+      |  1 |   4 | 0-1  |		
 		And The game has a final result
 		And The next move is <movno>.<rndno> 
 		When I initiate to continue game
@@ -49,8 +49,8 @@ As a player, I wish to review a past game in replay mode to walk through the mov
 	
 		Examples: 
       | movno | rndno | 
-      |     1 |     2 |  
-			|     2 |     1 |  
+      |     2 |     1 |  
+			|     1 |     2 |  
 			|     2 |     2 |  
-			|     4 |     1 |  
+			|     1 |     4 |  
 				
