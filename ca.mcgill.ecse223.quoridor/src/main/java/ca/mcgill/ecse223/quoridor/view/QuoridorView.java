@@ -97,8 +97,8 @@ public class QuoridorView extends JFrame{
 	public JButton grabButton = new JButton("Grab Wall");
 	public JButton moveButton = new JButton("Move Pawn");
 	public JButton validateButton = new JButton("Validate Position");
-	
 	public JButton continueButton;
+	public JButton resignButton = new JButton("Resign");
 	
 	public JPanel board;
 	private MouseListener boardMouseListener;
@@ -1616,12 +1616,82 @@ public class QuoridorView extends JFrame{
 		pack();
 	}
 	
-	
-	
+	class MouseEventListener implements MouseInputListener{
+		Point origin;
+		JPanel wall;
+		public MouseEventListener(JPanel wall) {
+			this.wall=wall;
+			
+			origin = new Point(board.getX(), board.getY());
+		}
+		 @Override
+		    public void mouseClicked(MouseEvent e) {}
+		 
+		    /**
+		    * è„—å½•è„™éˆ¥âˆ¶å†£ï¿½æ¯­å�®æµŽå…£çŠ†å…Ÿè¶�å�®æ³µå…Ÿî€¢å�®æ‡Šå�®ç–µå†¿æ‹·è„™éˆ¥æ¯­å…£çŠ†å�®æ³µå�®å¾—å†£ï¿½ç�»å�®å¾—å…Ÿï¿½
+		    */
+		    @Override
+		    public void mousePressed(MouseEvent e) {
+		      origin.x = e.getX(); 
+		      origin.y = e.getY();
+		      
+		    }
+		 
+		    @Override
+		    public void mouseReleased(MouseEvent e) {}
+		    @Override
+		    public void mouseEntered(MouseEvent e) {
+		    	this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+		    }    
+		    @Override
+		    public void mouseExited(MouseEvent e) {
+		    	this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		    }
+		 
+		    @Override
+		    public void mouseDragged(MouseEvent e) {
+		      board.requestFocus();
+		      Point p = this.wall.getLocation();
+		      int relX, relY;
+		      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+		    	  relX = p.x + (e.getX() - origin.x) - board.getX() - 15;
+			      relY = p.y + (e.getY() - origin.y) - board.getY()  + 15;
+		      } else {
+		    	  relX = p.x + (e.getX() - origin.x) - board.getX() + 15;
+			      relY = p.y + (e.getY() - origin.y) - board.getY() - 15;
+		      }
+		      
+		      if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
+		    		  == GameStatus.Running &&
+		    		  QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
+		    	  int row = relY / 40 + 1;
+		    	  int col = relX / 40 + 1;
+		    	  if(row < 1 || row > 9) return;
+		    	  if(col < 1 || col > 9) return;
+		    	  if(!QuoridorController.moveWall(QuoridorController.findTile(row, col))) {
+		    		  return;
+		    	  }
+		    	  row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+		    	  col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+			      refresh(); 
+			      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+			    	  this.wall.setLocation( 
+						        board.getX() - 5 + col*40, 
+						        board.getY() + row * 40 - 40);
+			      } else {
+			    	  this.wall.setLocation( 
+						        board.getX() + col*40 - 40, 
+						        board.getY() - 5 + row * 40);
+			      }
+			     
+		      }
+		    }
+		 
+		    @Override
+		    public void mouseMoved(MouseEvent e) { }
+		     
+		  }
 
-	
-	
-	
 	//Not implemented, but eventually was where I was planning on doing the timer stuff.
 	//I just don't know how
 	public void updateView() {

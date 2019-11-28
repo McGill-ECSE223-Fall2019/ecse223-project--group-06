@@ -2157,6 +2157,18 @@ public class QuoridorController {
 			}
 		}
 	}
+	public static void ResignGame(Game game) {
+		
+	}
+	
+	
+	public static void Gameisfinished(Game game) {	
+		if(game!=null) {
+			game.delete();
+		}
+	}
+	
+	
 	
 	public static Tile getCurrentPlayerTile() {
 		return QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
