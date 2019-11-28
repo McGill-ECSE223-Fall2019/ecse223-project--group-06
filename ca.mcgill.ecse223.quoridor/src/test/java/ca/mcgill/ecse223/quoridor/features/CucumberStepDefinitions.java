@@ -1549,14 +1549,12 @@ public class CucumberStepDefinitions {
 		*/
 		
 		@Given("The game is in replay mode")
-		public void the_game_is_in_replay_mode() {
-		    // Write code here that turns the phrase above into concrete actions
+		public void theGameIsInReplayMode() {
 		    throw new cucumber.api.PendingException();
 		}
 		
 		@Given("The following moves have been played in game:")
-		public void the_following_moves_have_been_played_in_game(io.cucumber.datatable.DataTable dataTable) {
-		    // Write code here that turns the phrase above into concrete actions
+		public void theFollowingMovesHaveBeenPlayedInGame(io.cucumber.datatable.DataTable dataTable) {
 		    // For automatic transformation, change DataTable to one of
 		    // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
 		    // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
@@ -1567,44 +1565,78 @@ public class CucumberStepDefinitions {
 		}
 		
 		@Given("The next move is {double}")
-		public void the_next_move_is(Double double1) {
-		    // Write code here that turns the phrase above into concrete actions
+		public void theNextMoveIs(Double double1) {
 		    throw new cucumber.api.PendingException();
 		}
 		
 		@When("Jump to start position is initiated")
-		public void jump_to_start_position_is_initiated() {
-		    // Write code here that turns the phrase above into concrete actions
+		public void jumpToStartPositionIsInitiated() {
 		    throw new cucumber.api.PendingException();
 		}
 
 		@Then("The next move shall be {double}")
-		public void the_next_move_shall_be(Double double1) {
-		    // Write code here that turns the phrase above into concrete actions
+		public void theNextMoveShallBe(Double double1) {
 		    throw new cucumber.api.PendingException();
 		}
 
 		@Then("White player's position shall be \\({double})")
-		public void white_player_s_position_shall_be(Double double1) {
-		    // Write code here that turns the phrase above into concrete actions
+		public void whitePlayersPositionShallBe(Double double1) {
 		    throw new cucumber.api.PendingException();
 		}
 
+//		@And("Player's new position shall be {int}:{int}") 
+//		public void playersNewPosShallBe(int row, int col) {
+//			GamePosition curPos;
+//			Player toCheck;
+//			
+//			curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+//			
+//			//Move failed, check current position current player
+//			if(view.notification.isVisible()) {
+//				
+//				if(curPos.getPlayerToMove().equals(
+//						QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
+//					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+//				} else {
+//					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+//				}
+//			//Move succeeded, check current position- other player (since player moving has changed)
+//			} else {
+//				
+//				if(curPos.getPlayerToMove().equals(
+//						QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
+//					
+//					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+//				} else {
+//					toCheck = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+//				}
+//			}
+//			
+//			//Last move added to Positions was white
+//			if(toCheck.equals(
+//					QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
+//				Assert.assertTrue(curPos.getWhitePosition().getTile().getRow() == row && curPos.getWhitePosition().getTile().getColumn() == col);
+//			//Last move added to positions was black
+//			} else {
+//				Assert.assertTrue(curPos.getBlackPosition().getTile().getRow() == row && curPos.getBlackPosition().getTile().getColumn() == col);
+//			}
+//			
+//			
+//		}
+		
+		
 		@Then("Black player's position shall be \\({double})")
-		public void black_player_s_position_shall_be(Double double1) {
-		    // Write code here that turns the phrase above into concrete actions
+		public void blackPlayersPositionShallBe(Double double1) {
 		    throw new cucumber.api.PendingException();
 		}
 
-		@Then("White has <wwallno> on stock")
-		public void white_has_wwallno_on_stock() {
-		    // Write code here that turns the phrase above into concrete actions
+		@Then("White has {int} on stock")
+		public void whiteHasOnStock() {
 		    throw new cucumber.api.PendingException();
 		}
 
 		@Then("Black has {int} on stock")
-		public void black_has_on_stock(Integer int1) {
-		    // Write code here that turns the phrase above into concrete actions
+		public void blackHasOnStock(Integer int1) {
 		    throw new cucumber.api.PendingException();
 		}
 		
