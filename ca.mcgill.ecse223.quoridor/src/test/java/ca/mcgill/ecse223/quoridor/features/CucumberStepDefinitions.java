@@ -1801,12 +1801,18 @@ public class CucumberStepDefinitions {
 
 		@Then("White player's position shall be \\({int},{int})")
 		public void whitePlayersPositionShallBe(int row, int col) {
-		    throw new cucumber.api.PendingException();
+			PlayerPosition whitePos;
+			
+			whitePos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
+			Assert.assertTrue(whitePos.getTile().getRow() == row && whitePos.getTile().getColumn() == col);
 		}
 		
 		@Then("Black player's position shall be \\({int},{int})")
 		public void blackPlayersPositionShallBe(int row, int col) {
-		    throw new cucumber.api.PendingException();
+			PlayerPosition blackPos;
+			
+			blackPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
+			Assert.assertTrue(blackPos.getTile().getRow() == row && blackPos.getTile().getColumn() == col);
 		}
 
 		@Then("White has {int} on stock")
