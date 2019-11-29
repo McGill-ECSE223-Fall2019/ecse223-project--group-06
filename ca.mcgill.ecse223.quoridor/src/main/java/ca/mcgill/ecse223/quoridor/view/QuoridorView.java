@@ -199,6 +199,7 @@ public class QuoridorView extends JFrame{
 				
 				
 				if(QuoridorController.startReplay(fileList.getSelectedValue())) {
+					
 					fileName = fileList.getSelectedValue();
 					p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
 					p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
@@ -460,7 +461,10 @@ public class QuoridorView extends JFrame{
 			l.addElement(r.getName());
 		}
 		l.addElement("ExampleUserName");
-		l.addElement("ExampleUserName2");
+		l.addElement("JoeBoe");
+		l.addElement("Corridor");
+		l.addElement("Rodirroc");
+		l.addElement("Xx_EpicGamer_xX");
 		//TODO: Make it show actual user names
 		
 		
@@ -1395,11 +1399,13 @@ public class QuoridorView extends JFrame{
 				
 				int moveNumber = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
 				int roundNumber = Integer.parseInt(roundNum.getText().replace("Round: ", ""));
-				moveNumber = moveNumber + (roundNumber-1)*2; // 0-1 -> 0. 1-1 -> 1
+				//int moveNumber = moveNumber + (roundNumber-1)*2; // 0-1 -> 0. 1-1 -> 1
 				List<Move> moveList = QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
 				for(Move m : moveList) {
-					
+					//If in greater move break. If same move, check round number
 					if(m.getMoveNumber() > moveNumber)  break;
+					if(m.getMoveNumber() == moveNumber && m.getRoundNumber() > roundNumber) break;
+					//3:2 break if 4:1  3:1 break if 3:2
 					
 					if(m instanceof WallMove) {
 						WallMove w = (WallMove) m;
@@ -1432,7 +1438,7 @@ public class QuoridorView extends JFrame{
 					
 				}
 				//Add remaining moves back in stock
-				QuoridorController.addReplayWallsBack(moveNumber);
+				QuoridorController.addReplayWallsBack(moveNumber, roundNumber);
 				
 
 				p1Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());

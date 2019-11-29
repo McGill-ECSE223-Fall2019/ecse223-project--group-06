@@ -1,7 +1,6 @@
 package ca.mcgill.ecse223.quoridor.features;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -37,7 +36,6 @@ import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.QuoridorView;
-import cucumber.api.Result;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -1591,7 +1589,7 @@ public class CucumberStepDefinitions {
 				String move = map.get("move");
 				
 				//White move
-				if(moveNum % 2 == 1) {	
+				if(roundNum == 1) {	
 					Move aMove;
 
 					//Wall Move
@@ -1701,11 +1699,15 @@ public class CucumberStepDefinitions {
 		}
 		@And("The next move is {int}.{int}") 
 		public void theNextMoveIs(int mNum, int rNum) {
-			//if the next move is white- round num of curren is last - 1
-			if(mNum == 1)  {
-				rNum--;
-				mNum = 2;
+			//if the next move is white- round num of current is last - 1
+			if(rNum == 1)  {
+				mNum--;
+				rNum = 2;
+			} else {
+				rNum = 1;
 			}
+			//2:2 -> 2:1    4:1 -> 3:2
+			System.out.println("Next move is Round " + rNum + " Move "+ mNum);
 			view.roundNum.setText("Round: " + rNum);
 			view.moveNum.setText("Move: " + mNum);
 		}
@@ -1719,6 +1721,7 @@ public class CucumberStepDefinitions {
 		public void theRemainingMovesOfTheGameShallBeRemoved() {
 			int rNum = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
 			int mNum = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
+			System.out.println("Replay mode is at Round " + rNum + " Move "+ mNum);
 			int currentMNum, currentRNum;
 			if(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() != 0) {
 				Move m = QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1);
@@ -1728,7 +1731,7 @@ public class CucumberStepDefinitions {
 				currentMNum = 0;
 				currentRNum = 1; //This one might not work
 			}
-			
+			System.out.println("The last move in game is at Round " + currentRNum + " Move "+ currentMNum);
 			
 			
 			Assert.assertEquals(mNum, currentMNum);
@@ -1868,9 +1871,14 @@ public class CucumberStepDefinitions {
 		 * Feature: ResignGame
 		 * @author xiangyu li
 		 */
-		@Given("Then game to move is {player}")
-		public void TheGameToMoveIs(Player player) {
-			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(player);
+		@Given("Then game to move is {string}")
+		public void TheGameToMoveIs(String player) {
+			if(player.equals("white")) {
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
+			} else {
+				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer());
+			}
+			
 		}
 		
 		@When("Player initates to resign")
@@ -1878,9 +1886,11 @@ public class CucumberStepDefinitions {
 			view.resignButton.doClick();
 		}
 		
-		@Then("Game result shall be {result}")
-		public void GameResultShallBe (GameStatus result) {
-			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),result);
+		@Then("Game result shall be {string}")
+		public void GameResultShallBe (String result) {
+			if(result.equals("BlackWon")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(), GameStatus.BlackWon);
+			else Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),GameStatus.WhiteWon);
+			
 		}
 		
 		@And("The game shall no longer be running")
