@@ -97,6 +97,10 @@ public class QuoridorView extends JFrame{
 	public JButton grabButton = new JButton("Grab Wall");
 	public JButton moveButton = new JButton("Move Pawn");
 	public JButton validateButton = new JButton("Validate Position");
+	public JButton stepForward;
+	public JButton stepBackwards;
+	public JButton jumpForward;
+	public JButton jumpBackwards;
 	public JButton continueButton;
 	public JButton resignButton = new JButton("Resign");
 	
@@ -1272,10 +1276,10 @@ public class QuoridorView extends JFrame{
 		getContentPane().removeAll();	
 		setTitle("Quoridor Replay");
 		
-		JButton stepForward = new JButton(">");
-		JButton stepBackwards = new JButton("<");
-		JButton jumpForward = new JButton(">>");
-		JButton jumpBackwards = new JButton("<<");
+		stepForward = new JButton(">");
+		stepBackwards = new JButton("<");
+		jumpForward = new JButton(">>");
+		jumpBackwards = new JButton("<<");
 		continueButton = new JButton("Continue");
 		if(continueButton.getActionListeners().length > 0)continueButton.removeActionListener(continueButton.getActionListeners()[0]);
 		

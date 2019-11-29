@@ -1792,6 +1792,7 @@ public class CucumberStepDefinitions {
 		
 		@When("Jump to start position is initiated")
 		public void jumpToStartPositionIsInitiated() {
+			view.jumpForward.doClick();
 		    throw new cucumber.api.PendingException();
 		}
 
@@ -1856,7 +1857,7 @@ public class CucumberStepDefinitions {
 		@And("White shall be unable to move")
 		public void WhiteShallBeUnableToMove(){
 			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame());
-				}
+		}
 		@And("Black shall be unable to move")
 		public void BlackShallBeUnableToMove() {
 			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition());
@@ -1868,7 +1869,7 @@ public class CucumberStepDefinitions {
 		 * Feature: ResignGame
 		 * @author xiangyu li
 		 */
-		@Given("Then game to move is {player}")
+		@Given("Then game to move is {string}")
 		public void TheGameToMoveIs(Player player) {
 			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(player);
 		}
@@ -1878,7 +1879,7 @@ public class CucumberStepDefinitions {
 			view.resignButton.doClick();
 		}
 		
-		@Then("Game result shall be {result}")
+		@Then("Game result shall be {string}")
 		public void GameResultShallBe (GameStatus result) {
 			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),result);
 		}
