@@ -84,7 +84,7 @@ class PawnBehavior {
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
 	}
 	
 	void moveStep(MoveDirection dir) {
@@ -126,7 +126,7 @@ class PawnBehavior {
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
 
 	}
 	
@@ -170,7 +170,7 @@ class PawnBehavior {
 									 currentGame);
 									 
 		currentGame.addMove(move);
-		QuoridorController.completeMove(curPos.getPlayerToMove());
+		QuoridorController.completeMove();
 
 	
 	}
@@ -443,11 +443,11 @@ class PawnBehavior {
 				} else {
 					if(QuoridorController.noWallBlock(oppo, -1, 0)) {
 						//Jump diagonal- check up
-						if(dir != MoveDirection.NorthEast) return true;
+						if(dir == MoveDirection.NorthEast) return true;
 					} 
 					if(QuoridorController.noWallBlock(oppo, 1, 0)) {
 						//Jump diagonal- check down
-						if(dir != MoveDirection.SouthEast) return true;
+						if(dir == MoveDirection.SouthEast) return true;
 					}
 				}
 			}
@@ -460,11 +460,11 @@ class PawnBehavior {
 				} else {
 					if(QuoridorController.noWallBlock(oppo, -1, 0)) {
 						//Jump diagonal- check up
-						if(dir != MoveDirection.NorthWest) return true;
+						if(dir == MoveDirection.NorthWest) return true;
 					} 
 					if(QuoridorController.noWallBlock(oppo, 1, 0)) {
 						//Jump diagonal- check down
-						if(dir != MoveDirection.SouthWest) return true;
+						if(dir == MoveDirection.SouthWest) return true;
 					}
 				}
 			}
