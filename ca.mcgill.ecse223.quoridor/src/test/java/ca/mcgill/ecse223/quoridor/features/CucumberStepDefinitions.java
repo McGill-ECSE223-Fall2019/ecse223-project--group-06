@@ -1901,6 +1901,27 @@ public class CucumberStepDefinitions {
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+		/**
+		 * Feature: Step Forward
+		 * @author Keanu, Natchev
+		 * ID#: 260804586
+		 */
+
+		@When("Step backward is initiated")
+		public void stepBackwardHasBeenInitiated() {
+			//view.replayGame.doClick();
+			//view.step
+			throw new cucumber.api.PendingException();
+		}
+
+		@Then("White has <wwallno> on stock")
+		public void white_has_wwallno_on_stock() {
+			// Write code here that turns the phrase above into concrete actions
+			throw new cucumber.api.PendingException();
+		}
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 		// ***********************************************
 		// Clean up
 		// ***********************************************

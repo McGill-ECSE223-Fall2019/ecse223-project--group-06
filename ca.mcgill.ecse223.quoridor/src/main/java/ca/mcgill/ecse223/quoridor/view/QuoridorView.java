@@ -46,6 +46,7 @@ import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+import ca.mcgill.ecse223.quoridor.model.JumpMove;
 import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.StepMove;
@@ -97,6 +98,10 @@ public class QuoridorView extends JFrame{
 	public JButton grabButton = new JButton("Grab Wall");
 	public JButton moveButton = new JButton("Move Pawn");
 	public JButton validateButton = new JButton("Validate Position");
+	public JButton stepForward = new JButton(">");
+	public JButton stepBackwards = new JButton("<");
+	public JButton jumpForward = new JButton(">>");
+	public JButton jumpBackwards = new JButton("<<");
 	public JButton continueButton;
 	public JButton resignButton = new JButton("Resign");
 	
@@ -1276,10 +1281,7 @@ public class QuoridorView extends JFrame{
 		getContentPane().removeAll();	
 		setTitle("Quoridor Replay");
 		
-		JButton stepForward = new JButton(">");
-		JButton stepBackwards = new JButton("<");
-		JButton jumpForward = new JButton(">>");
-		JButton jumpBackwards = new JButton("<<");
+		
 		continueButton = new JButton("Continue");
 		if(continueButton.getActionListeners().length > 0)continueButton.removeActionListener(continueButton.getActionListeners()[0]);
 		
@@ -1303,6 +1305,88 @@ public class QuoridorView extends JFrame{
 				
 				System.out.println("TODO: Step Forward- line 1302 in View");
 				board.requestFocusInWindow();
+				
+				int moveNumber = Integer.parseInt(moveNum.getText());
+				int roundNumber = Integer.parseInt(roundNum.getText());
+				List<Move> movement = QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
+				Move current = QuoridorApplication.getQuoridor().getCurrentGame().getMove(moveNumber);
+				if(current.hasNextMove()) {
+
+					if(current.getNextMove() instanceof WallMove) {
+						WallMove wallMoveNext = (WallMove) current.getNextMove();
+						JPanel newWall = new JPanel();
+						int row = wallMoveNext.getTargetTile().getRow();
+						int col = wallMoveNext.getTargetTile().getColumn();
+						refresh(); 
+						if(wallMoveNext.getWallDirection() == Direction.Vertical) {
+							newWall.setSize(5, 75);
+							newWall.setLocation( 
+									board.getX() - 5 + col*40, 
+									board.getY() + row * 40 - 40);
+						} else {
+							newWall.setSize(75, 5);
+							newWall.setLocation( 
+									board.getX() + col*40 - 40, 
+									board.getY() - 5 + row * 40);
+						}
+						newWall.setBackground(Color.BLACK);
+						getContentPane().add(newWall);
+
+
+						//Update move number and round number
+						moveNum.setText("Move: " + moveNumber + 1);
+						if(p2Turn.isSelected()) {
+							roundNumber++;
+							roundNum.setText("Round: " + roundNumber);
+
+
+							int blackWallsInStock = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfBlackWallsInStock();
+							p2Walls.setText("Walls: " + blackWallsInStock--);
+							p2Turn.setSelected(false);
+							p1Turn.setSelected(true);
+						}
+						if(p1Turn.isSelected()) {
+							int whiteWallsInStock = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsInStock();
+							p1Walls.setText("Walls: " + whiteWallsInStock--);
+							p2Turn.setSelected(true);
+							p1Turn.setSelected(false);
+						}
+
+					}
+
+					if(current.getNextMove() instanceof StepMove) {
+						StepMove nextStepMove = (StepMove) current.getNextMove();
+						Tile target = current.getNextMove().getTargetTile();
+						int row = nextStepMove.getTargetTile().getRow();
+						int col = nextStepMove.getTargetTile().getColumn();
+						if(p1Turn.isSelected()) {
+
+						}
+						else {
+
+						}
+
+						//Update move number and round number
+						moveNum.setText("Move: " + moveNumber + 1);
+						if(p2Turn.isSelected()) {
+							roundNumber++;
+						}
+						else {
+							//Do nothing
+						}
+					}
+					//Need to import jump move
+					if(current.getNextMove() instanceof JumpMove) {
+						//Update move number and round number
+						moveNum.setText("Move: " + moveNumber + 1);
+						if(p2Turn.isSelected()) {
+							roundNumber++;
+						}
+						else {
+							//Do nothing
+						}
+					}
+				}
 				
 				refresh();
 			}
