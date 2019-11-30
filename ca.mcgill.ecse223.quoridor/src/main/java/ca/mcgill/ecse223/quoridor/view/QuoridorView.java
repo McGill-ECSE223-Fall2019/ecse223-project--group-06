@@ -1284,6 +1284,10 @@ public class QuoridorView extends JFrame{
 		
 		continueButton = new JButton("Continue");
 		if(continueButton.getActionListeners().length > 0)continueButton.removeActionListener(continueButton.getActionListeners()[0]);
+		if(stepForward.getActionListeners().length > 0)stepForward.removeActionListener(stepForward.getActionListeners()[0]);
+		if(stepBackwards.getActionListeners().length > 0)stepBackwards.removeActionListener(stepBackwards.getActionListeners()[0]);
+		if(jumpForward.getActionListeners().length > 0)jumpForward.removeActionListener(jumpForward.getActionListeners()[0]);
+		if(jumpBackwards.getActionListeners().length > 0)jumpBackwards.removeActionListener(jumpBackwards.getActionListeners()[0]);
 		
 		roundNum.setText("Round: 1");
 		moveNum.setText("Move: 0");

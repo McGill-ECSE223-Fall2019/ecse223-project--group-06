@@ -1902,16 +1902,21 @@ public class CucumberStepDefinitions {
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		/**
-		 * Feature: Step Forward
+		 * Feature: Step Backward and Step Forward
 		 * @author Keanu, Natchev
 		 * ID#: 260804586
 		 */
 
 		@When("Step backward is initiated")
 		public void stepBackwardHasBeenInitiated() {
+			view.stepBackwards.doClick();
+		}
+		
+		@When("Step forward is initiated")
+		public void stepForwardHasBeenInitiated() {
 			//view.replayGame.doClick();
 			//view.step
-			throw new cucumber.api.PendingException();
+			view.stepForward.doClick();
 		}
 
 		@Then("White has <wwallno> on stock")
