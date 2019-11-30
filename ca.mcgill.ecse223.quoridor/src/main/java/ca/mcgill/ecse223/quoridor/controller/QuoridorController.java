@@ -2157,16 +2157,7 @@ public class QuoridorController {
 			}
 		}
 	}
-	public static void ResignGame(Game game) {
-		
-	}
 	
-	
-	public static void Gameisfinished(Game game) {	
-		if(game!=null) {
-			game.delete();
-		}
-	}
 	
 	
 	
