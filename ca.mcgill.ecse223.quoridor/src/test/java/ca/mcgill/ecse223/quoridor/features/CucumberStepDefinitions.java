@@ -51,7 +51,7 @@ public class CucumberStepDefinitions {
 	private Player currentPlayer;
 	private WallMove aWallMove;
 
-	private String gameResult;
+	private static String gameResult;
 	
 	// ***********************************************
 		// Background step definitions
