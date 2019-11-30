@@ -50,6 +50,8 @@ public class CucumberStepDefinitions {
 
 	private Player currentPlayer;
 	private WallMove aWallMove;
+
+	private String gameResult;
 	
 	// ***********************************************
 		// Background step definitions
@@ -471,7 +473,7 @@ public class CucumberStepDefinitions {
 
   @When("Checking of game result is initated")
   public void checking_of_game_result_is_initated() {
-      gameResult = QuoridorController.checkGameResult();
+      	gameResult = QuoridorController.checkGameResult();
   }
 
  @Then("Game result shall be {string}")
