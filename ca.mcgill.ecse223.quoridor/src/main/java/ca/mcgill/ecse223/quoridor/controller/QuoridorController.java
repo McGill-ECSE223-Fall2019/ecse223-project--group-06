@@ -323,12 +323,11 @@ public class QuoridorController {
 							    game.getWhitePlayer(), 
 								findStringTile(move), 
 								game);	
-						//TODO: I might need to set this game position AFTER the current one (aka assuming the move is done for player)
-						game.getCurrentPosition().getWhitePosition().setTile(aMove.getTargetTile());
-						PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), game.getCurrentPosition().getWhitePosition().getTile());
+
+						
+						PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), aMove.getTargetTile());
 						PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), game.getCurrentPosition().getBlackPosition().getTile());
 						
-						System.out.println("Current ID: " + game.getCurrentPosition().getId());
 						pos = new GamePosition(game.getCurrentPosition().getId() + 1,
 								whiteP,
 								blackP,
@@ -386,10 +385,9 @@ public class QuoridorController {
 							    game.getBlackPlayer(), 
 								findStringTile(move), 
 								game);
-						game.getCurrentPosition().getBlackPosition().setTile(aMove.getTargetTile());
 						
 						PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), game.getCurrentPosition().getWhitePosition().getTile());
-						PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), game.getCurrentPosition().getBlackPosition().getTile());
+						PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), aMove.getTargetTile());
 						
 						pos = new GamePosition(game.getCurrentPosition().getId() + 1,
 								whiteP,
@@ -1524,6 +1522,7 @@ public class QuoridorController {
 											new PlayerPosition(blackPlayer, blackStartTile),	// Move black player to initial position
 											whitePlayer,
 											game);
+		
 			
 		
 		cur.setPlayerToMove(whitePlayer);	// White players plays first
@@ -2505,7 +2504,6 @@ public class QuoridorController {
 		//Ex. fromMoveNum = 1, moves size = 20, index of move 1 = 0
 		//You would want to iterate from index 1 to 19, deleting
 		int count = moveList.size();
-		System.out.println("Iterating from " + fromMoveNum + " to "+ count);
 		for(int i = fromMoveNum; i < count; i++) {
 			//Idk why wallMoves aren't getting removed properly, but they aren't :(
 			if(curGame.getMove(fromMoveNum) instanceof WallMove) {
@@ -2513,7 +2511,6 @@ public class QuoridorController {
 				wallP.setWallPlaced(null);
 				wallP.delete();
 				curGame.removeMove(curGame.getMove(fromMoveNum));
-				System.out.println("Deleting move with round " + wallP.getRoundNumber() + " move "+wallP.getMoveNumber());
 			} else {
 				StepMove stepP = (StepMove) curGame.getMove(fromMoveNum);
 				stepP.delete();

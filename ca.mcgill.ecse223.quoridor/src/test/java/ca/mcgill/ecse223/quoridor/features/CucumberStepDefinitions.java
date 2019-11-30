@@ -476,10 +476,6 @@ public class CucumberStepDefinitions {
       	gameResult = QuoridorController.checkGameResult();
   }
 
- @Then("Game result shall be {string}")
-public void game_result_shall_be(String string) {
- assertEquals(string, gameResult);
-  }
 
   @Then("The game shall no longer be running")
   public void the_game_shall_no_longer_be_running() {
@@ -1673,6 +1669,7 @@ public void game_result_shall_be(String string) {
 			List<Map<String, String>> valueMaps = dataTable.asMaps();
 			// keys: mv, rnd, mov
 			Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+			int i = 1;
 			for (Map<String, String> map : valueMaps) {
 				Integer moveNum = Integer.decode(map.get("mv"));
 				Integer roundNum = Integer.decode(map.get("rnd"));
@@ -1681,11 +1678,12 @@ public void game_result_shall_be(String string) {
 				//White move
 				if(roundNum == 1) {	
 					Move aMove;
+					GamePosition aPos;
 
 					//Wall Move
 					if(move.length() == 3) {
 						if(move.charAt(1) == '-') {
-							//Here's the thing. I have a seperate method scanning the file every continue
+							//Here's the thing. I have a separate method scanning the file every continue
 							//for whether it was ended. That eliminates a new variable.
 							//This way of doing step definitions is throwing me off.
 							aMove = new StepMove(moveNum, 
@@ -1693,10 +1691,26 @@ public void game_result_shall_be(String string) {
 								    game.getWhitePlayer(), 
 								    QuoridorController.findTile(1, 5), 
 									game);
+							
+							PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), aMove.getTargetTile());
+							PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), game.getCurrentPosition().getBlackPosition().getTile());
+							
+							aPos = new GamePosition(game.getCurrentPosition().getId() + i,
+													whiteP,
+													blackP,
+													game.getWhitePlayer(),
+													game);
+							for(Wall w : game.getCurrentPosition().getWhiteWallsInStock()) aPos.addWhiteWallsInStock(w);
+							for(Wall w : game.getCurrentPosition().getBlackWallsInStock()) aPos.addBlackWallsInStock(w);
+							for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) aPos.addWhiteWallsOnBoard(w);
+							for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) aPos.addBlackWallsOnBoard(w);
+							
 							if(game.getMoves().size() == 0) aMove.setPrevMove(null);
 							else aMove.setPrevMove(game.getMove(game.getMoves().size() - 1));
 							game.addMove(aMove);
-							continue;
+							game.addPosition(aPos);
+							
+							break;
 						}
 						Wall wall = game.getCurrentPosition().getWhiteWallsInStock(0);
 						game.getCurrentPosition().removeWhiteWallsInStock(wall);
@@ -1710,20 +1724,50 @@ public void game_result_shall_be(String string) {
 								game, 
 								d,
 								wall);
+						
+						PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), game.getCurrentPosition().getWhitePosition().getTile());
+						PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), game.getCurrentPosition().getBlackPosition().getTile());
+						
+						aPos = new GamePosition(game.getCurrentPosition().getId() + i,
+												whiteP,
+												blackP,
+												game.getBlackPlayer(),
+												game);
+						for(Wall w : game.getCurrentPosition().getWhiteWallsInStock()) aPos.addWhiteWallsInStock(w);
+						for(Wall w : game.getCurrentPosition().getBlackWallsInStock()) aPos.addBlackWallsInStock(w);
+						for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) aPos.addWhiteWallsOnBoard(w);
+						for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) aPos.addBlackWallsOnBoard(w);
+						
 					} else {
 						aMove = new StepMove(moveNum, 
 								roundNum, 
 							    game.getWhitePlayer(), 
 							    QuoridorController.findStringTile(move), 
-								game);	
+								game);
+						
+						PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), aMove.getTargetTile());
+						PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), game.getCurrentPosition().getBlackPosition().getTile());
+						
+						aPos = new GamePosition(game.getCurrentPosition().getId() + i,
+												whiteP,
+												blackP,
+												game.getBlackPlayer(),
+												game);
+						for(Wall w : game.getCurrentPosition().getWhiteWallsInStock()) aPos.addWhiteWallsInStock(w);
+						for(Wall w : game.getCurrentPosition().getBlackWallsInStock()) aPos.addBlackWallsInStock(w);
+						for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) aPos.addWhiteWallsOnBoard(w);
+						for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) aPos.addBlackWallsOnBoard(w);
+						
 					}
 					if(game.getMoves().size() == 0) aMove.setPrevMove(null);
 					else aMove.setPrevMove(game.getMove(game.getMoves().size() - 1));
 					
 					game.addMove(aMove);
+					game.addPosition(aPos);
 				} else {
 					//Black Move
 					Move aMove;
+					GamePosition aPos;
 
 					//Wall Move
 					if(move.length() == 3) {
@@ -1736,10 +1780,26 @@ public void game_result_shall_be(String string) {
 								    game.getWhitePlayer(), 
 								    QuoridorController.findTile(9, 5), 
 									game);
+							
+							PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), game.getCurrentPosition().getBlackPosition().getTile());
+							PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), aMove.getTargetTile());
+							
+							aPos = new GamePosition(game.getCurrentPosition().getId() + i,
+													whiteP,
+													blackP,
+													game.getBlackPlayer(),
+													game);
+							for(Wall w : game.getCurrentPosition().getWhiteWallsInStock()) aPos.addWhiteWallsInStock(w);
+							for(Wall w : game.getCurrentPosition().getBlackWallsInStock()) aPos.addBlackWallsInStock(w);
+							for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) aPos.addWhiteWallsOnBoard(w);
+							for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) aPos.addBlackWallsOnBoard(w);
+							
+
 							if(game.getMoves().size() == 0) aMove.setPrevMove(null);
 							else aMove.setPrevMove(game.getMove(game.getMoves().size() - 1));
 							game.addMove(aMove);
-							continue;
+							game.addPosition(aPos);
+							break;
 						}
 						Wall wall = game.getCurrentPosition().getBlackWallsInStock(0);
 						game.getCurrentPosition().removeBlackWallsInStock(wall);
@@ -1752,6 +1812,20 @@ public void game_result_shall_be(String string) {
 								game, 
 								d,
 								wall);
+						
+						PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), game.getCurrentPosition().getWhitePosition().getTile());
+						PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), game.getCurrentPosition().getBlackPosition().getTile());
+						
+						aPos = new GamePosition(game.getCurrentPosition().getId() + i,
+												whiteP,
+												blackP,
+												game.getWhitePlayer(),
+												game);
+						for(Wall w : game.getCurrentPosition().getWhiteWallsInStock()) aPos.addWhiteWallsInStock(w);
+						for(Wall w : game.getCurrentPosition().getBlackWallsInStock()) aPos.addBlackWallsInStock(w);
+						for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) aPos.addWhiteWallsOnBoard(w);
+						for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) aPos.addBlackWallsOnBoard(w);
+						
 					} else { 
 						//Player Move
 						aMove = new StepMove(moveNum, 
@@ -1759,13 +1833,30 @@ public void game_result_shall_be(String string) {
 							    game.getBlackPlayer(), 
 							    QuoridorController.findStringTile(move), 
 								game);
+						
+						
+						PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), game.getCurrentPosition().getWhitePosition().getTile());
+						PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), aMove.getTargetTile());
+						
+						aPos = new GamePosition(game.getCurrentPosition().getId() + i,
+												whiteP,
+												blackP,
+												game.getWhitePlayer(),
+												game);
+						for(Wall w : game.getCurrentPosition().getWhiteWallsInStock()) aPos.addWhiteWallsInStock(w);
+						for(Wall w : game.getCurrentPosition().getBlackWallsInStock()) aPos.addBlackWallsInStock(w);
+						for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) aPos.addWhiteWallsOnBoard(w);
+						for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) aPos.addBlackWallsOnBoard(w);
+						
 							
 					}
 					if(game.getMoves().size() == 0) aMove.setPrevMove(null);
 					else aMove.setPrevMove(game.getMove(game.getMoves().size() - 1));
 					
 					game.addMove(aMove);
+					game.addPosition(aPos);
 				}
+				i++;
 			}
 			
 			QuoridorApplication.getQuoridor().setCurrentGame(game);
@@ -1790,14 +1881,14 @@ public void game_result_shall_be(String string) {
 		@And("The next move is {int}.{int}") 
 		public void theNextMoveIs(int mNum, int rNum) {
 			//if the next move is white- round num of current is last - 1
-			if(rNum == 1)  {
-				mNum--;
-				rNum = 2;
-			} else {
+			//Currently, game is displaying one move ahead.
+			if(rNum == 2)  {
+				mNum++;
 				rNum = 1;
+			} else {
+				rNum = 2;
 			}
 			//2:2 -> 2:1    4:1 -> 3:2
-			System.out.println("Next move is Round " + rNum + " Move "+ mNum);
 			view.roundNum.setText("Round: " + rNum);
 			view.moveNum.setText("Move: " + mNum);
 		}
@@ -1983,11 +2074,6 @@ public void game_result_shall_be(String string) {
 			
 		}
 		
-		@And("The game shall no longer be running")
-		public void TheGameShallNoLongerBeRunning() {
-			QuoridorController.Gameisfinished(QuoridorApplication.getQuoridor().getCurrentGame());
-			
-		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

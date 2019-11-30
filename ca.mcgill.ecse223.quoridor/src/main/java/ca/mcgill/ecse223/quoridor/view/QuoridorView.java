@@ -177,10 +177,9 @@ public class QuoridorView extends JFrame{
 		replayGame.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				//TODO: This won't work
 				
 				if(!getContentPane().contains(new Point(500, 50))) {
-					explanation.setText("<html>Press Enter to Load <br>Press 'R' for Replay</html>");
+					explanation.setText("<html>Press Enter to Load <br>Type Shift to Replay</html>");
 					explanation.setVisible(true);
 
 					layout.setHorizontalGroup(layout.createSequentialGroup()
@@ -342,19 +341,19 @@ public class QuoridorView extends JFrame{
 			}
 		});	
 
-	    
+	    if(fileList.getKeyListeners().length > 0) fileList.removeKeyListener(fileList.getKeyListeners()[0]);
 	    fileList.addKeyListener(new java.awt.event.KeyListener() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {}
 			public void keyTyped(java.awt.event.KeyEvent evt) {}
 			@Override
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-						loadGame.doClick();
-					}
+					loadGame.doClick();
+				}
 				else if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 					confirmDeleteFile(fileList.getSelectedValue());
 				}
-				else if(evt.getKeyCode() == KeyEvent.VK_R) {
+				else if(evt.getKeyCode() == KeyEvent.VK_SHIFT) {
 					replayGame.doClick();
 				}
 				
@@ -1290,33 +1289,61 @@ public class QuoridorView extends JFrame{
 		if(jumpBackwards.getActionListeners().length > 0)jumpBackwards.removeActionListener(jumpBackwards.getActionListeners()[0]);
 		
 		roundNum.setText("Round: 1");
-		moveNum.setText("Move: 0");
+		moveNum.setText("Move: 1");
 		roundNum.setFont(new Font(roundNum.getFont().getName(), Font.BOLD, 30));
 		moveNum.setFont(new Font(moveNum.getFont().getName(), Font.BOLD, 30));
 		
+		//Ok the problem is this. It's starting at round 1, move 1, showing index 0
+		//Then- the game is displaying everything LESS than the current index
 		
 		stepForward.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				
-				//Implement Step Forward. To add walls to the board, you
-				// can see how drop wall does it (create JPanel, resize/move,
-				//and add). All the moves are listed in the current games Moves
+				//Implement Step Forward. 
+				////I found an easy way for adding walls. just update position and refresh.
+				//All the moves are listed in the current games Moves
 				//and were set to either WallMoves with a target Tile+direction
 				//or step moves with a player to move and target tile
 				
 				//Be sure to update the roundNum/moveNum JLabels. 
-				
-				System.out.println("TODO: Step Forward- line 1302 in View");
-				board.requestFocusInWindow();
-				
-				int moveNumber = Integer.parseInt(moveNum.getText());
-				int roundNumber = Integer.parseInt(roundNum.getText());
-				List<Move> movement = QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
-				Move current = QuoridorApplication.getQuoridor().getCurrentGame().getMove(moveNumber);
-				if(current.hasNextMove()) {
 
-					if(current.getNextMove() instanceof WallMove) {
+				board.requestFocusInWindow();
+
+				int moveNumber = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
+				int roundNumber = Integer.parseInt(roundNum.getText().replace("Round: ", ""));
+				int p1WallsIn = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
+				int p2WallsIn = Integer.parseInt(p2Walls.getText().replace("Walls: ", ""));
+				if(roundNumber == 1) roundNumber++;
+				else {
+					moveNumber++;
+					roundNumber = 1;
+				}
+				//Update move number and round number
+				
+				
+				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
+				if(index >= QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 1)  {
+					stepForward.setEnabled(false);
+					jumpForward.setEnabled(false);
+					return;
+				}
+				if(index == QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 2) {
+					stepForward.setEnabled(false);
+					jumpForward.setEnabled(false);
+				}
+				System.out.println("Index: " + index);
+				stepBackwards.setEnabled(true);
+				jumpBackwards.setEnabled(true);
+				
+				QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
+				Move newMove = QuoridorApplication.getQuoridor().getCurrentGame().getMove(index-1);
+				moveNum.setText("Move: " + moveNumber);
+				roundNum.setText("Round: " + roundNumber);
+				if(newMove != null) {
+					
+					if(newMove instanceof WallMove) {
+						/*
 						WallMove wallMoveNext = (WallMove) current.getNextMove();
 						JPanel newWall = new JPanel();
 						int row = wallMoveNext.getTargetTile().getRow();
@@ -1335,59 +1362,43 @@ public class QuoridorView extends JFrame{
 						}
 						newWall.setBackground(Color.BLACK);
 						getContentPane().add(newWall);
+						*/
 
-
-						//Update move number and round number
-						moveNum.setText("Move: " + moveNumber + 1);
+						
+						
 						if(p2Turn.isSelected()) {
-							roundNumber++;
-							roundNum.setText("Round: " + roundNumber);
-
-
-							int blackWallsInStock = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfBlackWallsInStock();
-							p2Walls.setText("Walls: " + blackWallsInStock--);
+							
+							p2Walls.setText("Walls: " + (--p2WallsIn));
 							p2Turn.setSelected(false);
 							p1Turn.setSelected(true);
+							
+						} else if(p1Turn.isSelected()) {
+							
+							p1Walls.setText("Walls: " + (--p1WallsIn));
+							p2Turn.setSelected(true);
+							p1Turn.setSelected(false);
+							
 						}
-						if(p1Turn.isSelected()) {
-							int whiteWallsInStock = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsInStock();
-							p1Walls.setText("Walls: " + whiteWallsInStock--);
+
+					} else if(newMove instanceof StepMove) {
+						
+						if(p2Turn.isSelected()) {
+							p2Turn.setSelected(false);
+							p1Turn.setSelected(true);
+						} else if(p1Turn.isSelected()) {
 							p2Turn.setSelected(true);
 							p1Turn.setSelected(false);
 						}
 
 					}
-
-					if(current.getNextMove() instanceof StepMove) {
-						StepMove nextStepMove = (StepMove) current.getNextMove();
-						Tile target = current.getNextMove().getTargetTile();
-						int row = nextStepMove.getTargetTile().getRow();
-						int col = nextStepMove.getTargetTile().getColumn();
-						if(p1Turn.isSelected()) {
-
-						}
-						else {
-
-						}
-
-						//Update move number and round number
-						moveNum.setText("Move: " + moveNumber + 1);
-						if(p2Turn.isSelected()) {
-							roundNumber++;
-						}
-						else {
-							//Do nothing
-						}
-					}
 					//Need to import jump move
-					if(current.getNextMove() instanceof JumpMove) {
-						//Update move number and round number
-						moveNum.setText("Move: " + moveNumber + 1);
+					else if(newMove instanceof JumpMove) {
 						if(p2Turn.isSelected()) {
-							roundNumber++;
-						}
-						else {
-							//Do nothing
+							p2Turn.setSelected(false);
+							p1Turn.setSelected(true);
+						} else if(p1Turn.isSelected()) {
+							p2Turn.setSelected(true);
+							p1Turn.setSelected(false);
 						}
 					}
 				}
@@ -1399,19 +1410,90 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				
-				//Implement Step Backwards. To remove walls form the board...
-				//Well, idk. Maybe keep track of the step forward walls in an
-				//ArrayList<JPanel> variable?
+				//Implement Step Backwards
+				//I found an easy way for adding walls. just update position and refresh.
 				//All the moves are listed in the current games Moves
 				//and were set to either WallMoves with a target Tile+direction
 				//or step moves with a player to move and target tile
 				
-				//Removing Moves will not work, and probably shouldn't be done anyways
+				//Be sure to update the roundNum/moveNum JLabels. 
+
+				board.requestFocusInWindow();
+
+				int moveNumber = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
+				int roundNumber = Integer.parseInt(roundNum.getText().replace("Round: ", ""));
+				int p1WallsIn = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
+				int p2WallsIn = Integer.parseInt(p2Walls.getText().replace("Walls: ", ""));
+				if(roundNumber == 1)  {
+					moveNumber--;
+					roundNumber = 2;
+				}
+				else {
+					roundNumber--;
+				}
+				//Update move number and round number
 				
-				//Be sure to update the roundNum/moveNum JLabels.
-				//You might even be able to use it to find which one we're on!
+				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
+				if(index < 0)  {
+					stepBackwards.setEnabled(false);
+					jumpBackwards.setEnabled(false);
+					return;
+				}
+				if(index == 0) {
+					stepBackwards.setEnabled(false);
+					jumpBackwards.setEnabled(false);
+				}
+				System.out.println("Index: " + index);
+				stepForward.setEnabled(true);
+				jumpForward.setEnabled(true);
+				QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
+				Move newMove = QuoridorApplication.getQuoridor().getCurrentGame().getMove(index);
+
+				moveNum.setText("Move: " + moveNumber);
+				roundNum.setText("Round: " + roundNumber);
+				if(newMove != null) {
+					
+					if(newMove instanceof WallMove) {
+						
+						
+						if(p2Turn.isSelected()) {
+							
+							p1Walls.setText("Walls: " + (++p1WallsIn));
+							p2Turn.setSelected(false);
+							p1Turn.setSelected(true);
+							
+						} else if(p1Turn.isSelected()) {
+							
+							p2Walls.setText("Walls: " + (++p2WallsIn));
+							p2Turn.setSelected(true);
+							p1Turn.setSelected(false);
+							
+						}
+
+					} else if(newMove instanceof StepMove) {
+						
+						if(p2Turn.isSelected()) {
+							p2Turn.setSelected(false);
+							p1Turn.setSelected(true);
+						} else if(p1Turn.isSelected()) {
+							p2Turn.setSelected(true);
+							p1Turn.setSelected(false);
+						}
+
+					}
+					//Need to import jump move
+					else if(newMove instanceof JumpMove) {
+						if(p2Turn.isSelected()) {
+							p2Turn.setSelected(false);
+							p1Turn.setSelected(true);
+						} else if(p1Turn.isSelected()) {
+							p2Turn.setSelected(true);
+							p1Turn.setSelected(false);
+						}
+					}
+				}
 				
-				System.out.println("TODO: Step Backwards- line 1324 in View");
+				refresh();
 				board.requestFocusInWindow();
 				
 				refresh();
@@ -1421,18 +1503,17 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				
-				//Implement Jump Forward. To add walls to the board, you
-				// can see how drop wall does it (create JPanel, resize/move,
-				//and add). All the moves are listed in the current games Moves
+				//Implement Jump Forward. To add walls to the board, you can just update the position. 
+				//All the moves are listed in the current games Moves
 				//and were set to either WallMoves with a target Tile+direction
 				//or step moves with a player to move and target tile
 				
 				//Legit basically step forward but with last index every time.
-				//You might be able to set the button to enabled(false) if you want
+				//You should probably also set jump/step forward to false here, and enable backwards buttons
 				
 				//Be sure to update the roundNum/moveNum JLabels. 
 				
-				System.out.println("TODO: Jump Forward- line 1345 in View");
+				System.out.println("TODO: Jump Forward- line 1514 in View");
 				board.requestFocusInWindow();
 				
 				refresh();
@@ -1447,7 +1528,7 @@ public class QuoridorView extends JFrame{
 				
 				//Be sure to update the roundNum/moveNum JLabels. 
 				
-				System.out.println("TODO: Jump Backwards- line 1360 in View");
+				System.out.println("TODO: Jump Backwards- line 1529 in View");
 				board.requestFocusInWindow();
 				
 				refresh();
@@ -1613,6 +1694,52 @@ public class QuoridorView extends JFrame{
 								blackPos.getTile().getRow() * 40 - 35, 
 								25, 25);
 				}
+				int MoveNum = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
+				int RoundNum = Integer.parseInt(roundNum.getText().replace("Round: ", ""));
+				int index = MoveNum*2 - (RoundNum == 1 ? 1:0) - 1;
+				//index++;
+				/*
+				if(RoundNum == 1) {
+					RoundNum++;
+				} else {
+					MoveNum++;
+					RoundNum = 1;
+				}
+				*/
+				for(int i = 0; i < index; i++) {
+					WallMove w;
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMove(i) instanceof WallMove) {
+						w = (WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMove(i);
+						if(w.getWallDirection() == Direction.Horizontal) {	
+							g.fillRect(	(w.getTargetTile().getColumn()-1)*40,
+										w.getTargetTile().getRow()*40 - 5, 
+										75, 5);
+						} else {
+							g.fillRect(	w.getTargetTile().getColumn()*40 - 5,
+										(w.getTargetTile().getRow()-1)*40, 
+										5, 75);
+						}
+					}
+				}
+				/*
+				for(WallMove w : QuoridorController.getWalls()) {
+					if(w.getMoveNumber() < MoveNum ||
+					(w.getMoveNumber() == MoveNum && w.getRoundNumber() < RoundNum))
+					{
+						if(w.getWallDirection() == Direction.Horizontal) {	
+							g.fillRect(	(w.getTargetTile().getColumn()-1)*40,
+										w.getTargetTile().getRow()*40 - 5, 
+										75, 5);
+						} else {
+							g.fillRect(	w.getTargetTile().getColumn()*40 - 5,
+										(w.getTargetTile().getRow()-1)*40, 
+										5, 75);
+						}
+					} else {
+						break;
+					}
+				}
+				*/
 				
 			}
 		};
@@ -1629,9 +1756,9 @@ public class QuoridorView extends JFrame{
 						if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 							//
 						} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-							stepForward.doClick();
+							jumpForward.doClick();
 						} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-							stepBackwards.doClick();
+							jumpBackwards.doClick();
 						} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
 							stepForward.doClick();
 						} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
@@ -1649,8 +1776,8 @@ public class QuoridorView extends JFrame{
 		gameLayout.setAutoCreateContainerGaps(true);
 		GroupLayout.Group horizontal = gameLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 												 .addGroup(gameLayout.createSequentialGroup()
-																	.addComponent(roundNum)
-																	.addComponent(moveNum))
+																	.addComponent(moveNum)
+																	.addComponent(roundNum))
 												 .addGroup(gameLayout.createSequentialGroup()
 														 			 .addComponent(p2Name)
 														 			 .addComponent(p2Walls))
@@ -1677,8 +1804,8 @@ public class QuoridorView extends JFrame{
 		
 		GroupLayout.Group vertical = gameLayout.createSequentialGroup()
 												.addGroup(gameLayout.createParallelGroup()
-														.addComponent(roundNum)
-														.addComponent(moveNum))
+																	.addComponent(moveNum)
+																	.addComponent(roundNum))
 				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(p2Name) 
 				 													.addComponent(p2Walls))
@@ -1688,19 +1815,19 @@ public class QuoridorView extends JFrame{
 				 								.addComponent(board)
 				 								.addComponent(notification)
 				 								.addGroup(gameLayout.createParallelGroup()
-								 			 			 .addComponent(p1Name) 
-								 			 			 .addComponent(p1Walls))
+				 													.addComponent(p1Name) 
+				 													.addComponent(p1Walls))
 				 								.addGroup(gameLayout.createParallelGroup()
-											 			 .addComponent(white) 
-											 			 .addComponent(p1Turn))
+											 			 			.addComponent(white) 
+											 			 			.addComponent(p1Turn))
 				 								.addGroup(gameLayout.createParallelGroup()
-											 			 .addComponent(jumpBackwards)
-											 			.addComponent(stepBackwards)
-											 			.addComponent(stepForward)
-											 			.addComponent(jumpForward))
+											 			 			.addComponent(jumpBackwards)
+											 			 			.addComponent(stepBackwards)
+											 			 			.addComponent(stepForward)
+											 			 			.addComponent(jumpForward))
 				 								.addGroup(gameLayout.createParallelGroup()			
-								 						 .addComponent(exitButton)
-								 						 .addComponent(continueButton))
+				 													.addComponent(exitButton)
+				 													.addComponent(continueButton))
 												.addComponent(explanation);
 		
 		gameLayout.setHorizontalGroup(horizontal);
