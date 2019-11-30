@@ -20,6 +20,7 @@ import javax.swing.Timer;
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.features.InvalidInputException;
 import ca.mcgill.ecse223.quoridor.model.Board;
+import ca.mcgill.ecse223.quoridor.model.Destination;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
@@ -667,6 +668,62 @@ public class QuoridorController {
 			return true;
 		
 	}
+
+	/** Identify if game won Feature
+	 * Public method to check game result
+	 * @author Hongshuo Zhou 
+	 * @return game result
+	 */
+	public static String checkGameResult() {
+	 Player black = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
+	 Destination blackDes = black.getDestination();
+	 Direction blackDirection = blackDes.getDirection();
+	 int blackTarget = blackDes.getTargetNumber();
+	 int blackRow = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow();
+	 boolean blackWon = (blackDirection == Direction.Horizontal) && (blackTarget == blackRow);
+
+	 Player white = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
+	 Destination whiteDes = white.getDestination();
+	 Direction whiteDirection = whiteDes.getDirection();
+	 int whiteTarget = whiteDes.getTargetNumber();
+	 int whiteRow = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow();
+	 boolean whiteWon = (whiteDirection == Direction.Horizontal) && (whiteTarget == whiteRow);
+
+	 
+	 if (whiteWon && !blackWon){
+		 QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+		 return "whiteWon";
+	 }
+	 else if (!whiteWon && blackWon) {
+		 QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
+		 return "blackWon";
+	 }
+	 else {
+		 return "pending";
+	 }
+	 
+	}
+	/** Identify if game won Feature
+	 * Public method to check time limit and give result
+	 * @author Hongshuo Zhou 
+	 * @return game result
+	 */
+	public static String clockCountDownToZero(Player player) {
+		Time timeremain = player.getRemainingTime();
+		Time end = new Time(0);
+		if (timeremain.equals(end)) {
+		 if (player.hasGameAsWhite()) {
+		  QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
+		  return "blackWon";
+		 } else {
+		  QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+		  return "whiteWon";
+		 }
+		} else {
+		 return "pending";
+		}
+	   }
+
 	//////////////////////////////////////////////////////////////
 	/**
 	 * Move Wall Feature
