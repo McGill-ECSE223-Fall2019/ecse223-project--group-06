@@ -29,6 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -89,6 +90,7 @@ public class QuoridorView extends JFrame{
 	public JLabel moveNum = new JLabel("Move: 0");
 	
 	public JFrame confirmFrame = new JFrame("Confirmation");
+	
 	public JButton saveButton = new JButton("Save");
 	public JButton undoButton = new JButton("Undo");
 	private JButton exitButton = new JButton("Exit");
@@ -910,6 +912,50 @@ public class QuoridorView extends JFrame{
 				
 			}
 		});
+		resignButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				confirmFrame.getContentPane().removeAll();
+				JLabel notification = new JLabel("Are you sure to give up this game");
+				JButton yesButton = new JButton("Yes");
+				notification.setForeground(Color.red);
+				yesButton.addActionListener(new java.awt.event.ActionListener() {
+					@Override
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						getResult();
+						
+					}
+				});
+				JButton noButton = new JButton("No");
+				noButton.addActionListener(new java.awt.event.ActionListener() {
+					@Override
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						//Exit the frame
+						confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+					}
+				});
+				GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
+				layout.setAutoCreateGaps(true);
+				layout.setAutoCreateContainerGaps(true);
+				layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+												.addComponent(notification)
+												.addGroup(layout.createSequentialGroup()
+														  .addComponent(yesButton)
+														  .addComponent(noButton)	   
+																			   ));
+				layout.setVerticalGroup(layout.createSequentialGroup()
+						.addComponent(notification)
+						.addGroup(layout.createParallelGroup()
+									.addComponent(yesButton)
+									.addComponent(noButton)	   
+									   ));
+				layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
+				confirmFrame.getContentPane().setLayout(layout);
+				confirmFrame.pack();
+				confirmFrame.setVisible(true);
+				
+			}
+		});
 		validateButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1211,6 +1257,7 @@ public class QuoridorView extends JFrame{
 												 .addGroup(gameLayout.createSequentialGroup()
 		 													.addComponent(rotateButton)
 		 													.addComponent(undoButton)
+		 													.addComponent(resignButton)
 		 													.addComponent(validateButton))
 												 .addGroup(gameLayout.createSequentialGroup()
 															.addComponent(saveButton)
@@ -1240,6 +1287,7 @@ public class QuoridorView extends JFrame{
 				 								.addGroup(gameLayout.createParallelGroup()
 				 													.addComponent(rotateButton)
 				 													.addComponent(undoButton)
+				 													.addComponent(resignButton)
 				 													.addComponent(validateButton))
 												.addGroup(gameLayout.createParallelGroup()
 																	.addComponent(saveButton)
@@ -1453,6 +1501,7 @@ public class QuoridorView extends JFrame{
 				refresh();
 			}
 		});
+		
 		
 		
 
@@ -2171,6 +2220,7 @@ public class QuoridorView extends JFrame{
 		if(replayGame.getActionListeners().length > 0)replayGame.removeActionListener(replayGame.getActionListeners()[0]);
 		if(saveButton.getActionListeners().length > 0)saveButton.removeActionListener(saveButton.getActionListeners()[0]);
 		if(exitButton.getActionListeners().length > 0)exitButton.removeActionListener(exitButton.getActionListeners()[0]);
+		if(resignButton.getActionListeners().length > 0)resignButton.removeActionListener(resignButton.getActionListeners()[0]);
 		if(grabButton.getActionListeners().length > 0)grabButton.removeActionListener(grabButton.getActionListeners()[0]);
 		if(rotateButton.getActionListeners().length > 0)rotateButton.removeActionListener(rotateButton.getActionListeners()[0]);
 		if(undoButton.getActionListeners().length > 0)undoButton.removeActionListener(undoButton.getActionListeners()[0]);
@@ -2278,6 +2328,59 @@ public class QuoridorView extends JFrame{
 		}
 		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.PlayerMove);
 
+	}
+	public void getResult() {
+		confirmFrame.getContentPane().removeAll();
+		JLabel result;
+		if(p1Turn.isSelected())
+			 result = new JLabel("Black player wins this game");
+		else 
+			 result = new JLabel("White player wins this game");
+		result.setForeground(Color.red);
+		JButton yesButton = new JButton("New Game");
+		yesButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				confirmFrame.getContentPane().removeAll();
+				
+				//Reboot
+				QuoridorController.stopwhiteclock(whiteTimer);
+				QuoridorController.stopblackclock(blackTimer);
+				fileName = null;
+				clearActionListeners();
+				initLoadScreen();
+				//Exit the frame
+				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+				
+			}
+		});
+		JButton noButton = new JButton("Exit");
+		noButton.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				//Exit the frame
+				System.exit(1);
+			}
+		});
+		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+										.addComponent(result)
+										.addGroup(layout.createSequentialGroup()
+												  .addComponent(yesButton)
+												  .addComponent(noButton)	   
+																	   ));
+		layout.setVerticalGroup(layout.createSequentialGroup()
+				.addComponent(result)
+				.addGroup(layout.createParallelGroup()
+							.addComponent(yesButton)
+							.addComponent(noButton)	   
+							   ));
+		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
+		confirmFrame.getContentPane().setLayout(layout);
+		confirmFrame.pack();
+		confirmFrame.setVisible(true);
 	}
 
 }

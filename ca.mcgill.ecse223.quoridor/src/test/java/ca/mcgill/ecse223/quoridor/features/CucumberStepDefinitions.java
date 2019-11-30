@@ -1836,22 +1836,17 @@ public class CucumberStepDefinitions {
 		 * Feature: Report final result
 		 * @author xiangyu li
 		 */
-		@When("The game is no longer running")
-		public void TheGameIsNoLongerRunning() {
-			QuoridorController.Gameisfinished(QuoridorApplication.getQuoridor().getCurrentGame());
-		}
-		
 		@Then("The final result shall be displayed")
 		public void TheFinalResultShallBeDisplayed() {
-			
+			throw new cucumber.api.PendingException();
 		}
 		@And("White's clock shall not be counting down")
 		public void WhitesClockShallNotBeCountingDown() {	
-			QuoridorController.stopwhiteclock(view.whiteTimer);
+			Assert.assertEquals(null,view.whiteTimer);
 		}
 		@And("Black's clock shall not be counting down")
 		public void BlacksClockShallNotBeCountingDown(){
-			QuoridorController.stopblackclock(view.blackTimer);
+			Assert.assertEquals(null,view.whiteTimer);
 		}
 		@And("White shall be unable to move")
 		public void WhiteShallBeUnableToMove(){
@@ -1868,24 +1863,20 @@ public class CucumberStepDefinitions {
 		 * Feature: ResignGame
 		 * @author xiangyu li
 		 */
-		@Given("Then game to move is {player}")
-		public void TheGameToMoveIs(Player player) {
-			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(player);
-		}
 		
 		@When("Player initates to resign")
 		public void PlayerInitatesToResign() {
 			view.resignButton.doClick();
 		}
 		
-		@Then("Game result shall be {result}")
-		public void GameResultShallBe (GameStatus result) {
-			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),result);
+		@Then("Game result shall be {string}")
+		public void GameResultShallBe (String result) {
+			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus().toString(),result);
 		}
 		
 		@And("The game shall no longer be running")
 		public void TheGameShallNoLongerBeRunning() {
-			QuoridorController.Gameisfinished(QuoridorApplication.getQuoridor().getCurrentGame());
+			Assert.assertEquals(true,QuoridorController.isEnded(view.fileName));
 			
 		}
 
