@@ -2377,6 +2377,17 @@ public class QuoridorController {
 			}
 		}
 		
-	}
+	}	
+		public static void GameIsFinished(QuoridorView view) {
+			Game currentgame=QuoridorApplication.getQuoridor().getCurrentGame();
+			QuoridorController.stopblackclock(view.blackTimer);
+			QuoridorController.stopwhiteclock(view.whiteTimer);
+
+			currentgame.setGameStatus(gameresult());
+			currentgame.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(null);
+		
+			
+		}
+		
 	
 }

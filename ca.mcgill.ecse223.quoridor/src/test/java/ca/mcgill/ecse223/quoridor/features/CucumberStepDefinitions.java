@@ -1838,6 +1838,7 @@ public class CucumberStepDefinitions {
 		 */
 		@Then("The final result shall be displayed")
 		public void TheFinalResultShallBeDisplayed() {
+			throw new cucumber.api.PendingException();
 		}
 		@And("White's clock shall not be counting down")
 		public void WhitesClockShallNotBeCountingDown() {	
@@ -1875,7 +1876,7 @@ public class CucumberStepDefinitions {
 		
 		@And("The game shall no longer be running")
 		public void TheGameShallNoLongerBeRunning() {
-			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame());
+			Assert.assertEquals(true,QuoridorController.isEnded(view.fileName));
 			
 		}
 

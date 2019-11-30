@@ -2359,7 +2359,7 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Exit the frame
-				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
+				System.exit(1);
 			}
 		});
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
