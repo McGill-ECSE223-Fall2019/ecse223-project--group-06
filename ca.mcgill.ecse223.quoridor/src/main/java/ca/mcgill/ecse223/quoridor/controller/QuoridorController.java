@@ -210,8 +210,18 @@ public class QuoridorController {
 		if (QuoridorApplication.getQuoridor().getCurrentGame() == null) {
 			Game newGame = new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
 			QuoridorApplication.getQuoridor().setCurrentGame(newGame);
-			Player white = new Player(new Time(0), new User("qoihgpqi" + QuoridorApplication.getQuoridor().getUsers().size(), QuoridorApplication.getQuoridor()), 0, Direction.Vertical);
-			Player black = new Player(new Time(0), new User("agbawgbawifwagikbakwbja" + QuoridorApplication.getQuoridor().getUsers().size(), QuoridorApplication.getQuoridor()), 1, Direction.Vertical);
+			User whiteU = findUserName("User1");
+			User blackU = findUserName("User2");
+			if (whiteU == null){
+				createUser("User1");
+				whiteU = findUserName("User1");
+			}
+			if (blackU == null){
+				createUser("User2");
+				blackU = findUserName("User2");
+			}
+			Player white = new Player(new Time(0), whiteU, 0, Direction.Vertical);
+			Player black = new Player(new Time(0), blackU, 1, Direction.Vertical);
 			QuoridorApplication.getQuoridor().getCurrentGame().setWhitePlayer(white);
 			QuoridorApplication.getQuoridor().getCurrentGame().setBlackPlayer(black);
 			
@@ -1354,11 +1364,10 @@ public class QuoridorController {
 			if(scan.hasNextLine()) scan.nextLine();
 			while(scan.hasNext()) {
 				String line = scan.next();
-				if(line != "" && !line.contains("."))
+				if(line != "" && !line.contains(".")) {
 					moveNumber++;
+				}
 			}
-			
-			if(moveNumber != 0) moveNumber--; //One of the next things will be the /n probably
 			
 			scan.close();
 			
@@ -1366,6 +1375,8 @@ public class QuoridorController {
 			e.printStackTrace();
 			return false;
 		}
+		//TODO: Make this only happen if it's a win/loss situation
+		if(isEnded(filepath)) moveNumber -=2;
 		int realMoveNum = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
 		if(realMoveNum == moveNumber) {
 			//This is to combat the "File is up to date but not modified('updated')"
@@ -2398,10 +2409,11 @@ public class QuoridorController {
 				
 				boolean isClosed = closed.contains(suc);
 				
-				int newG = q.g + 1; //Testing this out
+				int newG = q.g + 1;
 				
 				if(newG < suc.g && isClosed) {
-					System.out.println("Problem");
+					//System.out.println("Problem");
+					System.err.println("Algorithmic problem: Not the end of the world (just possibly my grade)");
 					//closed.remove(closed.indexOf(suc));
 				} else if(isClosed) {
 					continue neighbors;
@@ -2516,6 +2528,8 @@ public class QuoridorController {
 				stepP.delete();
 				//curGame.getMove(fromMoveNum).delete();
 			}
+			GamePosition pos = curGame.getPosition(fromMoveNum);
+			pos.delete();
 		}
 		
 	}
