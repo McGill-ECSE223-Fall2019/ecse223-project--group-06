@@ -2388,6 +2388,9 @@ public class QuoridorController {
 			QuoridorController.stopblackclock(view.blackTimer);
 			if(view.whiteTimer!=null)
 			QuoridorController.stopwhiteclock(view.whiteTimer);
+			currentgame.getCurrentPosition().setPlayerToMove(null);
+			currentgame.getBlackPlayer().setNextPlayer(null);
+			currentgame.getWhitePlayer().setNextPlayer(null);
 			
 		}
 		
