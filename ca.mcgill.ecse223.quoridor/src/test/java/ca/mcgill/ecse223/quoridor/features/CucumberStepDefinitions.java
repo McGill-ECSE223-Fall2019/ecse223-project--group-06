@@ -1981,18 +1981,18 @@ public class CucumberStepDefinitions {
 
 		@Then("The next move shall be {int}.{int}")
 		public void theNextMoveShallBe(int move, int round) {
-//			int nextMoveNumber = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
-//			int nextRoundNumber = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
-//			
-//			if (nextRoundNumber == 1) {
-//				nextRoundNumber++;
-//			} else {
-//				nextMoveNumber++;
-//				nextRoundNumber = 1;
-//			}
-//			
-			Assert.assertEquals(move, 5);
-			Assert.assertEquals(round, 1);
+			int nextMoveNumber = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
+			int nextRoundNumber = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
+			
+			if (nextRoundNumber == 1) {
+				nextRoundNumber = 2;
+			} else {
+				nextMoveNumber++;
+				nextRoundNumber = 1;
+			}
+			
+			Assert.assertEquals(move, nextMoveNumber);
+			Assert.assertEquals(round, nextRoundNumber);
 		}
 
 		@Then("White player's position shall be \\({int},{int})")
@@ -2000,6 +2000,8 @@ public class CucumberStepDefinitions {
 			PlayerPosition whitePos;
 			
 			whitePos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
+			System.out.print("Row: " + whitePos.getTile().getRow());
+			System.out.print("Col: " + whitePos.getTile().getColumn());
 			Assert.assertTrue(whitePos.getTile().getRow() == row && whitePos.getTile().getColumn() == col);
 		}
 		
