@@ -1538,9 +1538,69 @@ public class QuoridorView extends JFrame{
 				//You should probably also set jump/step forward to false here, and enable backwards buttons
 				
 				//Be sure to update the roundNum/moveNum JLabels. 
-				
-				System.out.println("TODO: Jump Forward- line 1514 in View");
 				board.requestFocusInWindow();
+				
+				// The easy/dumb way - basically click stepForwards until it's disabled
+//				while (stepForward.isEnabled()) {
+//					stepForward.doClick();
+//				}
+				
+				stepForward.doClick();  // step forward 1 time to avoid issues (error when jumping backwards then forward)
+				
+				int moveNumber = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
+				int roundNumber = Integer.parseInt(roundNum.getText().replace("Round: ", ""));
+				int p1WallsIn = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
+				int p2WallsIn = Integer.parseInt(p2Walls.getText().replace("Walls: ", ""));
+				
+				
+				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
+				while (QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 2 > index) {  // reached end
+					
+					QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
+					Move newMove = QuoridorApplication.getQuoridor().getCurrentGame().getMove(index-1);
+					
+					// Update walls in stock for each player
+					if (newMove instanceof WallMove) {
+						
+						if (roundNumber == 1) {	 // player 1 turn
+								p1WallsIn--;
+							
+						} else if (roundNumber == 2) {  // player 2 turn
+								p2WallsIn--;
+						}
+					}
+					
+					// Update Round number & Move number
+					if (roundNumber == 1) {
+						roundNumber++;
+					} else {
+						moveNumber++;
+						roundNumber = 1;
+					}
+					
+					index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;  // update index
+				}
+				
+				moveNum.setText("Move: " + moveNumber);
+				roundNum.setText("Round: " + roundNumber);
+				p1Walls.setText("Walls: " + p1WallsIn);
+				p2Walls.setText("Walls: " + p2WallsIn);
+				
+				// Player 1 Turn
+				if (roundNumber == 1) {
+					p1Turn.setSelected(false);
+					p2Turn.setSelected(true);
+					
+				// Player 2 Turn
+				} else if (roundNumber == 2) {
+					p1Turn.setSelected(true);
+					p2Turn.setSelected(false);
+				}
+				
+				stepForward.setEnabled(false);
+				jumpForward.setEnabled(false);
+				stepBackwards.setEnabled(true);
+				jumpBackwards.setEnabled(true);
 				
 				refresh();
 			}
@@ -1553,9 +1613,17 @@ public class QuoridorView extends JFrame{
 				//See Jump Forwards for info. 
 				
 				//Be sure to update the roundNum/moveNum JLabels. 
-				
-				System.out.println("TODO: Jump Backwards- line 1529 in View");
 				board.requestFocusInWindow();
+				
+				// TODO: find a better way
+				while (stepBackwards.isEnabled()) {
+					stepBackwards.doClick();
+				}
+				
+				stepForward.setEnabled(true);
+				jumpForward.setEnabled(true);
+				stepBackwards.setEnabled(false);
+				jumpBackwards.setEnabled(false);
 				
 				refresh();
 			}

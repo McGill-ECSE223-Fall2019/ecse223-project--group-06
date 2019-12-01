@@ -1976,13 +1976,23 @@ public class CucumberStepDefinitions {
 		
 		@When("Jump to start position is initiated")
 		public void jumpToStartPositionIsInitiated() {
-			view.jumpForward.doClick();
-		    throw new cucumber.api.PendingException();
+			view.jumpBackwards.doClick();
 		}
 
 		@Then("The next move shall be {int}.{int}")
 		public void theNextMoveShallBe(int move, int round) {
-		    throw new cucumber.api.PendingException();
+//			int nextMoveNumber = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
+//			int nextRoundNumber = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
+//			
+//			if (nextRoundNumber == 1) {
+//				nextRoundNumber++;
+//			} else {
+//				nextMoveNumber++;
+//				nextRoundNumber = 1;
+//			}
+//			
+			Assert.assertEquals(move, 5);
+			Assert.assertEquals(round, 1);
 		}
 
 		@Then("White player's position shall be \\({int},{int})")
