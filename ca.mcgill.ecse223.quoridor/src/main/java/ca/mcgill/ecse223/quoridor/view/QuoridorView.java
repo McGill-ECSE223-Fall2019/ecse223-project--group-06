@@ -84,8 +84,8 @@ public class QuoridorView extends JFrame{
 	public JLabel p2Name = new JLabel();
 	private JLabel p1Time = new JLabel();
 	private JLabel p2Time = new JLabel();
-	private JLabel p1Walls = new JLabel("Walls: 10");
-	private JLabel p2Walls = new JLabel("Walls: 10");
+	public JLabel p1Walls = new JLabel("Walls: 10");
+	public JLabel p2Walls = new JLabel("Walls: 10");
 	public JRadioButton p1Turn = new JRadioButton("White Turn", true); //Don't put an action listener on this!
 	public JRadioButton p2Turn = new JRadioButton("Black Turn", false); //                ||
 	public JLabel notification = new JLabel(); //To use for any errors, make sure it's being cleared though

@@ -1023,7 +1023,6 @@ public class CucumberStepDefinitions {
 		public void fileWithNameShallNotBeUpdatedInSystem(String fileName) {
 			Assert.assertFalse(QuoridorController.isUpdated(fileName));
 		}
-		
 
 		/**
 		 * Feature 4. Initiate Board step definitions
@@ -1719,7 +1718,7 @@ public class CucumberStepDefinitions {
 			}
 		}
 		
-///////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////
 		
 		/** Enter Replay Mode
 		 * @author Yanis Jallouli
@@ -2091,7 +2090,7 @@ public class CucumberStepDefinitions {
 			theGameIsNotRunning();
 			view.replayGame.doClick();
 			view.replayGame.doClick();
-		}	
+		}
 		
 //		@When("Jump to start position is initiated")
 //		public void jumpToStartPositionIsInitiated() {
@@ -2221,8 +2220,13 @@ public class CucumberStepDefinitions {
 
 		
 
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		
+		/**
+		 * Feature: Step Backward and Step Forward
+		 * @author Keanu, Natchev
+		 * ID#: 260804586
+		 */
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2244,6 +2248,16 @@ public class CucumberStepDefinitions {
 			view.stepForward.doClick();
 		}
 
+		@Then("White has <wwallno> on stock")
+		public void white_has_wwallno_on_stock() {
+			int wallOnBoard = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsOnBoard();
+			int wallNumber = Integer.parseInt(view.p1Walls.getText().replace("Walls: ", ""));
+			Assert.assertTrue(wallNumber == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsInStock());
+		}
+  
+  
+  
+  
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
