@@ -1836,9 +1836,20 @@ public class CucumberStepDefinitions {
 		 * Feature: Report final result
 		 * @author xiangyu li
 		 */
+		@When("The game is no longer running")
+		public void TheGameIsEnd() {
+			theGameIsRunning();
+			QuoridorController.GameIsFinished(view);
+		}
+		
 		@Then("The final result shall be displayed")
 		public void TheFinalResultShallBeDisplayed() {
-			throw new cucumber.api.PendingException();
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()==GameStatus.BlackWon)
+				Assert.assertEquals(view.result.getText(),"Black player wins this game");
+			else if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()==GameStatus.WhiteWon)
+				Assert.assertEquals(view.result.getText(),"White player wins this game");
+			else if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()==GameStatus.Draw)
+				Assert.assertEquals(view.result.getText(),"The game is draw");
 		}
 		@And("White's clock shall not be counting down")
 		public void WhitesClockShallNotBeCountingDown() {	
@@ -1850,11 +1861,11 @@ public class CucumberStepDefinitions {
 		}
 		@And("White shall be unable to move")
 		public void WhiteShallBeUnableToMove(){
-			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame());
+			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove());
 				}
 		@And("Black shall be unable to move")
 		public void BlackShallBeUnableToMove() {
-			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition());
+			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove());
 		}
 		
 		
@@ -1867,11 +1878,12 @@ public class CucumberStepDefinitions {
 		@When("Player initates to resign")
 		public void PlayerInitatesToResign() {
 			view.resignButton.doClick();
+			((JButton)view.confirmFrame.getComponent(1)).doClick();
 		}
 		
 		@Then("Game result shall be {string}")
 		public void GameResultShallBe (String result) {
-			Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus().toString(),result);
+			Assert.assertEquals(result,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus().toString());
 		}
 		
 		@And("The game shall no longer be running")

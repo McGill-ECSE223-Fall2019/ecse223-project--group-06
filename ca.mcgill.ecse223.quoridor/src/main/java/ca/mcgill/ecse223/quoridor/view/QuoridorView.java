@@ -45,6 +45,7 @@ import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.MoveDirection;
 import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.PawnSM;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Direction;
+import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.Move;
@@ -84,6 +85,7 @@ public class QuoridorView extends JFrame{
 	public JRadioButton p1Turn = new JRadioButton("White Turn", true); //Don't put an action listener on this!
 	public JRadioButton p2Turn = new JRadioButton("Black Turn", false); //                ||
 	public JLabel notification = new JLabel(); //To use for any errors, make sure it's being cleared though
+	public JLabel result = new JLabel();
 	public JLabel explanation = new JLabel("<html><center>Press 'g' to grab a wall"
 										+  "<br>Or press 'm' to move</center></html>", SwingConstants.CENTER);
 	public JLabel roundNum = new JLabel("Round: 1");
@@ -2219,9 +2221,11 @@ public class QuoridorView extends JFrame{
 		if(loadGame.getActionListeners().length > 0)loadGame.removeActionListener(loadGame.getActionListeners()[0]);
 		if(replayGame.getActionListeners().length > 0)replayGame.removeActionListener(replayGame.getActionListeners()[0]);
 		if(saveButton.getActionListeners().length > 0)saveButton.removeActionListener(saveButton.getActionListeners()[0]);
+		if(moveButton.getActionListeners().length >0)moveButton.removeActionListener(moveButton.getActionListeners()[0]);
 		if(exitButton.getActionListeners().length > 0)exitButton.removeActionListener(exitButton.getActionListeners()[0]);
 		if(resignButton.getActionListeners().length > 0)resignButton.removeActionListener(resignButton.getActionListeners()[0]);
 		if(grabButton.getActionListeners().length > 0)grabButton.removeActionListener(grabButton.getActionListeners()[0]);
+		if(validateButton.getActionListeners().length>0)validateButton.removeActionListener(validateButton.getActionListeners()[0]);
 		if(rotateButton.getActionListeners().length > 0)rotateButton.removeActionListener(rotateButton.getActionListeners()[0]);
 		if(undoButton.getActionListeners().length > 0)undoButton.removeActionListener(undoButton.getActionListeners()[0]);
 		if(continueButton != null && continueButton.getActionListeners().length > 0)continueButton.removeActionListener(continueButton.getActionListeners()[0]);
@@ -2310,7 +2314,8 @@ public class QuoridorView extends JFrame{
 			if(white.move()) {
 				switchPlayerButton();
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow() == 1) {
-					QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+				
+					getResult();
 				}
 			}
 			else notifyInvalid("Invalid Player Move");
@@ -2320,32 +2325,38 @@ public class QuoridorView extends JFrame{
 				switchPlayerButton();
 				
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow() == 9) {
-					QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
+			
+					getResult();
 				}
 				
 			}
 			else notifyInvalid("Invalid Player Move");
 		}
 		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.PlayerMove);
+		
 
 	}
 	public void getResult() {
 		confirmFrame.getContentPane().removeAll();
-		JLabel result;
-		if(p1Turn.isSelected())
+		if(p1Turn.isSelected()) {
 			 result = new JLabel("Black player wins this game");
-		else 
+			 QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
+			 
+		}
+		else { 
 			 result = new JLabel("White player wins this game");
+			 QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+		}
+		
+		QuoridorController.GameIsFinished(this);
+		clearActionListeners();
+		
 		result.setForeground(Color.red);
 		JButton yesButton = new JButton("New Game");
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				confirmFrame.getContentPane().removeAll();
-				
-				//Reboot
-				QuoridorController.stopwhiteclock(whiteTimer);
-				QuoridorController.stopblackclock(blackTimer);
 				fileName = null;
 				clearActionListeners();
 				initLoadScreen();

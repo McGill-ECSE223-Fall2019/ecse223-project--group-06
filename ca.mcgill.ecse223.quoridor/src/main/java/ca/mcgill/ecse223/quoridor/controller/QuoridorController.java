@@ -2378,14 +2378,16 @@ public class QuoridorController {
 		}
 		
 	}	
-		public static void GameIsFinished(QuoridorView view) {
-			Game currentgame=QuoridorApplication.getQuoridor().getCurrentGame();
-			QuoridorController.stopblackclock(view.blackTimer);
-			QuoridorController.stopwhiteclock(view.whiteTimer);
-
-			currentgame.setGameStatus(gameresult());
-			currentgame.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(null);
+	
 		
+		
+		public static void GameIsFinished(QuoridorView view) {
+			
+			Game currentgame=QuoridorApplication.getQuoridor().getCurrentGame();
+			if(view.blackTimer!=null)
+			QuoridorController.stopblackclock(view.blackTimer);
+			if(view.whiteTimer!=null)
+			QuoridorController.stopwhiteclock(view.whiteTimer);
 			
 		}
 		
