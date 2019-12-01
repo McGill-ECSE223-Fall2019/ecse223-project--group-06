@@ -1952,15 +1952,7 @@ public class CucumberStepDefinitions {
 		}
 		@And("The next move is {int}.{int}") 
 		public void theNextMoveIs(int mNum, int rNum) {
-			//if the next move is white- round num of current is last - 1
-			//Currently, game is displaying one move ahead.
-			if(rNum == 2)  {
-				mNum++;
-				rNum = 1;
-			} else {
-				rNum = 2;
-			}
-			//2:2 -> 2:1    4:1 -> 3:2
+			
 			view.roundNum.setText("Round: " + rNum);
 			view.moveNum.setText("Move: " + mNum);
 		}
@@ -1972,8 +1964,13 @@ public class CucumberStepDefinitions {
 		
 		@Then("The next move shall be {int}.{int}")
 		public void theNextMoveShallBe(int nmov, int nrnd) {
-			Assert.assertTrue(nmov == QuoridorApplication.getQuoridor().getCurrentGame().getMove(0).getMoveNumber() 
-					&& nrnd == QuoridorApplication.getQuoridor().getCurrentGame().getMove(0).getRoundNumber());
+		
+			int move = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
+			int round = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
+			
+			Assert.assertEquals(nrnd, round);
+			Assert.assertEquals(nmov, move);
+			
 		}
 		
 		@And("White player's position shall be \\({int},{int})")
@@ -2144,6 +2141,7 @@ public class CucumberStepDefinitions {
 		 */
 		@When("The game is no longer running")
 		public void TheGameIsNoLongerRunning() {
+			
 			QuoridorController.Gameisfinished(QuoridorApplication.getQuoridor().getCurrentGame());
 		}
 		
@@ -2176,6 +2174,7 @@ public class CucumberStepDefinitions {
 		 */
 		@Given("Then game to move is {string}")
 		public void TheGameToMoveIs(String player) {
+			
 			if(player.equals("white")) {
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
 			} else {
