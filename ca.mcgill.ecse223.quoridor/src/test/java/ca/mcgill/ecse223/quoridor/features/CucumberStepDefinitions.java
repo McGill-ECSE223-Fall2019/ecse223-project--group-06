@@ -2075,11 +2075,11 @@ public class CucumberStepDefinitions {
 			view.replayGame.doClick();
 		}
 		
-		@When("Jump to start position is initiated")
-		public void jumpToStartPositionIsInitiated() {
-			view.jumpBackwards.doClick();
-		}
-
+//		@When("Jump to start position is initiated")
+//		public void jumpToStartPositionIsInitiated() {
+//			view.jumpBackwards.doClick();
+//		}
+//
 //		@Then("The next move shall be {int}.{int}")
 //		public void theNextMoveShallBe(int move, int round) {
 //			int nextMoveNumber = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
