@@ -1389,27 +1389,6 @@ public class QuoridorView extends JFrame{
 				if(newMove != null) {
 					
 					if(newMove instanceof WallMove) {
-						/*
-						WallMove wallMoveNext = (WallMove) current.getNextMove();
-						JPanel newWall = new JPanel();
-						int row = wallMoveNext.getTargetTile().getRow();
-						int col = wallMoveNext.getTargetTile().getColumn();
-						refresh(); 
-						if(wallMoveNext.getWallDirection() == Direction.Vertical) {
-							newWall.setSize(5, 75);
-							newWall.setLocation( 
-									board.getX() - 5 + col*40, 
-									board.getY() + row * 40 - 40);
-						} else {
-							newWall.setSize(75, 5);
-							newWall.setLocation( 
-									board.getX() + col*40 - 40, 
-									board.getY() - 5 + row * 40);
-						}
-						newWall.setBackground(Color.BLACK);
-						getContentPane().add(newWall);
-						*/
-
 						
 						
 						if(p2Turn.isSelected()) {
@@ -1649,8 +1628,10 @@ public class QuoridorView extends JFrame{
 				
 				stepForward.setEnabled(true);
 				jumpForward.setEnabled(true);
+				
 				QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
-
+				System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
+				
 				moveNum.setText("Move: " + moveNumber);
 				roundNum.setText("Round: " + roundNumber);
 				p1Walls.setText("Walls: " + p1WallsIn);
@@ -1914,6 +1895,7 @@ public class QuoridorView extends JFrame{
 		//Just throwing everything in layout in an organized way
 		gameLayout.setAutoCreateGaps(true);
 		gameLayout.setAutoCreateContainerGaps(true);
+		
 		GroupLayout.Group horizontal = gameLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
 												 .addGroup(gameLayout.createSequentialGroup()
 																	.addComponent(moveNum)
