@@ -16,7 +16,7 @@ and see the board position after that move.
       |  3 |   1 | e3h  |
       |  3 |   2 | e8h  |
       |  4 |   1 | d3v  |
-      |  4 |   2 | f2   |
+      |  4 |   2 | f3   |
     And The next move is <movno>.<rndno>
     When Step forward is initiated
     Then The next move shall be <nmov>.<nrnd>
@@ -34,5 +34,5 @@ and see the board position after that move.
       |     3 |     1 |    3 |    2 |    7 |    5 |     9   |    3 |    5 |      10 |
       |     3 |     2 |    4 |    1 |    7 |    5 |     9   |    3 |    5 |       9 |
       |     4 |     1 |    4 |    2 |    7 |    5 |     8   |    3 |    5 |       9 |
-      |     4 |     2 |    5 |    1 |    7 |    5 |     8   |    2 |    6 |       9 |
+      |     4 |     2 |    5 |    1 |    7 |    5 |     8   |    3 |    6 |       9 |
 

@@ -1973,6 +1973,10 @@ public class CucumberStepDefinitions {
 		public void jumpToStartInitiated() {
 			view.jumpBackwards.doClick();
 		}
+		@When("Jump to final position is initiated")
+		public void jumpToFinalInitiated() {
+			view.jumpForward.doClick();
+		}
 		
 		@Then("The next move shall be {int}.{int}")
 		public void theNextMoveShallBe(int nmov, int nrnd) {
