@@ -2202,7 +2202,6 @@ public class CucumberStepDefinitions {
 			}
 			
 		}
-		
 		@When("Player initates to resign")
 		public void PlayerInitatesToResign() {
 			view.resignButton.doClick();
@@ -2217,10 +2216,10 @@ public class CucumberStepDefinitions {
 			if(result.equals("black")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),GameStatus.WhiteWon);
 			
 		}
-			@And("The game shall no longer be running")
+		/*	@And("The game shall no longer be running")
 		public void TheGameShallNoLongerBeRunning() {
 			Assert.assertNotSame(GameStatus.Running,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
-			
+		}*/
 
 		
 
