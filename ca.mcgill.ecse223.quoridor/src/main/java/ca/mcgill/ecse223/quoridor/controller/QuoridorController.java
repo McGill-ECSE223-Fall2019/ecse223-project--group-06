@@ -732,6 +732,35 @@ public class QuoridorController {
 		}
 	   }
 
+	   /** Helper method to update position
+	 * @author Hongshuo Zhou 
+	 * @return game result
+	 */
+	public static void newPosition(){
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		GamePosition position = game.getCurrentPosition();
+		PlayerPosition whiteP = new PlayerPosition(game.getWhitePlayer(), game.getCurrentPosition().getWhitePosition().getTile());
+		PlayerPosition blackP = new PlayerPosition(game.getBlackPlayer(), game.getCurrentPosition().getBlackPosition().getTile());
+		Player player = position.getPlayerToMove();
+
+		GamePosition newposition = new GamePosition(game.getCurrentPosition().getId() + 1,
+		whiteP,
+		blackP,
+		player,
+		game);
+		for(Wall w : game.getCurrentPosition().getWhiteWallsInStock()) newposition.addWhiteWallsInStock(w);
+		for(Wall w : game.getCurrentPosition().getBlackWallsInStock()) newposition.addBlackWallsInStock(w);
+		for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) newposition.addWhiteWallsOnBoard(w);
+		for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) newposition.addBlackWallsOnBoard(w);
+
+		game.setCurrentPosition(newposition);
+
+
+
+	}
+
+	   
+
 	//////////////////////////////////////////////////////////////
 	/**
 	 * Move Wall Feature

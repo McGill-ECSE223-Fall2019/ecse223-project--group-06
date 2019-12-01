@@ -10,6 +10,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -20,6 +21,7 @@ import java.sql.Time;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -708,6 +710,7 @@ public class QuoridorView extends JFrame{
 				newGame.removeActionListener(newGame.getActionListeners()[0]);
 			}
 		});
+		
 		//Fill in and resize
 		getContentPane().setLayout(initLayout);
 		pack();
@@ -1128,6 +1131,22 @@ public class QuoridorView extends JFrame{
 										        board.getX() + (col-1)*40 - 40, 
 										        board.getY() - 5 + (row) * 40);
 							      }
+							}
+						} else if (e.getKeyCode() == KeyEvent.VK_Q) {
+							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+								movePlayer(MoveDirection.NorthWest);
+							}
+						} else if (e.getKeyCode() == KeyEvent.VK_E) {
+							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+								movePlayer(MoveDirection.NorthEast);
+							}
+						} else if (e.getKeyCode() == KeyEvent.VK_Z) {
+							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+								movePlayer(MoveDirection.SouthWest);
+							}
+						} else if (e.getKeyCode() == KeyEvent.VK_C) {
+							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+								movePlayer(MoveDirection.SouthEast);
 							}
 						} else if (e.getKeyCode() == KeyEvent.VK_R) {
 							RotateWall();
@@ -1613,6 +1632,33 @@ public class QuoridorView extends JFrame{
 				//See Jump Forwards for info. 
 				
 				//Be sure to update the roundNum/moveNum JLabels. 
+
+				board.requestFocusInWindow();
+				
+				int moveNumber = 1;
+				int roundNumber = 1;
+				int p1WallsIn = 10;
+				int p2WallsIn = 10;
+			
+				//Update move number and round number
+				
+				int index = 0;
+				
+				stepBackwards.setEnabled(false);
+				jumpBackwards.setEnabled(false);
+				
+				stepForward.setEnabled(true);
+				jumpForward.setEnabled(true);
+				QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
+
+				moveNum.setText("Move: " + moveNumber);
+				roundNum.setText("Round: " + roundNumber);
+				p1Walls.setText("Walls: " + p1WallsIn);
+				p2Walls.setText("Walls: " + p2WallsIn);
+				p1Turn.setSelected(true);
+				p2Turn.setSelected(false);
+				
+				refresh();
 				board.requestFocusInWindow();
 				
 				// TODO: find a better way
@@ -2092,9 +2138,6 @@ public class QuoridorView extends JFrame{
 		layout.setVerticalGroup(vert);
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {saveButton, exitButton});
 		
-		
-		
-		
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2132,6 +2175,19 @@ public class QuoridorView extends JFrame{
 				f.setLastModified(1000000000); //TODO: Remove all the f stuff
 			}
 		});
+		
+        confirmFrame.setFocusable(true);
+        
+		confirmFrame.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					saveButton.doClick();
+				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					exitButton.doClick();
+				}}});
 		
 		saveButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
@@ -2199,6 +2255,9 @@ public class QuoridorView extends JFrame{
 		JLabel notification = new JLabel("You have unsaved data. Do you wish to continue?");
 		notification.setForeground(Color.red);
 		JButton yesButton = new JButton("Yes");
+		
+		confirmFrame.setFocusable(true);
+        
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2220,6 +2279,18 @@ public class QuoridorView extends JFrame{
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
+		
+		confirmFrame.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					yesButton.doClick();
+				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					noButton.doClick();
+				}}});
+		
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
@@ -2285,6 +2356,20 @@ public class QuoridorView extends JFrame{
 				
 			}
 		});
+		
+		confirmFrame.setFocusable(true);
+		
+		confirmFrame.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					yesButton.doClick();
+				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					noButton.doClick();
+				}}});
+		
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
@@ -2453,6 +2538,20 @@ public class QuoridorView extends JFrame{
 				
 			}
 		});
+		
+		confirmFrame.setFocusable(true);
+		
+		confirmFrame.addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					yesButton.doClick();
+				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+					noButton.doClick();
+				}}});
+		
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
