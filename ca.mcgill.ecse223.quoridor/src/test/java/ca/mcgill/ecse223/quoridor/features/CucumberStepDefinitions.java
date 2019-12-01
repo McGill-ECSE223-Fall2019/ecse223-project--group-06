@@ -2196,8 +2196,8 @@ public class CucumberStepDefinitions {
 		
 		@Then("Game result shall be {string}")
 		public void GameResultShallBe (String result) {
-			if(result.equals("BlackWon")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(), GameStatus.BlackWon);
-			if(result.equals("WhiteWon")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),GameStatus.WhiteWon);
+			if(result.equals("white")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(), GameStatus.BlackWon);
+			if(result.equals("black")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),GameStatus.WhiteWon);
 			
 		}
 		
