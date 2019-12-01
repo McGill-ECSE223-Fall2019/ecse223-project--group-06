@@ -475,10 +475,10 @@ public class CucumberStepDefinitions {
   public void checking_of_game_result_is_initated() {
       	gameResult = QuoridorController.checkGameResult();
   }
-  @Then("Game result shall be {string}")
+  /*@Then("Game result shall be {string}")
   public void game_result_shall_be(String string) {
    assertEquals(string, gameResult);
-  }
+  }*/
 
   @Then("The game shall no longer be running")
   public void the_game_shall_no_longer_be_running() {
@@ -2184,7 +2184,7 @@ public class CucumberStepDefinitions {
 		@Then("Game result shall be {string}")
 		public void GameResultShallBe (String result) {
 			if(result.equals("BlackWon")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(), GameStatus.BlackWon);
-			else Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),GameStatus.WhiteWon);
+			if(result.equals("WhiteWon")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),GameStatus.WhiteWon);
 			
 		}
 		
