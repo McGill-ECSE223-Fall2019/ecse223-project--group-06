@@ -310,7 +310,7 @@ public class PawnBehavior
 				curPos.setWhitePosition(pos);
 		} else {
 				targetRow = blackRow + rChange;
-				targetCol = blackCol + rChange;
+				targetCol = blackCol + cChange;
 				PlayerPosition pos = new PlayerPosition(curPos.getPlayerToMove(), QuoridorController.findTile(blackRow + rChange, blackCol + cChange));
 				curPos.setBlackPosition(pos);
 		}
