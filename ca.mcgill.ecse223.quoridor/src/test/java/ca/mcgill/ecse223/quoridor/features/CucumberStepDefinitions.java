@@ -1723,12 +1723,12 @@ public class CucumberStepDefinitions {
 			Assert.assertEquals(GameStatus.Replay, QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
 		}
 		
-//		@Given("The game is replay mode")
-//		public void theGameIsReplayMode() {
-//			theGameIsNotRunning();
-//			view.replayGame.doClick();
-//			view.replayGame.doClick(); //Select file, I guess we'll just assume it's the top
-//		}
+		@Given("The game is replay mode")
+		public void theGameIsReplayMode() {
+			theGameIsNotRunning();
+			view.replayGame.doClick();
+			view.replayGame.doClick(); //Select file, I guess we'll just assume it's the top
+		}
 		
 		@Given("The following moves have been played in game:")
 		public void theFollowingMovesHaveBeenPlayed(io.cucumber.datatable.DataTable dataTable) {
@@ -1985,13 +1985,15 @@ public class CucumberStepDefinitions {
 		@And("White has {int} on stock")
 		public void whiteHasWallsOnStock(int walls) {
 			int numWalls = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size();
-			Assert.assertTrue(10 == walls);
+			System.out.println("NUMBER IS THAT YA FATASS" + numWalls);
+			Assert.assertTrue(numWalls == walls);
 		}
 		
 		@And("Black has {int} on stock")
 		public void blackHasWallsOnStock(int walls) {
 			int numWalls = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size();
-			Assert.assertTrue(10 == walls);
+			System.out.println("NUMBER IS THAT YA FATASS" + numWalls);
+			Assert.assertTrue(numWalls == walls);
 		}
 		
 		@When("I initiate to continue game")

@@ -300,8 +300,7 @@ public class QuoridorController {
 					//Wall Move
 					if(move.length() == 3) {
 						Wall wall = game.getCurrentPosition().getWhiteWallsInStock(0);
-						game.getCurrentPosition().removeWhiteWallsInStock(wall);
-						game.getCurrentPosition().addWhiteWallsOnBoard(wall);
+						
 						Direction d = (move.charAt(2) == 'h') ? Direction.Horizontal : Direction.Vertical;
 						//Move Number is what I called round. Round is 1 for white, 2 for black
 						aMove = new WallMove((moveNumber+1) / 2, 
@@ -320,13 +319,15 @@ public class QuoridorController {
 												blackP,
 												game.getBlackPlayer(),
 												game);
+						
 						for(Wall w : game.getCurrentPosition().getWhiteWallsInStock()) pos.addWhiteWallsInStock(w);
 						for(Wall w : game.getCurrentPosition().getBlackWallsInStock()) pos.addBlackWallsInStock(w);
 						for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) pos.addWhiteWallsOnBoard(w);
 						for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) pos.addBlackWallsOnBoard(w);
 						
 						
-						
+						pos.removeWhiteWallsInStock(wall);
+						pos.addWhiteWallsOnBoard(wall);
 					} else {
 						aMove = new StepMove((moveNumber+1) / 2, 
 								1, 
@@ -363,8 +364,7 @@ public class QuoridorController {
 					//Wall Move
 					if(move.length() == 3) {
 						Wall wall = game.getCurrentPosition().getBlackWallsInStock(0);
-						game.getCurrentPosition().removeBlackWallsInStock(wall);
-						game.getCurrentPosition().addBlackWallsOnBoard(wall);
+						
 						Direction d = (move.charAt(2) == 'h') ? Direction.Horizontal : Direction.Vertical;
 						aMove = new WallMove((moveNumber+1) / 2, 
 								2, 
@@ -387,6 +387,8 @@ public class QuoridorController {
 						for(Wall w : game.getCurrentPosition().getWhiteWallsOnBoard()) pos.addWhiteWallsOnBoard(w);
 						for(Wall w : game.getCurrentPosition().getBlackWallsOnBoard()) pos.addBlackWallsOnBoard(w);
 						
+						pos.removeBlackWallsInStock(wall);
+						pos.addBlackWallsOnBoard(wall);
 						
 					} else { 
 						//Player Move
@@ -1500,6 +1502,10 @@ public class QuoridorController {
 
 	public static boolean ExistingUserName(String userName) {
 		if(userName == null) return false;
+		if(userName.equals("") && findUserName("") != null) {
+			findUserName("").delete();
+			return false;
+		}
 		for(User u : QuoridorApplication.getQuoridor().getUsers()) {
 			if(u.getName().equals(userName)) return true;
 		}
