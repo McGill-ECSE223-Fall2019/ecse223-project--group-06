@@ -507,6 +507,38 @@ public class CucumberStepDefinitions {
 		*Feature: Identify if game drawn
 		*@Author Hongshuo Zhou
 		*/
+  @Given("The following moves were executed:")
+  public void the_following_moves_were_executed(io.cucumber.datatable.DataTable dataTable) {
+  Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+  Player white = game.getWhitePlayer();
+  Player black = game.getBlackPlayer();
+  List<Map<String, String>> valueMaps = dataTable.asMaps();
+  for (Map<String, String> map : valueMaps) {
+   Integer move, turn, row, col;
+   move = Integer.decode(map.get("move"));
+   turn = Integer.decode(map.get("turn"));
+   row = Integer.decode(map.get("row"));
+   col = Integer.decode(map.get("col"));
+
+   Tile tile = QuoridorApplication.getQuoridor().getBoard().getTile(9*(row-1)+(col-1));
+   if (turn == 1) {
+    new StepMove(move, turn, white, tile, game);
+    QuoridorController.newPosition();
+    PlayerPosition playerPosition;
+    playerPosition = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
+	  playerPosition.setTile(tile);
+	} else {
+	 new StepMove(move, turn, black, tile, game);
+	 QuoridorController.newPosition();
+	 // update position
+	 PlayerPosition playerPosition;
+	 playerPosition = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
+	 playerPosition.setTile(tile);
+	}
+   }
+  }
+
+
 		@Given("The last move of {string} is pawn move to {int}:{int}")
 		public void the_last_move_of_is_pawn_move_to(String string, Integer row, Integer col) {
 			Player player;
@@ -526,7 +558,7 @@ public class CucumberStepDefinitions {
 			int round = lastMoveOfPlayer.getRoundNumber()+1;
 			
 			StepMove move = new StepMove(moveNumber, round, player, tile, game);
-			QuoridorController.newCurrentPosition();
+			QuoridorController.newPosition();
 		}
 	   
 
