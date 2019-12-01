@@ -1718,7 +1718,7 @@ public class CucumberStepDefinitions {
 			}
 		}
 		
-		///////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////
 		
 		/** Enter Replay Mode
 		 * @author Yanis Jallouli
@@ -1946,8 +1946,8 @@ public class CucumberStepDefinitions {
 			QuoridorApplication.getQuoridor().setCurrentGame(game);
 			
 		}
-	
-		@And("The game does not have a final result")
+  
+  		@And("The game does not have a final result")
 		public void theGameDoesNotHaveAFinalResult() {
 			//Should honestly be taken care of in the moves. What do you want here???
 			if(QuoridorController.isEnded(view.fileName)) {
@@ -1964,15 +1964,7 @@ public class CucumberStepDefinitions {
 		}
 		@And("The next move is {int}.{int}") 
 		public void theNextMoveIs(int mNum, int rNum) {
-			//if the next move is white- round num of current is last - 1
-			//Currently, game is displaying one move ahead.
-			if(rNum == 2)  {
-				mNum++;
-				rNum = 1;
-			} else {
-				rNum = 2;
-			}
-			//2:2 -> 2:1    4:1 -> 3:2
+			
 			view.roundNum.setText("Round: " + rNum);
 			view.moveNum.setText("Move: " + mNum);
 		}
@@ -1984,23 +1976,24 @@ public class CucumberStepDefinitions {
 		
 		@Then("The next move shall be {int}.{int}")
 		public void theNextMoveShallBe(int nmov, int nrnd) {
-			Assert.assertTrue(nmov == QuoridorApplication.getQuoridor().getCurrentGame().getMove(0).getMoveNumber() 
-					&& nrnd == QuoridorApplication.getQuoridor().getCurrentGame().getMove(0).getRoundNumber());
+		
+			int move = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
+			int round = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
+			
+			Assert.assertEquals(nrnd, round);
+			Assert.assertEquals(nmov, move);
+			
 		}
 		
 		@And("White player's position shall be \\({int},{int})")
 		public void whitePlayerPosition(int wrow, int wcol) {
 			Tile tile = QuoridorController.findTile(wrow, wcol);
-			PlayerPosition position = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), tile);
-			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setWhitePosition(position);
 			Assert.assertTrue(tile == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile());
 		}
 		
 		@And("Black player's position shall be \\({int},{int})")
 		public void blackPlayerPosition(int wrow, int wcol) {
 			Tile tile = QuoridorController.findTile(wrow, wcol);
-			PlayerPosition position = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), tile);
-			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setBlackPosition(position);
 			Assert.assertTrue(tile == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile());
 		}
 		
@@ -2235,10 +2228,17 @@ public class CucumberStepDefinitions {
 		 * ID#: 260804586
 		 */
 
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		/**
+		 * Feature: Step Backward and Step Forward
+		 * @author Keanu, Natchev
+		 * ID#: 260804586
+		 */
+
 		@When("Step backward is initiated")
 		public void stepBackwardHasBeenInitiated() {
 			view.stepBackwards.doClick();
-			//Assert.assertEquals(result,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus().toString());
 		}
 		
 		@When("Step forward is initiated")
@@ -2254,6 +2254,10 @@ public class CucumberStepDefinitions {
 			int wallNumber = Integer.parseInt(view.p1Walls.getText().replace("Walls: ", ""));
 			Assert.assertTrue(wallNumber == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsInStock());
 		}
+  
+  
+  
+  
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2365,4 +2369,3 @@ public class CucumberStepDefinitions {
 		}
 		*/
 }
-			

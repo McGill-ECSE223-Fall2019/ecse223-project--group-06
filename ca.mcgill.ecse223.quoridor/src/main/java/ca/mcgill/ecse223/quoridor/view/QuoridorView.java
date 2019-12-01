@@ -1420,12 +1420,12 @@ public class QuoridorView extends JFrame{
 				
 				
 				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
-				if(index >= QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 1)  {
+				if(index >= QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size())  {
 					stepForward.setEnabled(false);
 					jumpForward.setEnabled(false);
 					return;
 				}
-				if(index == QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 2) {
+				if(index == QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 1) {
 					stepForward.setEnabled(false);
 					jumpForward.setEnabled(false);
 				}
@@ -1601,8 +1601,8 @@ public class QuoridorView extends JFrame{
 				int p2WallsIn = Integer.parseInt(p2Walls.getText().replace("Walls: ", ""));
 				
 				
-				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
-				while (QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 2 > index) {  // reached end
+				int index = moveNumber*2 - (roundNumber == 1 ? 1:0);
+				while (QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 1 >= index) {  // reached end
 					
 					QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
 					Move newMove = QuoridorApplication.getQuoridor().getCurrentGame().getMove(index-1);
@@ -1626,7 +1626,7 @@ public class QuoridorView extends JFrame{
 						roundNumber = 1;
 					}
 					
-					index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;  // update index
+					index = moveNumber*2 - (roundNumber == 1 ? 1:0);  // update index
 				}
 				
 				moveNum.setText("Move: " + moveNumber);
@@ -1865,6 +1865,7 @@ public class QuoridorView extends JFrame{
 					g.fillOval( blackPos.getTile().getColumn() * 40 - 35, 
 								blackPos.getTile().getRow() * 40 - 35, 
 								25, 25);
+					
 				}
 				int MoveNum = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
 				int RoundNum = Integer.parseInt(roundNum.getText().replace("Round: ", ""));

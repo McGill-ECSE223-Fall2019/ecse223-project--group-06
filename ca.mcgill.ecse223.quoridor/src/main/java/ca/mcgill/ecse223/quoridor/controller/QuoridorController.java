@@ -2503,9 +2503,7 @@ public class QuoridorController {
 		//Moves players as if they were in move 1
 		if(worked) {
 			Game cur = QuoridorApplication.getQuoridor().getCurrentGame();
-			cur.getCurrentPosition().getBlackPosition().setTile(findTile(1, 5));
-			cur.getCurrentPosition().getWhitePosition().setTile(findTile(9, 5));
-			cur.getCurrentPosition().setPlayerToMove(cur.getWhitePlayer());
+			cur.setCurrentPosition(cur.getPosition(0));
 			cur.setGameStatus(GameStatus.Replay);
 		}
 		
