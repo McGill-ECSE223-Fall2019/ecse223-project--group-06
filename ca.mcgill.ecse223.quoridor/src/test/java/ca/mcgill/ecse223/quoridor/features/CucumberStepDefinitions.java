@@ -1853,11 +1853,11 @@ public class CucumberStepDefinitions {
 		}
 		@And("White's clock shall not be counting down")
 		public void WhitesClockShallNotBeCountingDown() {	
-			Assert.assertEquals(null,view.whiteTimer);
+			Assert.assertEquals(false,view.whiteTimer.isRunning());;
 		}
 		@And("Black's clock shall not be counting down")
 		public void BlacksClockShallNotBeCountingDown(){
-			Assert.assertEquals(null,view.whiteTimer);
+			Assert.assertEquals(false,view.blackTimer.isRunning());
 		}
 		@And("White shall be unable to move")
 		public void WhiteShallBeUnableToMove(){
@@ -1878,7 +1878,7 @@ public class CucumberStepDefinitions {
 		@When("Player initates to resign")
 		public void PlayerInitatesToResign() {
 			view.resignButton.doClick();
-			((JButton)view.confirmFrame.getComponent(1)).doClick();
+			((JButton)view.confirmFrame.getComponent(2)).doClick();
 		}
 		
 		@Then("Game result shall be {string}")
