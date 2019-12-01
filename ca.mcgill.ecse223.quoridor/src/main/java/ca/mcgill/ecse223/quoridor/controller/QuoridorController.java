@@ -2331,16 +2331,7 @@ public class QuoridorController {
 			}
 		}
 	}
-	public static void ResignGame(Game game) {
-		
-	}
 	
-	
-	public static void Gameisfinished(Game game) {	
-		if(game!=null) {
-			game.delete();
-		}
-	}
 	
 	
 	
@@ -2565,6 +2556,22 @@ public class QuoridorController {
 			pos.delete();
 		}
 		
-	}
+	}	
+	
+		
+		
+		public static void GameIsFinished(QuoridorView view) {
+			
+			Game currentgame=QuoridorApplication.getQuoridor().getCurrentGame();
+			if(view.blackTimer!=null)
+			QuoridorController.stopblackclock(view.blackTimer);
+			if(view.whiteTimer!=null)
+			QuoridorController.stopwhiteclock(view.whiteTimer);
+			currentgame.getCurrentPosition().setPlayerToMove(null);
+			currentgame.getBlackPlayer().setNextPlayer(null);
+			currentgame.getWhitePlayer().setNextPlayer(null);
+			
+		}
+		
 	
 }

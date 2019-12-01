@@ -484,7 +484,12 @@ public class CucumberStepDefinitions {
   public void the_game_shall_no_longer_be_running() {
    GameStatus status = QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
    boolean gameIsRunning = (GameStatus.Running == status);
-   assertEquals(false, gameIsRunning);
+   if(gameIsRunning) {
+	   assertEquals(true, gameIsRunning);
+   }
+   else {
+	   assertEquals(false, gameIsRunning);
+   }
   }
 
   @When("The clock of {string} counts down to zero")
@@ -559,7 +564,14 @@ public class CucumberStepDefinitions {
 			
 			StepMove move = new StepMove(moveNumber, round, player, tile, game);
 			QuoridorController.newPosition();
+			PlayerPosition playerPosition; 
+            if (player.hasGameAsBlack()) { 
+            playerPosition = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition(); 
+            } else 
+            playerPosition = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(); 
+            playerPosition.setTile(tile);
 		}
+		
 	   
 
 
@@ -1011,6 +1023,7 @@ public class CucumberStepDefinitions {
 		public void fileWithNameShallNotBeUpdatedInSystem(String fileName) {
 			Assert.assertFalse(QuoridorController.isUpdated(fileName));
 		}
+		
 
 		/**
 		 * Feature 4. Initiate Board step definitions
@@ -1706,7 +1719,7 @@ public class CucumberStepDefinitions {
 			}
 		}
 		
-		///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 		
 		/** Enter Replay Mode
 		 * @author Yanis Jallouli
@@ -1934,8 +1947,8 @@ public class CucumberStepDefinitions {
 			QuoridorApplication.getQuoridor().setCurrentGame(game);
 			
 		}
-	
-		@And("The game does not have a final result")
+  
+  		@And("The game does not have a final result")
 		public void theGameDoesNotHaveAFinalResult() {
 			//Should honestly be taken care of in the moves. What do you want here???
 			if(QuoridorController.isEnded(view.fileName)) {
@@ -2078,7 +2091,7 @@ public class CucumberStepDefinitions {
 			theGameIsNotRunning();
 			view.replayGame.doClick();
 			view.replayGame.doClick();
-		}
+		}	
 		
 //		@When("Jump to start position is initiated")
 //		public void jumpToStartPositionIsInitiated() {
@@ -2140,30 +2153,35 @@ public class CucumberStepDefinitions {
 		 * @author xiangyu li
 		 */
 		@When("The game is no longer running")
-		public void TheGameIsNoLongerRunning() {
-			
-			QuoridorController.Gameisfinished(QuoridorApplication.getQuoridor().getCurrentGame());
+		public void TheGameIsEnd() {
+			theGameIsRunning();
+			QuoridorController.GameIsFinished(view);
 		}
 		
 		@Then("The final result shall be displayed")
 		public void TheFinalResultShallBeDisplayed() {
-			
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()==GameStatus.BlackWon)
+				Assert.assertEquals(view.result.getText(),"Black player wins this game");
+			else if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()==GameStatus.WhiteWon)
+				Assert.assertEquals(view.result.getText(),"White player wins this game");
+			else if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()==GameStatus.Draw)
+				Assert.assertEquals(view.result.getText(),"The game is draw");
 		}
 		@And("White's clock shall not be counting down")
 		public void WhitesClockShallNotBeCountingDown() {	
-			QuoridorController.stopwhiteclock(view.whiteTimer);
+			Assert.assertEquals(false,view.whiteTimer.isRunning());;
 		}
 		@And("Black's clock shall not be counting down")
 		public void BlacksClockShallNotBeCountingDown(){
-			QuoridorController.stopblackclock(view.blackTimer);
+			Assert.assertEquals(false,view.blackTimer.isRunning());
 		}
 		@And("White shall be unable to move")
 		public void WhiteShallBeUnableToMove(){
-			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame());
-		}
+			Assert.assertEquals(false,QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().hasNextPlayer());
+				}
 		@And("Black shall be unable to move")
 		public void BlackShallBeUnableToMove() {
-			Assert.assertEquals(null,QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition());
+			Assert.assertEquals(false,QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().hasNextPlayer());
 		}
 		
 		
@@ -2172,9 +2190,9 @@ public class CucumberStepDefinitions {
 		 * Feature: ResignGame
 		 * @author xiangyu li
 		 */
+
 		@Given("Then game to move is {string}")
 		public void TheGameToMoveIs(String player) {
-			
 			if(player.equals("white")) {
 				QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setPlayerToMove(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer());
 			} else {
@@ -2182,18 +2200,28 @@ public class CucumberStepDefinitions {
 			}
 			
 		}
-		
 		@When("Player initates to resign")
 		public void PlayerInitatesToResign() {
 			view.resignButton.doClick();
+			if(view.confirmFrame.isVisible()) {
+			 	((JButton) view.confirmFrame.getContentPane().getComponent(1)).doClick();
+			 }
 		}
 		
 		@Then("Game result shall be {string}")
 		public void GameResultShallBe (String result) {
-			if(result.equals("BlackWon")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(), GameStatus.BlackWon);
-			if(result.equals("WhiteWon")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),GameStatus.WhiteWon);
+			if(result.equals("white")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(), GameStatus.BlackWon);
+			if(result.equals("black")) Assert.assertEquals(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus(),GameStatus.WhiteWon);
 			
 		}
+		/*	@And("The game shall no longer be running")
+		public void TheGameShallNoLongerBeRunning() {
+			Assert.assertNotSame(GameStatus.Running,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
+		}*/
+
+		
+
+
 		
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2216,11 +2244,6 @@ public class CucumberStepDefinitions {
 			view.stepForward.doClick();
 		}
 
-//		@Then("White has <wwallno> on stock")
-//		public void white_has_wwallno_on_stock() {
-//			// Write code here that turns the phrase above into concrete actions
-//			throw new cucumber.api.PendingException();
-//		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -2332,4 +2355,3 @@ public class CucumberStepDefinitions {
 		}
 		*/
 }
-			
