@@ -1657,12 +1657,12 @@ public class CucumberStepDefinitions {
 			Assert.assertEquals(GameStatus.Replay, QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus());
 		}
 		
-		@Given("The game is replay mode")
-		public void theGameIsReplayMode() {
-			theGameIsNotRunning();
-			view.replayGame.doClick();
-			view.replayGame.doClick(); //Select file, I guess we'll just assume it's the top
-		}
+//		@Given("The game is replay mode")
+//		public void theGameIsReplayMode() {
+//			theGameIsNotRunning();
+//			view.replayGame.doClick();
+//			view.replayGame.doClick(); //Select file, I guess we'll just assume it's the top
+//		}
 		
 		@Given("The following moves have been played in game:")
 		public void theFollowingMovesHaveBeenPlayed(io.cucumber.datatable.DataTable dataTable) {
@@ -1862,7 +1862,7 @@ public class CucumberStepDefinitions {
 			QuoridorApplication.getQuoridor().setCurrentGame(game);
 			
 		}
-		
+	
 		@And("The game does not have a final result")
 		public void theGameDoesNotHaveAFinalResult() {
 			//Should honestly be taken care of in the moves. What do you want here???
@@ -1891,6 +1891,41 @@ public class CucumberStepDefinitions {
 			//2:2 -> 2:1    4:1 -> 3:2
 			view.roundNum.setText("Round: " + rNum);
 			view.moveNum.setText("Move: " + mNum);
+		}
+		
+		@When("Jump to start position is initiated")
+		public void jumpToStartInitiated() {
+			view.jumpBackwards.doClick();
+		}
+		
+		@Then("The next move shall be {int}.{int}")
+		public void theNextMoveShallBe(int nmov, int nrnd) {
+			Assert.assertTrue(nmov == QuoridorApplication.getQuoridor().getCurrentGame().getMove(0).getMoveNumber() 
+					&& nrnd == QuoridorApplication.getQuoridor().getCurrentGame().getMove(0).getRoundNumber());
+		}
+		
+		@And("White player's position shall be \\({int},{int})")
+		public void whitePlayerPosition(int wrow, int wcol) {
+			Tile tile = QuoridorController.findTile(wrow, wcol);
+			Assert.assertTrue(tile == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile());
+		}
+		
+		@And("Black player's position shall be \\({int},{int})")
+		public void blackPlayerPosition(int wrow, int wcol) {
+			Tile tile = QuoridorController.findTile(wrow, wcol);
+			Assert.assertTrue(tile == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile());
+		}
+		
+		@And("White has {int} on stock")
+		public void whiteHasWallsOnStock(int walls) {
+			int numWalls = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size();
+			Assert.assertTrue(10 == walls);
+		}
+		
+		@And("Black has {int} on stock")
+		public void blackHasWallsOnStock(int walls) {
+			int numWalls = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size();
+			Assert.assertTrue(10 == walls);
 		}
 		
 		@When("I initiate to continue game")
@@ -1974,45 +2009,48 @@ public class CucumberStepDefinitions {
 			view.replayGame.doClick();
 		}
 		
-		@When("Jump to start position is initiated")
-		public void jumpToStartPositionIsInitiated() {
-		    throw new cucumber.api.PendingException();
-		}
+//		@When("Jump to start position is initiated")
+//		public void jumpToStartPositionIsInitiated() {
+//		    throw new cucumber.api.PendingException();
+//		}
 
-		@Then("The next move shall be {int}.{int}")
-		public void theNextMoveShallBe(int move, int round) {
-		    throw new cucumber.api.PendingException();
-		}
+		/*
+		 * Taken care of above
+		 */
+//		@Then("The next move shall be {int}.{int}")
+//		public void theNextMoveShallBe(int move, int round) {
+//		    throw new cucumber.api.PendingException();
+//		}
 
-		@Then("White player's position shall be \\({int},{int})")
-		public void whitePlayersPositionShallBe(int row, int col) {
-			PlayerPosition whitePos;
-			
-			whitePos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
-			Assert.assertTrue(whitePos.getTile().getRow() == row && whitePos.getTile().getColumn() == col);
-		}
-		
-		@Then("Black player's position shall be \\({int},{int})")
-		public void blackPlayersPositionShallBe(int row, int col) {
-			PlayerPosition blackPos;
-			
-			blackPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
-			Assert.assertTrue(blackPos.getTile().getRow() == row && blackPos.getTile().getColumn() == col);
-		}
-
-		@Then("White has {int} on stock")
-		public void whiteHasOnStock(int wallNumber) {
-			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
-			int wallSize = curPos.numberOfWhiteWallsInStock();
-			Assert.assertEquals(wallSize, wallNumber);
-		}
-		
-		@Then("Black has {int} on stock")
-		public void blackHasOnStock(int wallNumber) {
-			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
-			int wallSize = curPos.numberOfBlackWallsInStock();
-			Assert.assertEquals(wallSize, wallNumber);
-		}
+//		@Then("White player's position shall be \\({int},{int})")
+//		public void whitePlayersPositionShallBe(int row, int col) {
+//			PlayerPosition whitePos;
+//			
+//			whitePos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
+//			Assert.assertTrue(whitePos.getTile().getRow() == row && whitePos.getTile().getColumn() == col);
+//		}
+//		
+//		@Then("Black player's position shall be \\({int},{int})")
+//		public void blackPlayersPositionShallBe(int row, int col) {
+//			PlayerPosition blackPos;
+//			
+//			blackPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
+//			Assert.assertTrue(blackPos.getTile().getRow() == row && blackPos.getTile().getColumn() == col);
+//		}
+//
+//		@Then("White has {int} on stock")
+//		public void whiteHasOnStock(int wallNumber) {
+//			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+//			int wallSize = curPos.numberOfWhiteWallsInStock();
+//			Assert.assertEquals(wallSize, wallNumber);
+//		}
+//		
+//		@Then("Black has {int} on stock")
+//		public void blackHasOnStock(int wallNumber) {
+//			GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+//			int wallSize = curPos.numberOfBlackWallsInStock();
+//			Assert.assertEquals(wallSize, wallNumber);
+//		}
 		
 		///////////////////////////////////////////////////////////////////////////////
 
@@ -2095,11 +2133,11 @@ public class CucumberStepDefinitions {
 			view.stepForward.doClick();
 		}
 
-		@Then("White has <wwallno> on stock")
-		public void white_has_wwallno_on_stock() {
-			// Write code here that turns the phrase above into concrete actions
-			throw new cucumber.api.PendingException();
-		}
+//		@Then("White has <wwallno> on stock")
+//		public void white_has_wwallno_on_stock() {
+//			// Write code here that turns the phrase above into concrete actions
+//			throw new cucumber.api.PendingException();
+//		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
