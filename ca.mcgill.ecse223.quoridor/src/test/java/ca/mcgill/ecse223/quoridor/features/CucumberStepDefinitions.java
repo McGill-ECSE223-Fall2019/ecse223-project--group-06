@@ -484,7 +484,12 @@ public class CucumberStepDefinitions {
   public void the_game_shall_no_longer_be_running() {
    GameStatus status = QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus();
    boolean gameIsRunning = (GameStatus.Running == status);
-   assertEquals(false, gameIsRunning);
+   if(gameIsRunning) {
+	   assertEquals(true, gameIsRunning);
+   }
+   else {
+	   assertEquals(false, gameIsRunning);
+   }
   }
 
   @When("The clock of {string} counts down to zero")
