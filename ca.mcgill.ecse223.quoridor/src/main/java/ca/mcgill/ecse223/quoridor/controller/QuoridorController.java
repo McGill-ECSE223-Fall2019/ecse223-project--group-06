@@ -732,6 +732,8 @@ public class QuoridorController {
 		}
 	   }
 
+	   
+
 	//////////////////////////////////////////////////////////////
 	/**
 	 * Move Wall Feature
