@@ -564,7 +564,14 @@ public class CucumberStepDefinitions {
 			
 			StepMove move = new StepMove(moveNumber, round, player, tile, game);
 			QuoridorController.newPosition();
+			PlayerPosition playerPosition; 
+            if (player.hasGameAsBlack()) { 
+            playerPosition = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition(); 
+            } else 
+            playerPosition = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(); 
+            playerPosition.setTile(tile);
 		}
+		
 	   
 
 
