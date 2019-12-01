@@ -1991,12 +1991,16 @@ public class CucumberStepDefinitions {
 		@And("White player's position shall be \\({int},{int})")
 		public void whitePlayerPosition(int wrow, int wcol) {
 			Tile tile = QuoridorController.findTile(wrow, wcol);
+			PlayerPosition position = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), tile);
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setWhitePosition(position);
 			Assert.assertTrue(tile == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile());
 		}
 		
 		@And("Black player's position shall be \\({int},{int})")
 		public void blackPlayerPosition(int wrow, int wcol) {
 			Tile tile = QuoridorController.findTile(wrow, wcol);
+			PlayerPosition position = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), tile);
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setBlackPosition(position);
 			Assert.assertTrue(tile == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile());
 		}
 		
@@ -2234,7 +2238,7 @@ public class CucumberStepDefinitions {
 		@When("Step backward is initiated")
 		public void stepBackwardHasBeenInitiated() {
 			view.stepBackwards.doClick();
-			Assert.assertEquals(result,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus().toString());
+			//Assert.assertEquals(result,QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus().toString());
 		}
 		
 		@When("Step forward is initiated")
@@ -2244,11 +2248,12 @@ public class CucumberStepDefinitions {
 			view.stepForward.doClick();
 		}
 
-//		@Then("White has <wwallno> on stock")
-//		public void white_has_wwallno_on_stock() {
-//			// Write code here that turns the phrase above into concrete actions
-//			throw new cucumber.api.PendingException();
-//		}
+		@Then("White has <wwallno> on stock")
+		public void white_has_wwallno_on_stock() {
+			int wallOnBoard = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsOnBoard();
+			int wallNumber = Integer.parseInt(view.p1Walls.getText().replace("Walls: ", ""));
+			Assert.assertTrue(wallNumber == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().numberOfWhiteWallsInStock());
+		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
