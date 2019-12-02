@@ -878,7 +878,7 @@ public class QuoridorView extends JFrame{
 							Wall w = ((WallMove) undoMove).getWallPlaced();
 							game.getCurrentPosition().addBlackWallsInStock(w);
 							game.getCurrentPosition().removeBlackWallsOnBoard(w);
-							p2Walls.setText("Walls: " + (++p2WallsIn));
+							p2Walls.setText("Walls: " + (p2WallsIn));
 						} else {
 							boolean found = false;
 							//Here's a q. How to get last white position? Like where they moved from
@@ -2645,11 +2645,14 @@ public class QuoridorView extends JFrame{
 	}
 	public void getResult() {
 		//TODO: Recognize draw
+		
+		
 		confirmFrame.getContentPane().removeAll();
 		if(p1Turn.isSelected()) {
 			result = new JLabel("Black player wins the game!");
 			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
-
+			this.getContentPane().setBackground(new Color(0));
+			
 		}
 		else { 
 			result = new JLabel("White player wins the game!");
