@@ -1070,6 +1070,22 @@ public class QuoridorView extends JFrame{
 							blackPos.getTile().getRow() * 40 - 35, 
 							25, 25);
 				}
+				int index = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
+				for(int i = 0; i < index; i++) {
+					WallMove w;
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMove(i) instanceof WallMove) {
+						w = (WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMove(i);
+						if(w.getWallDirection() == Direction.Horizontal) {	
+							g.fillRect(	(w.getTargetTile().getColumn()-1)*40,
+										w.getTargetTile().getRow()*40 - 5, 
+										75, 5);
+						} else {
+							g.fillRect(	w.getTargetTile().getColumn()*40 - 5,
+										(w.getTargetTile().getRow()-1)*40, 
+										5, 75);
+						}
+					}
+				}
 
 			}
 		};
@@ -1864,15 +1880,16 @@ public class QuoridorView extends JFrame{
 						w = (WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMove(i);
 						if(w.getWallDirection() == Direction.Horizontal) {	
 							g.fillRect(	(w.getTargetTile().getColumn()-1)*40,
-									w.getTargetTile().getRow()*40 - 5, 
-									75, 5);
+										w.getTargetTile().getRow()*40 - 5, 
+										75, 5);
 						} else {
 							g.fillRect(	w.getTargetTile().getColumn()*40 - 5,
-									(w.getTargetTile().getRow()-1)*40, 
-									5, 75);
+										(w.getTargetTile().getRow()-1)*40, 
+										5, 75);
 						}
 					}
 				}
+				
 			}
 		};
 
@@ -2611,29 +2628,8 @@ public class QuoridorView extends JFrame{
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
 			if(QuoridorController.wallIsValid() && QuoridorController.dropWall()) {
 
-				JPanel newWall = new JPanel();
-				int row = ((WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMoves().get(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1)).getTargetTile().getRow();
-				int col = ((WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMoves().get(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1)).getTargetTile().getColumn();
-				refresh(); 
-				if(((WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMoves().get(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size() - 1)).getWallDirection() == Direction.Vertical) {
-
-					newWall.setSize(5, 75);
-					newWall.setLocation( 
-							board.getX() - 5 + col*40, 
-							board.getY() + row * 40 - 40);
-				} else {
-					newWall.setSize(75, 5);
-					newWall.setLocation( 
-							board.getX() + col*40 - 40, 
-							board.getY() - 5 + row * 40);
-				}
-				newWall.setBackground(Color.BLACK);
-				getContentPane().add(newWall);
 				if(wall != null) getContentPane().remove(wall);
 				wall = null;
-
-
-
 
 				switchPlayerButton();
 			} else {
