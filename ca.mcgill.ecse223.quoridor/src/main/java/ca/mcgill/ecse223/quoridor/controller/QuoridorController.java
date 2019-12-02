@@ -2181,7 +2181,6 @@ public class QuoridorController {
 	public static void findAllowedTiles(boolean[] allowed) {
 		if(allowed.length != 81) return;
 
-
 		GamePosition curPos = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
 		Player white = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer();
 
@@ -2202,9 +2201,7 @@ public class QuoridorController {
 			oppo = white;
 			toMove = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer();
 		}
-
 		//Tiles are drawn by row then by column. 0= row1 col1, 
-
 		//Checking the has opponent first
 
 		//Check down
@@ -2226,9 +2223,9 @@ public class QuoridorController {
 						allowed[(col) + (row) * 9] = true;
 					}
 				}
-			}
+			}		
+		//Check up
 
-			//Check up
 		} else if(hasOpponent(-1, 0)) {
 			if(noWallBlock(toMove, -1, 0)) {
 
@@ -2248,9 +2245,7 @@ public class QuoridorController {
 					}
 				}
 			}
-
-
-			//Check right
+		//Check right
 		} else if(hasOpponent(0, 1)) {
 			if(noWallBlock(toMove, 0, 1)) {
 				if(noWallBlock(oppo, 0, 1) ) {
@@ -2268,10 +2263,8 @@ public class QuoridorController {
 						allowed[(col) + (row) * 9] = true;
 					}
 				}
-			}
-
-
-			//Check left
+			}	
+		//Check left
 		} else if(hasOpponent(0, -1)) {
 			if(noWallBlock(toMove, 0, -1)) {
 				if(noWallBlock(oppo, 0, -1) ) {
@@ -2544,11 +2537,38 @@ public class QuoridorController {
 			QuoridorController.stopblackclock(view.blackTimer);
 		if(view.whiteTimer!=null)
 			QuoridorController.stopwhiteclock(view.whiteTimer);
-		currentgame.getCurrentPosition().setPlayerToMove(null);
-		currentgame.getBlackPlayer().setNextPlayer(null);
-		currentgame.getWhitePlayer().setNextPlayer(null);
-
-	}
-
-
+			currentgame.getCurrentPosition().setPlayerToMove(null);
+			currentgame.getBlackPlayer().setNextPlayer(null);
+			currentgame.getWhitePlayer().setNextPlayer(null);
+			
+		}
+		
+		
+		public static boolean gameIsDrawn() {
+			
+			List<Move> moves = QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
+			
+			if(moves.size() < 9) return false;
+			
+			Move drawMove;
+			Move lastMove = moves.get(moves.size() - 1);
+			
+			//A - 0 - B - 0 - A - 0 - B - 0 - A
+			
+			for(int i = moves.size() - 5, c = 0; c < 2; i-=4, c++) {
+				//Compare lastMove to the one two before it
+				drawMove = moves.get(i);
+				//If you get a difference- break out
+				if(!drawMove.getTargetTile().equals(lastMove.getTargetTile())) return false;
+				//Otherwise, update lastMove
+				lastMove = moves.get(i);
+			}
+			
+			lastMove = moves.get(moves.size() - 3);
+			drawMove = moves.get( moves.size() - 7);
+			if(!drawMove.getTargetTile().equals(lastMove.getTargetTile())) return false;
+			
+			return true;
+			
+		}
 }

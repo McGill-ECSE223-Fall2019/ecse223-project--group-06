@@ -734,7 +734,7 @@ public class QuoridorView extends JFrame{
 
 		whiteTimer = QuoridorController.runwhiteclock(this);
 		blackTimer = QuoridorController.runblackclock(this);
-
+    
 		boardMouseListener = new MouseListener() {
 
 			public void mouseEntered(MouseEvent e) {}
@@ -828,10 +828,7 @@ public class QuoridorView extends JFrame{
 					return;
 				}
 
-
-				GamePosition curPos = game.getCurrentPosition();
-
-
+				GamePosition curPos = game.getCurrentPosition();		
 				Move lastMoveOfPlayer;
 
 				int p1WallsIn = curPos.getWhiteWallsInStock().size();
@@ -1016,7 +1013,7 @@ public class QuoridorView extends JFrame{
 				yesButton.addActionListener(new java.awt.event.ActionListener() {
 					@Override
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						getResult();
+						getResult(false);
 
 					}
 				});
@@ -2135,13 +2132,13 @@ public class QuoridorView extends JFrame{
 			p1Time.setText("Time: " + (whiteSeconds / 60) + " m " + (whiteSeconds % 60) +" s ");
 			if(QuoridorApplication.getQuoridor().hasCurrentGame())
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(whiteSeconds * 1000));
-			if(whiteSeconds <= 0) getResult(); //End game if so
+			if(whiteSeconds <= 0) getResult(false); //End game if so
 		} else {
 			blackSeconds--;
 			p2Time.setText("Time: "+(blackSeconds / 60)+" m " + (blackSeconds % 60) +" s ");
 			if(QuoridorApplication.getQuoridor().hasCurrentGame())
 				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setRemainingTime(new Time(blackSeconds * 1000));
-			if(blackSeconds <= 0) this.getResult(); //End game if so
+			if(blackSeconds <= 0) this.getResult(false); //End game if so
 		}
 		refresh();
 	}
@@ -2615,9 +2612,15 @@ public class QuoridorView extends JFrame{
 			if(white.move()) {
 				switchPlayerButton();
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow() == 1) {
-
-					getResult();
+					getResult(false);
 				}
+				
+				if(QuoridorController.gameIsDrawn()) {
+					getResult(true);
+				}
+				
+				
+				
 			}
 			else notifyInvalid("Invalid Player Move");
 
@@ -2626,8 +2629,11 @@ public class QuoridorView extends JFrame{
 				switchPlayerButton();
 
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow() == 9) {
-
-					getResult();
+					getResult(false);
+				}
+				
+				if(QuoridorController.gameIsDrawn()) {
+					getResult(true);
 				}
 
 			}
@@ -2637,12 +2643,16 @@ public class QuoridorView extends JFrame{
 
 
 	}
-	public void getResult() {
+	public void getResult(boolean drawn) {
 		//TODO: Recognize draw
 
 
 		confirmFrame.getContentPane().removeAll();
-		if(p1Turn.isSelected()) {
+		if(drawn) {
+			result = new JLabel("The game has been drawn.");
+			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.Draw);
+		}
+		else if(p1Turn.isSelected()) {
 			result = new JLabel("Black player wins the game!");
 			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
 			this.getContentPane().setBackground(new Color(0));
