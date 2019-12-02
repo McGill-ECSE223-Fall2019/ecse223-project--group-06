@@ -49,6 +49,7 @@ import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.PawnSM;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
+import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.JumpMove;
@@ -828,7 +829,61 @@ public class QuoridorView extends JFrame{
 		undoButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				//TODO: Implement Undo	
+				//TODO: Implement Undo
+				board.requestFocusInWindow();
+				
+				Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+				GamePosition curPos = game.getPosition(game.getPositions().size() - 1);
+				
+				List<Move> moves = game.getMoves();
+				Move lastMoveOfPlayer = game.getMove(moves.size() - 2);
+				
+				int moveNumber = lastMoveOfPlayer.getMoveNumber()+1;
+				int roundNumber = lastMoveOfPlayer.getRoundNumber()+1;
+				int p1WallsIn = curPos.getWhiteWallsInStock().size();
+				int p2WallsIn = curPos.getBlackWallsInStock().size();
+				
+				if(roundNumber == 1)  {
+					moveNumber--;
+					roundNumber = 2;
+				}
+				else {
+					roundNumber--;
+				}
+				
+				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
+				System.out.println("moveNumber: " + moveNumber);
+				System.out.println("roundNumber: " + roundNumber);
+				System.out.println("index: " + index);
+				if(moves.size() <= 0)  {
+					return;
+				}
+				
+				game.setCurrentPosition(game.getPosition(moves.size() - 2));
+				Move newMove = game.getMove(moves.size() - 2);
+				
+				if(newMove != null) {
+				
+					if(p2Turn.isSelected()) {
+						
+						if(newMove instanceof WallMove)
+							game.getWhitePlayer().addWall(p1WallsIn-1);
+						
+						p2Turn.setSelected(false);
+						p1Turn.setSelected(true);
+						
+					} else if(p1Turn.isSelected()) {
+						
+						if(newMove instanceof WallMove)
+							game.getBlackPlayer().addWall(p2WallsIn-1);
+						
+						p2Turn.setSelected(true);
+						p1Turn.setSelected(false);
+					}
+				}
+				
+				game.getMove(game.getMoves().size() - 1).delete();
+				
 				refresh();
 				board.requestFocusInWindow();
 			}
