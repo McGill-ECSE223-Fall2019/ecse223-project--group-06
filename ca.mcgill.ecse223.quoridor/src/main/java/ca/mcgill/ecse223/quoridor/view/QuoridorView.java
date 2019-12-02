@@ -45,15 +45,16 @@ import ca.mcgill.ecse223.quoridor.controller.PawnBehavior.PawnSM;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
-import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.JumpMove;
 import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.StepMove;
 import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
+import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 public class QuoridorView extends JFrame{
@@ -828,56 +829,78 @@ public class QuoridorView extends JFrame{
 				board.requestFocusInWindow();
 				
 				Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-				GamePosition curPos = game.getPosition(game.getPositions().size() - 1);
-				
 				List<Move> moves = game.getMoves();
-				Move lastMoveOfPlayer = game.getMove(moves.size() - 2);
-				
-				int moveNumber = lastMoveOfPlayer.getMoveNumber()+1;
-				int roundNumber = lastMoveOfPlayer.getRoundNumber()+1;
-				int p1WallsIn = curPos.getWhiteWallsInStock().size();
-				int p2WallsIn = curPos.getBlackWallsInStock().size();
-				
-				if(roundNumber == 1)  {
-					moveNumber--;
-					roundNumber = 2;
-				}
-				else {
-					roundNumber--;
-				}
-				
-				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
-				System.out.println("moveNumber: " + moveNumber);
-				System.out.println("roundNumber: " + roundNumber);
-				System.out.println("index: " + index);
 				if(moves.size() <= 0)  {
 					return;
 				}
 				
-				game.setCurrentPosition(game.getPosition(moves.size() - 2));
-				Move newMove = game.getMove(moves.size() - 2);
 				
-				if(newMove != null) {
+				GamePosition curPos = game.getCurrentPosition();
+				
+				
+				Move lastMoveOfPlayer;
+
+				int p1WallsIn = curPos.getWhiteWallsInStock().size();
+				int p2WallsIn = curPos.getBlackWallsInStock().size();
+
+				Move undoMove = game.getMove(moves.size() - 1);
+				
+				if(undoMove != null) {
 				
 					if(p2Turn.isSelected()) {
 						
-						if(newMove instanceof WallMove)
-							game.getWhitePlayer().addWall(p1WallsIn-1);
+						if(undoMove instanceof WallMove) {
+							Wall w = ((WallMove) undoMove).getWallPlaced();
+							game.getCurrentPosition().addWhiteWallsInStock(w);
+							game.getCurrentPosition().removeWhiteWallsOnBoard(w);
+							p1Walls.setText("Walls: " + (++p1WallsIn));
+						} else {
+							boolean found = false;
+							//Here's a q. How to get last white position? Like where they moved from
+							for(int i = moves.size() - 3; i >= 0; i-=2) {
+								lastMoveOfPlayer = game.getMove(i);
+								if(!(lastMoveOfPlayer instanceof WallMove)) {
+									game.getCurrentPosition().getWhitePosition().setTile(lastMoveOfPlayer.getTargetTile());
+									found = true;
+									break;
+								}
+							}
+							if(!found) game.getCurrentPosition().getWhitePosition().setTile(QuoridorController.findTile(9, 5));
+						}
 						
 						p2Turn.setSelected(false);
 						p1Turn.setSelected(true);
+						game.getCurrentPosition().setPlayerToMove(game.getWhitePlayer());
 						
 					} else if(p1Turn.isSelected()) {
 						
-						if(newMove instanceof WallMove)
-							game.getBlackPlayer().addWall(p2WallsIn-1);
-						
+						if(undoMove instanceof WallMove) {
+							Wall w = ((WallMove) undoMove).getWallPlaced();
+							game.getCurrentPosition().addBlackWallsInStock(w);
+							game.getCurrentPosition().removeBlackWallsOnBoard(w);
+							p2Walls.setText("Walls: " + (++p2WallsIn));
+						} else {
+							boolean found = false;
+							//Here's a q. How to get last white position? Like where they moved from
+							for(int i = moves.size() - 3; i >= 0; i-=2) {
+								lastMoveOfPlayer = game.getMove(i);
+								if(!(lastMoveOfPlayer instanceof WallMove)) {
+									game.getCurrentPosition().getBlackPosition().setTile(lastMoveOfPlayer.getTargetTile());
+									found = true;
+									break;
+								}
+							}
+							if(!found) game.getCurrentPosition().getBlackPosition().setTile(QuoridorController.findTile(1, 5));
+							
+						}
 						p2Turn.setSelected(true);
 						p1Turn.setSelected(false);
+						game.getCurrentPosition().setPlayerToMove(game.getBlackPlayer());
 					}
 				}
 				
-				game.getMove(game.getMoves().size() - 1).delete();
+				undoMove.delete();
+				if(game.getMoves().contains(undoMove)) game.removeMove(undoMove);
 				
 				refresh();
 				board.requestFocusInWindow();
