@@ -508,8 +508,13 @@ public class CucumberStepDefinitions {
 			}
 		}
 	}
-
-
+	//***********************************************
+	// Identify if game drawn
+	// **********************************************
+	/**
+	 *Feature: Identify if game drawn
+	 *@Author Hongshuo Zhou
+	 */
 	@Given("The last move of {string} is pawn move to {int}:{int}")
 	public void the_last_move_of_is_pawn_move_to(String string, Integer row, Integer col) {
 		Player player;
@@ -524,18 +529,19 @@ public class CucumberStepDefinitions {
 
 		List<Move> moves = game.getMoves();
 		int size = moves.size();
-		Move lastMoveOfPlayer = game.getMove(size-2);
-		int moveNumber = lastMoveOfPlayer.getMoveNumber()+1;
-		int round = lastMoveOfPlayer.getRoundNumber()+1;
+		Move lastMove = game.getMove(size-2);
+		int round = lastMove.getRoundNumber()+1;
+		int moveNumber = lastMove.getMoveNumber()+1;
 
 		StepMove move = new StepMove(moveNumber, round, player, tile, game);
 		QuoridorController.newPosition();
-		PlayerPosition playerPosition; 
+		PlayerPosition Position; 
 		if (player.hasGameAsBlack()) { 
-			playerPosition = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition(); 
+			Position = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition(); 
 		} else 
-			playerPosition = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(); 
-		playerPosition.setTile(tile);
+			Position = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition(); 
+		Position.setTile(tile);
+		
 	}
 
 
