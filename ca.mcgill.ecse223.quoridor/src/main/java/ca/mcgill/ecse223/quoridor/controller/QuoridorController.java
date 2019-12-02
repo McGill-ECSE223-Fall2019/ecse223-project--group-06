@@ -2543,32 +2543,34 @@ public class QuoridorController {
 			
 		}
 		
+	/** Method to identify when a game has been drawn
+	 * @return whether it is drawn
+	 */
+	public static boolean gameIsDrawn() {
 		
-		public static boolean gameIsDrawn() {
-			
-			List<Move> moves = QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
-			
-			if(moves.size() < 9) return false;
-			
-			Move drawMove;
-			Move lastMove = moves.get(moves.size() - 1);
-			
-			//A - 0 - B - 0 - A - 0 - B - 0 - A
-			
-			for(int i = moves.size() - 5, c = 0; c < 2; i-=4, c++) {
-				//Compare lastMove to the one two before it
-				drawMove = moves.get(i);
-				//If you get a difference- break out
-				if(!drawMove.getTargetTile().equals(lastMove.getTargetTile())) return false;
-				//Otherwise, update lastMove
-				lastMove = moves.get(i);
-			}
-			
-			lastMove = moves.get(moves.size() - 3);
-			drawMove = moves.get( moves.size() - 7);
+		List<Move> moves = QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
+		
+		if(moves.size() < 9) return false;
+		
+		Move drawMove;
+		Move lastMove = moves.get(moves.size() - 1);
+		
+		//A - 0 - B - 0 - A - 0 - B - 0 - A
+		
+		for(int i = moves.size() - 5, c = 0; c < 2; i-=4, c++) {
+			//Compare lastMove to the one two before it
+			drawMove = moves.get(i);
+			//If you get a difference- break out
 			if(!drawMove.getTargetTile().equals(lastMove.getTargetTile())) return false;
-			
-			return true;
-			
+			//Otherwise, update lastMove
+			lastMove = moves.get(i);
 		}
+		
+		lastMove = moves.get(moves.size() - 3);
+		drawMove = moves.get( moves.size() - 7);
+		if(!drawMove.getTargetTile().equals(lastMove.getTargetTile())) return false;
+		
+		return true;
+		
+	}
 }
