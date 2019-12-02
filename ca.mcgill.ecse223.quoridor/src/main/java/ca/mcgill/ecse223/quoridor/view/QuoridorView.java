@@ -853,7 +853,7 @@ public class QuoridorView extends JFrame{
 							Wall w = ((WallMove) undoMove).getWallPlaced();
 							game.getCurrentPosition().addWhiteWallsInStock(w);
 							game.getCurrentPosition().removeWhiteWallsOnBoard(w);
-							p1Walls.setText("Walls: " + (++p1WallsIn));
+							p1Walls.setText("Walls: " + (p1WallsIn));
 						} else {
 							boolean found = false;
 							//Here's a q. How to get last white position? Like where they moved from
