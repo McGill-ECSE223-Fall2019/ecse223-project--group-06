@@ -61,14 +61,14 @@ import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 public class QuoridorView extends JFrame{
 	private static final long serialVersionUID = -4426310869335015542L;
-	
+
 	public PawnBehavior white;
 	public PawnBehavior black; 
 	public JButton newGame = new JButton("New Game");
 	public JButton loadGame = new JButton("Load Game");
 	public JButton replayGame = new JButton("Replay");
 	private JLabel title = new JLabel("Quoridor");
-	
+
 	//Load screen vars
 	public JTextField whiteName = new JTextField(20);
 	public JTextField blackName = new JTextField(20);
@@ -79,7 +79,7 @@ public class QuoridorView extends JFrame{
 	public String userSelecting = "white";
 	public JList<String> userList;
 	public JScrollPane filePane = new JScrollPane();
-		
+
 	public JLabel p1Name = new JLabel();
 	public JLabel p2Name = new JLabel();
 	private JLabel p1Time = new JLabel();
@@ -91,12 +91,12 @@ public class QuoridorView extends JFrame{
 	public JLabel notification = new JLabel(); //To use for any errors, make sure it's being cleared though
 	public JLabel result = new JLabel();
 	public JLabel explanation = new JLabel("<html><center>Press 'g' to grab a wall"
-										+  "<br>Or press 'm' to move</center></html>", SwingConstants.CENTER);
+			+  "<br>Or press 'm' to move</center></html>", SwingConstants.CENTER);
 	public JLabel roundNum = new JLabel("Round: 1");
 	public JLabel moveNum = new JLabel("Move: 0");
-	
+
 	public JFrame confirmFrame = new JFrame("Confirmation");
-	
+
 	public JButton saveButton = new JButton("Save");
 	public JButton undoButton = new JButton("Undo");
 	private JButton exitButton = new JButton("Exit");
@@ -111,7 +111,7 @@ public class QuoridorView extends JFrame{
 	public JButton jumpBackwards = new JButton("<<");
 	public JButton continueButton;
 	public JButton resignButton = new JButton("Resign");
-	
+
 	public JPanel board;
 	private MouseListener boardMouseListener;
 	private MouseInputListener wallMouseListener;
@@ -124,54 +124,54 @@ public class QuoridorView extends JFrame{
 	public int whiteSeconds;
 	public Timer blackTimer;
 	public int blackSeconds;
-	
+
 	public boolean[] outlineTile = new boolean[81];
-	
+
 	//First screen user sees, just title and two buttons
 	public void initLoadScreen() {
 		getContentPane().removeAll();
 		Arrays.fill(outlineTile, false);
-		
+
 		setTitle("Quoridor Application");
 		title.setText("Quoridor");
 		title.setFont(new Font("Serif", Font.BOLD, 80));
-		
+
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		GroupLayout.Group horizontal = layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-											.addComponent(title)
-											.addComponent(newGame)
-											.addComponent(loadGame)
-											.addComponent(replayGame);
+				.addComponent(title)
+				.addComponent(newGame)
+				.addComponent(loadGame)
+				.addComponent(replayGame);
 		GroupLayout.Group vertical = layout.createSequentialGroup()
-				  						   .addComponent(title)
-				  						   .addComponent(newGame)
-				  						   .addComponent(loadGame)
-				  						   .addComponent(replayGame);
-		
-		
+				.addComponent(title)
+				.addComponent(newGame)
+				.addComponent(loadGame)
+				.addComponent(replayGame);
+
+
 		layout.setHorizontalGroup(horizontal);
 		layout.setVerticalGroup(vertical);
-		
+
 		DefaultListModel<String> l = new DefaultListModel<>(); 
-		
+
 		File dir = new File(System.getProperty("user.dir"));
-		
+
 		File[] saveFiles = dir.listFiles();
 		String name;
 		if(saveFiles != null) {
 			for(File f : saveFiles) {
 				name = f.getName();
 				if( name.length() > 4 && (name.substring(name.length() - 4, name.length()).equals(".dat") 
-					||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
+						||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
 					l.addElement(f.getName());
 				}
-				
+
 			}
 		}
-		
+
 		newGame.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -180,25 +180,25 @@ public class QuoridorView extends JFrame{
 		});
 
 		JList<String> fileList = new JList<String>(l);
-	    //Will work on enter
-		
+		//Will work on enter
+
 		replayGame.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				explanation.setText("<html>Press Enter to Load <br>Type Shift to Replay</html>");
 				explanation.setVisible(true);
-				
+
 				if(!getContentPane().contains(new Point(500, 50))) {
 					layout.setHorizontalGroup(layout.createSequentialGroup()
-													.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																	.addGroup(horizontal)
-																	.addComponent(explanation))
-													.addComponent(filePane));
+							.addGroup(layout.createParallelGroup(Alignment.CENTER)
+									.addGroup(horizontal)
+									.addComponent(explanation))
+							.addComponent(filePane));
 					layout.setVerticalGroup(layout.createParallelGroup()
-												 .addGroup(layout.createSequentialGroup()
-														 		.addGroup(vertical)
-														 		.addComponent(explanation))
-												 .addComponent(filePane));
+							.addGroup(layout.createSequentialGroup()
+									.addGroup(vertical)
+									.addComponent(explanation))
+							.addComponent(filePane));
 					getContentPane().setLayout(layout);
 					pack();
 					return;
@@ -207,43 +207,43 @@ public class QuoridorView extends JFrame{
 					fileList.setSelectedIndex(0);
 				}
 				if(fileList.getSelectedValue() == null) return;
-				
-				
+
+
 				if(QuoridorController.startReplay(fileList.getSelectedValue())) {
-					
+
 					fileName = fileList.getSelectedValue();
 					p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
 					p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
-					
-					
-					
+
+
+
 					whiteSeconds = 60*10;
 					blackSeconds = 60*10;
 					p1Time.setText("Time: "+10+" m " + 0 +" s ");
 					p2Time.setText("Time: "+10+" m " + 0 +" s ");
-					
+
 					QuoridorController.setTotaltime(10, 0);
-					
-					
+
+
 					initReplay();
-					
+
 					board.requestFocusInWindow();
 					fileList.removeKeyListener(fileList.getKeyListeners()[0]);
-					
+
 				} else {
 					notifyInvalid("Replay File Error- Invalid Position");
 					layout.setHorizontalGroup(layout.createSequentialGroup()
-													.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																	.addGroup(horizontal)
-																	.addComponent(notification)
-																	.addComponent(explanation))
-													.addComponent(filePane));
+							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+									.addGroup(horizontal)
+									.addComponent(notification)
+									.addComponent(explanation))
+							.addComponent(filePane));
 					layout.setVerticalGroup(layout.createParallelGroup()
-											.addGroup(layout.createSequentialGroup()
-															.addGroup(vertical)
-															.addComponent(notification)
-															.addComponent(explanation))
-											.addComponent(filePane));
+							.addGroup(layout.createSequentialGroup()
+									.addGroup(vertical)
+									.addComponent(notification)
+									.addComponent(explanation))
+							.addComponent(filePane));
 
 					getContentPane().setLayout(layout);
 					pack();
@@ -251,32 +251,32 @@ public class QuoridorView extends JFrame{
 
 			}
 		});
-		
+
 		loadGame.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				explanation.setText("<html>Press Enter to Load <br>Type Shift to Replay</html>");
 				explanation.setVisible(true);
-				
+
 				if(!getContentPane().contains(new Point(500, 50))) {
 					explanation.setText("<html>Press Enter to Load <br>Type Shift to Replay</html>");
-					
+
 
 					layout.setHorizontalGroup(layout.createSequentialGroup()
-													.addGroup(layout.createParallelGroup(Alignment.CENTER)
-																	.addGroup(horizontal)
-																	.addComponent(explanation))
-													.addComponent(filePane));
+							.addGroup(layout.createParallelGroup(Alignment.CENTER)
+									.addGroup(horizontal)
+									.addComponent(explanation))
+							.addComponent(filePane));
 					layout.setVerticalGroup(layout.createParallelGroup()
-												 .addGroup(layout.createSequentialGroup()
-														 		.addGroup(vertical)
-														 		.addComponent(explanation))
-												 .addComponent(filePane));
+							.addGroup(layout.createSequentialGroup()
+									.addGroup(vertical)
+									.addComponent(explanation))
+							.addComponent(filePane));
 					getContentPane().setLayout(layout);
 					pack();
 					return;
 				}
-				
+
 				if(QuoridorController.isEnded(fileList.getSelectedValue())) {
 					replayGame.doClick();
 					return;
@@ -285,76 +285,76 @@ public class QuoridorView extends JFrame{
 					fileName = fileList.getSelectedValue();
 					File f = new File(fileName); 
 					f.setLastModified(0);
-					
+
 					p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
 					p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
-					
+
 					whiteSeconds = 60*10;
 					blackSeconds = 60*10;
 					p1Time.setText("Time: "+10+" m " + 0 +" s ");
 					p2Time.setText("Time: "+10+" m " + 0 +" s ");
-					
+
 					p1Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
 					p2Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size());
-					
-					
+
+
 					QuoridorController.setTotaltime(10, 0);
-					
+
 					initGame();
-					
+
 					if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
 							.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
-								p2Turn.setSelected(true);
-								p1Turn.setSelected(false);
-							}
-					
+						p2Turn.setSelected(true);
+						p1Turn.setSelected(false);
+					}
+
 					for(WallMove w : QuoridorController.getWalls()) {
-						
+
 						JPanel newWall = new JPanel();
 						int row = w.getTargetTile().getRow();
-				    	int col = w.getTargetTile().getColumn();
-					    refresh(); 
-					    if(w.getWallDirection() == Direction.Vertical) {
-					    	
-					    	newWall.setSize(5, 75);
-					    	newWall.setLocation( 
-								     board.getX() - 5 + col*40, 
-								     board.getY() + row * 40 - 40);
-					      } else {
-					    	  newWall.setSize(75, 5);
-					    	  newWall.setLocation( 
-								        board.getX() + col*40 - 40, 
-								        board.getY() - 5 + row * 40);
-					      }
+						int col = w.getTargetTile().getColumn();
+						refresh(); 
+						if(w.getWallDirection() == Direction.Vertical) {
+
+							newWall.setSize(5, 75);
+							newWall.setLocation( 
+									board.getX() - 5 + col*40, 
+									board.getY() + row * 40 - 40);
+						} else {
+							newWall.setSize(75, 5);
+							newWall.setLocation( 
+									board.getX() + col*40 - 40, 
+									board.getY() - 5 + row * 40);
+						}
 						newWall.setBackground(Color.BLACK);
 						getContentPane().add(newWall);
-						
+
 					}
 					board.requestFocusInWindow();
 					fileList.removeKeyListener(fileList.getKeyListeners()[0]);
-					
+
 				} else {
 					notifyInvalid("Load File Error- Invalid Position");
 					layout.setHorizontalGroup(layout.createSequentialGroup()
-													.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																	.addGroup(horizontal)
-																	.addComponent(notification)
-																	.addComponent(explanation))
-													.addComponent(filePane));
+							.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+									.addGroup(horizontal)
+									.addComponent(notification)
+									.addComponent(explanation))
+							.addComponent(filePane));
 					layout.setVerticalGroup(layout.createParallelGroup()
-											.addGroup(layout.createSequentialGroup()
-															.addGroup(vertical)
-															.addComponent(notification)
-															.addComponent(explanation))
-											.addComponent(filePane));
+							.addGroup(layout.createSequentialGroup()
+									.addGroup(vertical)
+									.addComponent(notification)
+									.addComponent(explanation))
+							.addComponent(filePane));
 					getContentPane().setLayout(layout);
 					pack();
 				}
 			}
 		});	
 
-	    if(fileList.getKeyListeners().length > 0) fileList.removeKeyListener(fileList.getKeyListeners()[0]);
-	    fileList.addKeyListener(new java.awt.event.KeyListener() {
+		if(fileList.getKeyListeners().length > 0) fileList.removeKeyListener(fileList.getKeyListeners()[0]);
+		fileList.addKeyListener(new java.awt.event.KeyListener() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {}
 			public void keyTyped(java.awt.event.KeyEvent evt) {}
 			@Override
@@ -368,28 +368,28 @@ public class QuoridorView extends JFrame{
 				else if(evt.getKeyCode() == KeyEvent.VK_SHIFT) {
 					replayGame.doClick();
 				}
-				
+
 			}
 		});
-        filePane.setViewportView(fileList);
-		
-		
+		filePane.setViewportView(fileList);
+
+
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {newGame, loadGame});
 		layout.linkSize(SwingConstants.VERTICAL, new java.awt.Component[] {newGame, loadGame});		
-		
+
 		this.getContentPane().setBackground(new Color(191, 222, 217, 255));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		pack();
 		setVisible(true);
 	}
-	
+
 	//Initialize the game screen. This is where usernames and think time is set
 	public void initSetParams() {
-		
+
 		getContentPane().removeAll();
-		
+
 		//All the components to be placed on the window
-		
+
 		JLabel tmpMinutes = new JLabel("Minutes");
 		JLabel tmpSeconds = new JLabel("Seconds");
 		JLabel tmpP1 = new JLabel("Player 1");
@@ -397,84 +397,84 @@ public class QuoridorView extends JFrame{
 		JLabel tmpTimeTitle = new JLabel("Set Total Time");
 		title.setText("Quoridor Game");
 		title.setFont(new Font("Serif", Font.BOLD, 18));
-		
+
 		//placing components on the window
-		
+
 		initLayout = new GroupLayout(getContentPane());
-		
-		
-		
+
+
+
 		GroupLayout.Group horizontal = initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-											.addComponent(title)
-											.addGroup(initLayout.createSequentialGroup()
-															.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																			.addComponent(tmpP1)
-																			.addComponent(whiteName)
-																			.addComponent(useExistingWhite)
-																	)
-															.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																			.addComponent(tmpP2)
-																			.addComponent(blackName)
-																			.addComponent(useExistingBlack)
-																	)
-															
-													)
-											.addComponent(tmpTimeTitle)
-											.addGroup(initLayout.createSequentialGroup()
-													.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																	.addComponent(tmpMinutes)
-																	.addComponent(minutesField)
-															)
-													.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																	.addComponent(tmpSeconds)
-																	.addComponent(secondsField)
-															)
-													
-													)
-											 .addGroup(initLayout.createSequentialGroup()
-													 		 .addComponent(newGame)
-													 		 .addComponent(loadGame)
-													 );
+				.addComponent(title)
+				.addGroup(initLayout.createSequentialGroup()
+						.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+								.addComponent(tmpP1)
+								.addComponent(whiteName)
+								.addComponent(useExistingWhite)
+								)
+						.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+								.addComponent(tmpP2)
+								.addComponent(blackName)
+								.addComponent(useExistingBlack)
+								)
+
+						)
+				.addComponent(tmpTimeTitle)
+				.addGroup(initLayout.createSequentialGroup()
+						.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+								.addComponent(tmpMinutes)
+								.addComponent(minutesField)
+								)
+						.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+								.addComponent(tmpSeconds)
+								.addComponent(secondsField)
+								)
+
+						)
+				.addGroup(initLayout.createSequentialGroup()
+						.addComponent(newGame)
+						.addComponent(loadGame)
+						);
 		GroupLayout.Group vertical = initLayout.createSequentialGroup()
-										   .addComponent(title)
-										   .addGroup(initLayout.createParallelGroup()
-												          .addComponent(tmpP1)
-												          .addComponent(tmpP2)
-												  	)
-										   .addGroup(initLayout.createParallelGroup()
-												  		  .addComponent(whiteName)
-												  		  .addComponent(blackName)
-												   )
-										   .addGroup(initLayout.createParallelGroup()
-												  		  .addComponent(useExistingWhite)
-												  		  .addComponent(useExistingBlack)
-												   )
-										   .addComponent(tmpTimeTitle)
-										   .addGroup(initLayout.createParallelGroup()
-												  		  .addComponent(tmpMinutes)
-												  		  .addComponent(tmpSeconds)
-											 	   )
-										   .addGroup(initLayout.createParallelGroup()
-												  		  .addComponent(minutesField)
-												  		  .addComponent(secondsField)
-												   )
-										   .addGroup(initLayout.createParallelGroup()
-												  		  .addComponent(newGame)
-												  		  .addComponent(loadGame)
-												    );
+				.addComponent(title)
+				.addGroup(initLayout.createParallelGroup()
+						.addComponent(tmpP1)
+						.addComponent(tmpP2)
+						)
+				.addGroup(initLayout.createParallelGroup()
+						.addComponent(whiteName)
+						.addComponent(blackName)
+						)
+				.addGroup(initLayout.createParallelGroup()
+						.addComponent(useExistingWhite)
+						.addComponent(useExistingBlack)
+						)
+				.addComponent(tmpTimeTitle)
+				.addGroup(initLayout.createParallelGroup()
+						.addComponent(tmpMinutes)
+						.addComponent(tmpSeconds)
+						)
+				.addGroup(initLayout.createParallelGroup()
+						.addComponent(minutesField)
+						.addComponent(secondsField)
+						)
+				.addGroup(initLayout.createParallelGroup()
+						.addComponent(newGame)
+						.addComponent(loadGame)
+						);
 
 		initLayout.setAutoCreateGaps(true);
 		initLayout.setAutoCreateContainerGaps(true);
-		
+
 		initLayout.setHorizontalGroup(horizontal);
 		initLayout.setVerticalGroup(vertical);
-		
-		
+
+
 		//This is the 'select existing username' part'
 		//I define a list of usernames, and have it fill in fields when enter is clicked
-		
+
 		JScrollPane pane = new JScrollPane();
-		
+
 		DefaultListModel<String> l = new DefaultListModel<>(); 
 		for(User r : QuoridorApplication.getQuoridor().getUsers()) {
 			l.addElement(r.getName());
@@ -485,14 +485,14 @@ public class QuoridorView extends JFrame{
 		l.addElement("Rodirroc");
 		l.addElement("Xx_EpicGamer_xX");
 		//TODO: Make it show actual user names
-		
-		
-        userList = new JList<String>(l);
-        //Maybe the problem is that any layout containing userList is stored?
-        
-        //Will work on enter
-        if(userList.getKeyListeners().length > 0 ) userList.removeKeyListener(userList.getKeyListeners()[0]);
-        userList.addKeyListener(new java.awt.event.KeyListener() {
+
+
+		userList = new JList<String>(l);
+		//Maybe the problem is that any layout containing userList is stored?
+
+		//Will work on enter
+		if(userList.getKeyListeners().length > 0 ) userList.removeKeyListener(userList.getKeyListeners()[0]);
+		userList.addKeyListener(new java.awt.event.KeyListener() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {}
 			public void keyTyped(java.awt.event.KeyEvent evt) {}
 			@Override
@@ -505,114 +505,114 @@ public class QuoridorView extends JFrame{
 					}
 
 				}
-				
+
 			}
 		});
-        
-        
-		
+
+
+
 		DefaultListModel<String> listoo = new DefaultListModel<>(); 
-	
+
 		File dir = new File(System.getProperty("user.dir"));
-		
+
 		File[] saveFiles = dir.listFiles();
 		String name;
 		if(saveFiles != null) {
 			for(File f : saveFiles) {
 				name = f.getName();
 				if( name.length() > 4 && (name.substring(name.length() - 4, name.length()).equals(".dat") 
-					||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
+						||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
 					listoo.addElement(f.getName());
 				}
-				
+
 			}
 		}
-        
-        //Load Game Button Definition
+
+		//Load Game Button Definition
 
 		JList<String> fileList = new JList<String>(listoo);
-	    //Will work on enter
-	    
-	    fileList.addKeyListener(new java.awt.event.KeyListener() {
+		//Will work on enter
+
+		fileList.addKeyListener(new java.awt.event.KeyListener() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {}
 			public void keyTyped(java.awt.event.KeyEvent evt) {}
 			@Override
 			public void keyReleased(java.awt.event.KeyEvent evt) {
 				if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-						if(QuoridorController.isEnded(fileList.getSelectedValue())) {
-							replayGame.doClick();
-							return;
-						}
-						if(QuoridorController.loadGame(fileList.getSelectedValue())) {
-							fileName = fileList.getSelectedValue();
-							File f = new File(fileName); 
-							f.setLastModified(0);
-							
-							p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
-							p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
-							
-							whiteSeconds = 60*10;
-							blackSeconds = 60*10;
-							p1Time.setText("Time: "+10+" m " + 0 +" s ");
-							p2Time.setText("Time: "+10+" m " + 0 +" s ");
-							
-							p1Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
-							p2Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size());
-							
-							QuoridorController.setTotaltime(10, 0);
-							
-							initGame();
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
-									.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
-										p2Turn.setSelected(true);
-										p1Turn.setSelected(false);
-									}
-							for(WallMove w : QuoridorController.getWalls()) {
-								
-								JPanel newWall = new JPanel();
-								int row = w.getTargetTile().getRow();
-						    	int col = w.getTargetTile().getColumn();
-							    refresh(); 
-							    if(w.getWallDirection() == Direction.Vertical) {
-							    	
-							    	newWall.setSize(5, 75);
-							    	newWall.setLocation( 
-										     board.getX() - 5 + col*40, 
-										     board.getY() + row * 40 - 40);
-							      } else {
-							    	  newWall.setSize(75, 5);
-							    	  newWall.setLocation( 
-										        board.getX() + col*40 - 40, 
-										        board.getY() - 5 + row * 40);
-							      }
-								newWall.setBackground(Color.BLACK);
-								getContentPane().add(newWall);
-								
-							}
-							board.requestFocusInWindow();
-							fileList.removeKeyListener(fileList.getKeyListeners()[0]);
-						} else {
-							notifyInvalid("Load File Error- Invalid Position");
-							initLayout.setHorizontalGroup(initLayout.createSequentialGroup()
-															.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																			.addGroup(horizontal)
-																			.addComponent(notification))
-															.addComponent(pane));
-							initLayout.setVerticalGroup(initLayout.createParallelGroup()
-													.addGroup(initLayout.createSequentialGroup()
-																	.addGroup(vertical)
-																	.addComponent(notification))
-													.addComponent(pane));
-
-							getContentPane().setLayout(initLayout);
-							pack();
-						}
-	
-						
+					if(QuoridorController.isEnded(fileList.getSelectedValue())) {
+						replayGame.doClick();
+						return;
 					}
+					if(QuoridorController.loadGame(fileList.getSelectedValue())) {
+						fileName = fileList.getSelectedValue();
+						File f = new File(fileName); 
+						f.setLastModified(0);
+
+						p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
+						p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
+
+						whiteSeconds = 60*10;
+						blackSeconds = 60*10;
+						p1Time.setText("Time: "+10+" m " + 0 +" s ");
+						p2Time.setText("Time: "+10+" m " + 0 +" s ");
+
+						p1Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
+						p2Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size());
+
+						QuoridorController.setTotaltime(10, 0);
+
+						initGame();
+						if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
+								.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
+							p2Turn.setSelected(true);
+							p1Turn.setSelected(false);
+						}
+						for(WallMove w : QuoridorController.getWalls()) {
+
+							JPanel newWall = new JPanel();
+							int row = w.getTargetTile().getRow();
+							int col = w.getTargetTile().getColumn();
+							refresh(); 
+							if(w.getWallDirection() == Direction.Vertical) {
+
+								newWall.setSize(5, 75);
+								newWall.setLocation( 
+										board.getX() - 5 + col*40, 
+										board.getY() + row * 40 - 40);
+							} else {
+								newWall.setSize(75, 5);
+								newWall.setLocation( 
+										board.getX() + col*40 - 40, 
+										board.getY() - 5 + row * 40);
+							}
+							newWall.setBackground(Color.BLACK);
+							getContentPane().add(newWall);
+
+						}
+						board.requestFocusInWindow();
+						fileList.removeKeyListener(fileList.getKeyListeners()[0]);
+					} else {
+						notifyInvalid("Load File Error- Invalid Position");
+						initLayout.setHorizontalGroup(initLayout.createSequentialGroup()
+								.addGroup(initLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+										.addGroup(horizontal)
+										.addComponent(notification))
+								.addComponent(pane));
+						initLayout.setVerticalGroup(initLayout.createParallelGroup()
+								.addGroup(initLayout.createSequentialGroup()
+										.addGroup(vertical)
+										.addComponent(notification))
+								.addComponent(pane));
+
+						getContentPane().setLayout(initLayout);
+						pack();
+					}
+
+
+				}
 			}
 		});  
-        loadGame.removeActionListener(loadGame.getActionListeners()[0]);
+		loadGame.removeActionListener(loadGame.getActionListeners()[0]);
 		loadGame.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -620,27 +620,27 @@ public class QuoridorView extends JFrame{
 				initLayout.setHorizontalGroup(initLayout.createSequentialGroup().addGroup(horizontal)
 						.addComponent(pane));
 				initLayout.setVerticalGroup(initLayout.createParallelGroup().addGroup(vertical)
-					  .addComponent(pane));
-				
+						.addComponent(pane));
+
 				getContentPane().setLayout(initLayout);
 				pack();
 			}
 		});	
-        
-        
-        
-        //Define action for use existing button
+
+
+
+		//Define action for use existing button
 		if(useExistingWhite.getActionListeners().length > 0) useExistingWhite.removeActionListener(useExistingWhite.getActionListeners()[0]);
 		useExistingWhite.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-			
+
 				pane.setViewportView(userList);
 				initLayout.setHorizontalGroup(initLayout.createSequentialGroup().addGroup(horizontal)
 						.addComponent(pane));
 				initLayout.setVerticalGroup(initLayout.createParallelGroup().addGroup(vertical)
-					  .addComponent(pane));
-				
+						.addComponent(pane));
+
 				getContentPane().setLayout(initLayout);
 				pack();
 				userSelecting = "white";
@@ -651,32 +651,32 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				pane.setViewportView(userList);
-				
+
 				initLayout.setHorizontalGroup(initLayout.createSequentialGroup().addGroup(horizontal)
-																		.addComponent(pane));
+						.addComponent(pane));
 				initLayout.setVerticalGroup(initLayout.createParallelGroup().addGroup(vertical)
-																	  .addComponent(pane));
-				
-				
+						.addComponent(pane));
+
+
 				getContentPane().setLayout(initLayout);
 				pack();
 				userSelecting = "black";
 			}
 		});
-		
+
 		//Redefine what the newGame button does (start the board this time)
 		newGame.removeActionListener(newGame.getActionListeners()[0]);
 		newGame.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				
-				
+
+
 				userList.removeKeyListener(userList.getKeyListeners()[0]);
-				
-				
+
+
 				p1Name.setText(whiteName.getText());
 				p2Name.setText(blackName.getText());
-				
+
 				if(!QuoridorController.ExistingUserName(whiteName.getText())) {
 					QuoridorController.createUser(whiteName.getText());
 				} else {
@@ -689,7 +689,7 @@ public class QuoridorView extends JFrame{
 					confirmExistingName();
 					return;
 				}
-				
+
 				QuoridorController.startGame();
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setUser(QuoridorController.findUserName(whiteName.getText()));
 				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setUser(QuoridorController.findUserName(blackName.getText()));
@@ -708,23 +708,23 @@ public class QuoridorView extends JFrame{
 					p2Time.setText("Time: "+10+" m " + 0 +" s ");
 					QuoridorController.setTotaltime(10, 0);
 				}
-				
+
 				QuoridorController.initializeBoard();
 				initGame();
 				newGame.removeActionListener(newGame.getActionListeners()[0]);
 			}
 		});
-		
+
 		//Fill in and resize
 		getContentPane().setLayout(initLayout);
 		pack();
-		
+
 	}
-	
+
 	//This is the actual meat of the game. Board, actions, info, etc.
 	public void initGame() { 
 		explanation.setText("<html><center>Press 'g' to grab a wall"
-										+  "<br>Or press 'm' to move</center></html>");
+				+  "<br>Or press 'm' to move</center></html>");
 		white = new PawnBehavior(MoveDirection.North);
 		black = new PawnBehavior(MoveDirection.North);
 		white.setCurrentGame(QuoridorApplication.getQuoridor().getCurrentGame());
@@ -734,18 +734,18 @@ public class QuoridorView extends JFrame{
 		QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.Running);
 		getContentPane().removeAll();	
 		setTitle("Quoridor");
-		
-		
-		
-		
+
+
+
+
 		whiteTimer = QuoridorController.runwhiteclock(this);
 		blackTimer = QuoridorController.runblackclock(this);
-		
-		
-		
+
+
+
 		wall = new JPanel();
 		boardMouseListener = new MouseListener() {
-			
+
 			public void mouseEntered(MouseEvent e) {}
 			public void mousePressed(MouseEvent e) {}
 			public void mouseReleased(MouseEvent e) {}
@@ -788,7 +788,7 @@ public class QuoridorView extends JFrame{
 					moveButton.doClick();
 				}
 			}
-			
+
 		};
 		saveButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
@@ -802,12 +802,12 @@ public class QuoridorView extends JFrame{
 					f.setLastModified(0);
 					notifyValid("Saved Successfully");
 				}
-				
+
 				refresh();
 				board.requestFocusInWindow();
 			}
 		});
-		
+
 		if(exitButton.getActionListeners().length == 1) exitButton.removeActionListener(exitButton.getActionListeners()[0]);
 		exitButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
@@ -833,30 +833,30 @@ public class QuoridorView extends JFrame{
 				board.requestFocusInWindow();
 			}
 		});
-		
-		
+
+
 		grabButton.addActionListener(new java.awt.event.ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 
 				notification.setVisible(false);
 				if(QuoridorController.grabWall()) {
-					
+
 					if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 							QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
 						white.initGrab(); //Update state machines
 					} else {
 						black.initGrab();
 					}
-					
-					
+
+
 					if(wall != null) getContentPane().remove(wall);
 					wall = new JPanel();
 					wall.setBounds(47, 60, 5, 75);
 					wall.setBackground(Color.BLACK);
 					wall.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-					
+
 					if(board.getMouseMotionListeners().length == 0) {
 						board.addMouseListener(wallMouseListener);
 						board.addMouseMotionListener(wallMouseListener);
@@ -864,24 +864,16 @@ public class QuoridorView extends JFrame{
 					if(board.getKeyListeners().length == 0) {
 						System.out.println("This should never happen");
 					}
-					
-					
-					
+
+
+
 					getContentPane().add(wall,JLayeredPane.DRAG_LAYER);
-					
-					 wall.setLocation( 
-						        board.getX() - 5 + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn() *40, 
-						        board.getY() + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow() * 40 - 40);
-					/*
-					if(p1Turn.isSelected()) {
-						Integer numWalls = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
-						p1Walls.setText("Walls: " + Integer.toString(numWalls - 1));
-					} else {
-						Integer numWalls = Integer.parseInt(p2Walls.getText().replace("Walls: ", ""));
-						p2Walls.setText("Walls: " + Integer.toString(numWalls - 1));
-					}
-					*/
-					 //TODO: See if this works
+
+					wall.setLocation( 
+							board.getX() - 5 + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn() *40, 
+							board.getY() + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow() * 40 - 40);
+
+					//TODO: See if this works
 					p1Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
 					p2Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size());
 
@@ -899,12 +891,12 @@ public class QuoridorView extends JFrame{
 						notifyInvalid("No walls in stock");
 					}
 				}
-		}});
+			}});
 
 		moveButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				
+
 				if(wall != null) {
 					getContentPane().remove(wall);
 
@@ -915,13 +907,13 @@ public class QuoridorView extends JFrame{
 						Integer numWalls = Integer.parseInt(p2Walls.getText().replace("Walls: ", ""));
 						p2Walls.setText("Walls: " + Integer.toString(numWalls + 1));
 					}
-					
+
 					QuoridorController.undoGrabWall();
-					
+
 					wall = null;
 				}
-				
-				
+
+
 				QuoridorController.findAllowedTiles(outlineTile);
 				refresh();
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
@@ -932,7 +924,7 @@ public class QuoridorView extends JFrame{
 				}
 				//Mmmhmm
 				QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.PlayerMove);
-				
+
 				explanation.setText("Select a highlighted tile to move to that position!");
 				explanation.setVisible(true);
 				board.requestFocusInWindow();
@@ -943,9 +935,9 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				board.requestFocusInWindow();
-				
+
 				RotateWall();
-				
+
 			}
 		});
 		resignButton.addActionListener(new java.awt.event.ActionListener() {
@@ -959,7 +951,7 @@ public class QuoridorView extends JFrame{
 					@Override
 					public void actionPerformed(java.awt.event.ActionEvent evt) {
 						getResult();
-						
+
 					}
 				});
 				JButton noButton = new JButton("No");
@@ -974,22 +966,22 @@ public class QuoridorView extends JFrame{
 				layout.setAutoCreateGaps(true);
 				layout.setAutoCreateContainerGaps(true);
 				layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-												.addComponent(notification)
-												.addGroup(layout.createSequentialGroup()
-														  .addComponent(yesButton)
-														  .addComponent(noButton)	   
-																			   ));
+						.addComponent(notification)
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(yesButton)
+								.addComponent(noButton)	   
+								));
 				layout.setVerticalGroup(layout.createSequentialGroup()
 						.addComponent(notification)
 						.addGroup(layout.createParallelGroup()
-									.addComponent(yesButton)
-									.addComponent(noButton)	   
-									   ));
+								.addComponent(yesButton)
+								.addComponent(noButton)	   
+								));
 				layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
 				confirmFrame.getContentPane().setLayout(layout);
 				confirmFrame.pack();
 				confirmFrame.setVisible(true);
-				
+
 			}
 		});
 		validateButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1001,7 +993,7 @@ public class QuoridorView extends JFrame{
 					refresh();
 					return;
 				}
-				
+
 				if(!QuoridorController.pathExists(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
 					if(!QuoridorController.pathExists(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
 						notifyInvalid("Both Players' Quoridor Positions Are Invalid");
@@ -1013,7 +1005,7 @@ public class QuoridorView extends JFrame{
 				} else {
 					notifyValid("Quoridor Position is Valid");
 				}
-				
+
 				board.requestFocusInWindow();
 				refresh();
 			}
@@ -1037,17 +1029,17 @@ public class QuoridorView extends JFrame{
 				g.setStroke(new BasicStroke(2));
 				for(int i = 0; i < 81; i++) {
 					if(outlineTile[i] ) {
-						
-						
+
+
 						g.fillRect((i % 9)*width,
 								(i/9)*height,
 								width - 5, height - 5);
-						
-						
+
+
 						g.setColor(new Color(0, 255, 0));
 						g.drawRect((i % 9)*width,
-									(i/9)*height,
-									width - 5, height - 5);
+								(i/9)*height,
+								width - 5, height - 5);
 						g.setColor(new Color(201, 156, 84));
 					} else {
 						g.fillRect((i % 9)*width,
@@ -1056,7 +1048,7 @@ public class QuoridorView extends JFrame{
 					}
 				}
 				g.setStroke(new BasicStroke(1));
-				
+
 				PlayerPosition whitePos;
 				PlayerPosition blackPos;
 				if(QuoridorApplication.getQuoridor().getCurrentGame() != null) {
@@ -1069,14 +1061,14 @@ public class QuoridorView extends JFrame{
 				if(whitePos != null) {
 					g.setColor(new Color(255, 255, 255));
 					g.fillOval( whitePos.getTile().getColumn() * 40 - 35, 
-								whitePos.getTile().getRow() * 40 - 35, 
-								25, 25);
+							whitePos.getTile().getRow() * 40 - 35, 
+							25, 25);
 				}
 				if(blackPos != null) {
 					g.setColor(new Color(0, 0, 0));
 					g.fillOval( blackPos.getTile().getColumn() * 40 - 35, 
-								blackPos.getTile().getRow() * 40 - 35, 
-								25, 25);
+							blackPos.getTile().getRow() * 40 - 35, 
+							25, 25);
 				}
 				int index = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
 				for(int i = 0; i < index; i++) {
@@ -1094,303 +1086,302 @@ public class QuoridorView extends JFrame{
 						}
 					}
 				}
-				
-				
+
 			}
 		};
-		
+
 		board.setPreferredSize(new Dimension(40*9, 40*9));
 		board.setFocusable(true);
-		
+
 
 		//Defining action listeners- updates screen with components after each
 		board.addKeyListener(new KeyListener() {
-					public void keyTyped(KeyEvent e) {}
-					public void keyPressed(KeyEvent e) {}
-					public void keyReleased(KeyEvent e) {
-						if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-							DropWall();
-						} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-								movePlayer(MoveDirection.North);
-							} else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-								
-								int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
-						    	int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
-						    	if(row == 1) return;
-								if(!QuoridorController.moveWall(QuoridorController.findTile(row - 1, col))) {
-						    		  return;
-						    	 }
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					DropWall();
+				} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+						movePlayer(MoveDirection.North);
+					} else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
 
-							     if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-							    	  wall.setLocation( 
-										        board.getX() - 5 + col*40, 
-										        board.getY() + (row-1) * 40 - 40);
-							      } else {
-							    	  wall.setLocation( 
-										        board.getX() + col*40 - 40, 
-										        board.getY() - 5 + (row-1) * 40);
-							      }
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-								movePlayer(MoveDirection.South);
-							}else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-								int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
-						    	int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
-						    	if(row == 8) return;
-								if(!QuoridorController.moveWall(QuoridorController.findTile(row + 1, col))) {
-						    		  return;
-						    	 }
-
-							     if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-							    	  wall.setLocation( 
-										        board.getX() - 5 + col*40, 
-										        board.getY() + (row+1) * 40 - 40);
-							      } else {
-							    	  wall.setLocation( 
-										        board.getX() + col*40 - 40, 
-										        board.getY() - 5 + (row+1) * 40);
-							      }
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-								movePlayer(MoveDirection.East);
-							}else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-								
-								int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
-						    	int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
-						    	if(col == 8) return;
-								if(!QuoridorController.moveWall(QuoridorController.findTile(row, col+1))) {
-						    		  return;
-						    	 }
-
-							     if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-							    	  wall.setLocation( 
-										        board.getX() - 5 + (col+1)*40, 
-										        board.getY() + (row) * 40 - 40);
-							      } else {
-							    	  wall.setLocation( 
-										        board.getX() + (col+1)*40 - 40, 
-										        board.getY() - 5 + (row) * 40);
-							      }
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-								movePlayer(MoveDirection.West);
-							}else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-								
-								int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
-						    	int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
-						    	if(col == 1) return;
-								if(!QuoridorController.moveWall(QuoridorController.findTile(row, col-1))) {
-						    		  return;
-						    	 }
-
-							     if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-							    	  wall.setLocation( 
-										        board.getX() - 5 + (col-1)*40, 
-										        board.getY() + (row) * 40 - 40);
-							      } else {
-							    	  wall.setLocation( 
-										        board.getX() + (col-1)*40 - 40, 
-										        board.getY() - 5 + (row) * 40);
-							      }
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_Q) {
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-								movePlayer(MoveDirection.NorthWest);
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_E) {
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-								movePlayer(MoveDirection.NorthEast);
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_Z) {
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-								movePlayer(MoveDirection.SouthWest);
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_C) {
-							if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
-								movePlayer(MoveDirection.SouthEast);
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_R) {
-							RotateWall();
-						} else if (e.getKeyCode() == KeyEvent.VK_G) {
-							grabButton.doClick();
-						} else if (e.getKeyCode() == KeyEvent.VK_M) {
-							moveButton.doClick();
+						int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+						int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+						if(row == 1) return;
+						if(!QuoridorController.moveWall(QuoridorController.findTile(row - 1, col))) {
+							return;
 						}
-						
+
+						if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+							wall.setLocation( 
+									board.getX() - 5 + col*40, 
+									board.getY() + (row-1) * 40 - 40);
+						} else {
+							wall.setLocation( 
+									board.getX() + col*40 - 40, 
+									board.getY() - 5 + (row-1) * 40);
+						}
 					}
-				});	
+				} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+						movePlayer(MoveDirection.South);
+					}else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+						int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+						int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+						if(row == 8) return;
+						if(!QuoridorController.moveWall(QuoridorController.findTile(row + 1, col))) {
+							return;
+						}
+
+						if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+							wall.setLocation( 
+									board.getX() - 5 + col*40, 
+									board.getY() + (row+1) * 40 - 40);
+						} else {
+							wall.setLocation( 
+									board.getX() + col*40 - 40, 
+									board.getY() - 5 + (row+1) * 40);
+						}
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+						movePlayer(MoveDirection.East);
+					}else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+
+						int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+						int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+						if(col == 8) return;
+						if(!QuoridorController.moveWall(QuoridorController.findTile(row, col+1))) {
+							return;
+						}
+
+						if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+							wall.setLocation( 
+									board.getX() - 5 + (col+1)*40, 
+									board.getY() + (row) * 40 - 40);
+						} else {
+							wall.setLocation( 
+									board.getX() + (col+1)*40 - 40, 
+									board.getY() - 5 + (row) * 40);
+						}
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+						movePlayer(MoveDirection.West);
+					}else if (QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+
+						int row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+						int col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+						if(col == 1) return;
+						if(!QuoridorController.moveWall(QuoridorController.findTile(row, col-1))) {
+							return;
+						}
+
+						if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+							wall.setLocation( 
+									board.getX() - 5 + (col-1)*40, 
+									board.getY() + (row) * 40 - 40);
+						} else {
+							wall.setLocation( 
+									board.getX() + (col-1)*40 - 40, 
+									board.getY() - 5 + (row) * 40);
+						}
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_Q) {
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+						movePlayer(MoveDirection.NorthWest);
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_E) {
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+						movePlayer(MoveDirection.NorthEast);
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_Z) {
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+						movePlayer(MoveDirection.SouthWest);
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_C) {
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.PlayerMove) {
+						movePlayer(MoveDirection.SouthEast);
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_R) {
+					RotateWall();
+				} else if (e.getKeyCode() == KeyEvent.VK_G) {
+					grabButton.doClick();
+				} else if (e.getKeyCode() == KeyEvent.VK_M) {
+					moveButton.doClick();
+				}
+
+			}
+		});	
 		wallMouseListener = new MouseInputListener() {
 			@Override
-		    public void mouseClicked(MouseEvent e) {}
-		    @Override
-		    public void mousePressed(MouseEvent e) {
-		      origin.x = e.getX(); 
-		      origin.y = e.getY();
-		      
-		    		if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
-				    		  == GameStatus.Running &&
-				    		  QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-				    	  
-					    	board.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-				      }
-		    		
-		    }
-		 
-		    @Override
-		    public void mouseReleased(MouseEvent e) {
-		    	board.requestFocusInWindow();
-		    	board.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		    }
-		    @Override
-		    public void mouseEntered(MouseEvent e) {
-		    	
-		    }    
-		    @Override
-		    public void mouseExited(MouseEvent e) {}
-		 
-		    @Override
-		    public void mouseDragged(MouseEvent e) {
+			public void mouseClicked(MouseEvent e) {}
+			@Override
+			public void mousePressed(MouseEvent e) {
+				origin.x = e.getX(); 
+				origin.y = e.getY();
 
-		      int relX = e.getXOnScreen() - board.getX() - 23;
-	    	  int relY = e.getYOnScreen() - board.getY() - 45;
-		      
-		      if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
-		    		  == GameStatus.Running &&
-		    		  QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
-		    	  int row = relY / 40 + 1;
-		    	  int col = relX / 40 + 1;
-		    	  if(row < 1 || row > 9) return;
-		    	  if(col < 1 || col > 9) return;
-		    	  if(!QuoridorController.moveWall(QuoridorController.findTile(row, col))) {
-		    		  return;
-		    	  }
-		    	  row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
-		    	  col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
-			     
-			      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-			    	  wall.setLocation( 
-						        board.getX() - 5 + col*40, 
-						        board.getY() + row * 40 - 40);
-			      } else {
-			    	  wall.setLocation( 
-						        board.getX() + col*40 - 40, 
-						        board.getY() - 5 + row * 40);
-			      }
-			      refresh(); 
-			     
-		      }
-		    }
-		 
-		    @Override
-		    public void mouseMoved(MouseEvent e) { 
-		    	
-		    	
-		    }
+				if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
+						== GameStatus.Running &&
+						QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+
+					board.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+				}
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				board.requestFocusInWindow();
+				board.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}    
+			@Override
+			public void mouseExited(MouseEvent e) {}
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+
+				int relX = e.getXOnScreen() - board.getX() - 23;
+				int relY = e.getYOnScreen() - board.getY() - 45;
+
+				if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
+						== GameStatus.Running &&
+						QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
+					int row = relY / 40 + 1;
+					int col = relX / 40 + 1;
+					if(row < 1 || row > 9) return;
+					if(col < 1 || col > 9) return;
+					if(!QuoridorController.moveWall(QuoridorController.findTile(row, col))) {
+						return;
+					}
+					row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+					col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+
+					if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+						wall.setLocation( 
+								board.getX() - 5 + col*40, 
+								board.getY() + row * 40 - 40);
+					} else {
+						wall.setLocation( 
+								board.getX() + col*40 - 40, 
+								board.getY() - 5 + row * 40);
+					}
+					refresh(); 
+
+				}
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) { 
+
+
+			}
 		};
-		
-		
+
+
 		origin = new Point(board.getX(), board.getY());
 		board.addMouseListener(boardMouseListener);
-		
-		
-		
+
+
+
 		p1Turn.setBackground(new Color(191, 222, 217, 255));
 		p2Turn.setBackground(new Color(191, 222, 217, 255));
 		//Just throwing everything in layout in an organized way
 		gameLayout.setAutoCreateGaps(true);
 		gameLayout.setAutoCreateContainerGaps(true);
 		GroupLayout.Group horizontal = gameLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-												 .addGroup(gameLayout.createSequentialGroup()
-														 			 .addComponent(p2Name) 
-														 			 .addComponent(p2Time)
-														 			 .addComponent(p2Walls))
-												 .addGroup(gameLayout.createSequentialGroup()
-														 			 .addComponent(black) 
-														 			 .addComponent(p2Turn))
-												 .addComponent(board)
-												 .addComponent(notification)
-												 .addGroup(gameLayout.createSequentialGroup()
-											 			 			 .addComponent(p1Name) 
-											 			 			 .addComponent(p1Time)
-											 			 			 .addComponent(p1Walls))
-												 .addGroup(gameLayout.createSequentialGroup()
-														 			 .addComponent(white) 
-														 			 .addComponent(p1Turn))
-												 .addGroup(gameLayout.createSequentialGroup()
-		 													.addComponent(grabButton) 
-		 													.addComponent(moveButton))
-												 .addGroup(gameLayout.createSequentialGroup()
-		 													.addComponent(rotateButton)
-		 													.addComponent(undoButton)
-		 													.addComponent(resignButton)
-		 													.addComponent(validateButton))
-												 .addGroup(gameLayout.createSequentialGroup()
-															.addComponent(saveButton)
-															.addComponent(exitButton))
-												 .addComponent(explanation);
-		
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(p2Name) 
+						.addComponent(p2Time)
+						.addComponent(p2Walls))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(black) 
+						.addComponent(p2Turn))
+				.addComponent(board)
+				.addComponent(notification)
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(p1Name) 
+						.addComponent(p1Time)
+						.addComponent(p1Walls))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(white) 
+						.addComponent(p1Turn))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(grabButton) 
+						.addComponent(moveButton))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(rotateButton)
+						.addComponent(undoButton)
+						.addComponent(resignButton)
+						.addComponent(validateButton))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(saveButton)
+						.addComponent(exitButton))
+				.addComponent(explanation);
+
 		GroupLayout.Group vertical = gameLayout.createSequentialGroup()
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(p2Name) 
-				 													.addComponent(p2Time)
-				 													.addComponent(p2Walls))
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(black) 
-				 													.addComponent(p2Turn))
-				 								.addComponent(board)
-				 								.addComponent(notification)
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(p1Name) 
-				 													.addComponent(p1Time)
-				 													.addComponent(p1Walls))
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(white) 
-				 													.addComponent(p1Turn))
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(grabButton) 
-				 													.addComponent(moveButton))
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(rotateButton)
-				 													.addComponent(undoButton)
-				 													.addComponent(resignButton)
-				 													.addComponent(validateButton))
-												.addGroup(gameLayout.createParallelGroup()
-																	.addComponent(saveButton)
-																	.addComponent(exitButton))
-												.addComponent(explanation);
-		
-		
-		
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(p2Name) 
+						.addComponent(p2Time)
+						.addComponent(p2Walls))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(black) 
+						.addComponent(p2Turn))
+				.addComponent(board)
+				.addComponent(notification)
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(p1Name) 
+						.addComponent(p1Time)
+						.addComponent(p1Walls))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(white) 
+						.addComponent(p1Turn))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(grabButton) 
+						.addComponent(moveButton))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(rotateButton)
+						.addComponent(undoButton)
+						.addComponent(resignButton)
+						.addComponent(validateButton))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(saveButton)
+						.addComponent(exitButton))
+				.addComponent(explanation);
+
+
+
 		gameLayout.setHorizontalGroup(horizontal);
 		gameLayout.setVerticalGroup(vertical);
-		
+
 		getContentPane().setLayout(gameLayout);
 		pack();
 		board.requestFocusInWindow();
 	}
-	
 
-	
-	
+
+
+
 	//This is the Replay Mode. Emulates board, but none of the fancier mechanics
 	public void initReplay() { 
 		//TODO: Make it just default to white in play here- including switching player buttons
 		//& Changing current position
-		
+
 		p1Walls.setText("Walls: " +10);
 		p2Walls.setText("Walls: " + 10);
 		explanation.setBorder(BorderFactory.createLineBorder(new Color(94, 151, 219, 255)));
 		explanation.setText("Use Arrow Keys to Step through Game");
 		notification.setVisible(false);
-		
+
 		getContentPane().removeAll();	
 		setTitle("Quoridor Replay");
-		
-		
+
+
 		continueButton = new JButton("Continue");
 		if(continueButton.getActionListeners().length > 0)continueButton.removeActionListener(continueButton.getActionListeners()[0]);
 		if(stepForward.getActionListeners().length > 0)stepForward.removeActionListener(stepForward.getActionListeners()[0]);
@@ -1401,25 +1392,25 @@ public class QuoridorView extends JFrame{
 		stepBackwards.setEnabled(true);
 		jumpForward.setEnabled(true);
 		jumpBackwards.setEnabled(true);
-		
+
 		roundNum.setText("Round: 1");
 		moveNum.setText("Move: 1");
 		roundNum.setFont(new Font(roundNum.getFont().getName(), Font.BOLD, 30));
 		moveNum.setFont(new Font(moveNum.getFont().getName(), Font.BOLD, 30));
-		
+
 		//Ok the problem is this. It's starting at round 1, move 1, showing index 0
 		//Then- the game is displaying everything LESS than the current index
-		
+
 		stepForward.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				
+
 				//Implement Step Forward. 
 				////I found an easy way for adding walls. just update position and refresh.
 				//All the moves are listed in the current games Moves
 				//and were set to either WallMoves with a target Tile+direction
 				//or step moves with a player to move and target tile
-				
+
 				//Be sure to update the roundNum/moveNum JLabels. 
 
 				board.requestFocusInWindow();
@@ -1434,8 +1425,8 @@ public class QuoridorView extends JFrame{
 					roundNumber = 1;
 				}
 				//Update move number and round number
-				
-				
+
+
 				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
 				if(index >= QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size())  {
 					stepForward.setEnabled(false);
@@ -1448,32 +1439,32 @@ public class QuoridorView extends JFrame{
 				}
 				stepBackwards.setEnabled(true);
 				jumpBackwards.setEnabled(true);
-				
+
 				QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
 				Move newMove = QuoridorApplication.getQuoridor().getCurrentGame().getMove(index-1);
 				moveNum.setText("Move: " + moveNumber);
 				roundNum.setText("Round: " + roundNumber);
 				if(newMove != null) {
-					
+
 					if(newMove instanceof WallMove) {
-						
-						
+
+
 						if(p2Turn.isSelected()) {
-							
+
 							p2Walls.setText("Walls: " + (--p2WallsIn));
 							p2Turn.setSelected(false);
 							p1Turn.setSelected(true);
-							
+
 						} else if(p1Turn.isSelected()) {
-							
+
 							p1Walls.setText("Walls: " + (--p1WallsIn));
 							p2Turn.setSelected(true);
 							p1Turn.setSelected(false);
-							
+
 						}
 
 					} else if(newMove instanceof StepMove) {
-						
+
 						if(p2Turn.isSelected()) {
 							p2Turn.setSelected(false);
 							p1Turn.setSelected(true);
@@ -1494,20 +1485,20 @@ public class QuoridorView extends JFrame{
 						}
 					}
 				}
-				
+
 				refresh();
 			}
 		});
 		stepBackwards.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				
+
 				//Implement Step Backwards
 				//I found an easy way for adding walls. just update position and refresh.
 				//All the moves are listed in the current games Moves
 				//and were set to either WallMoves with a target Tile+direction
 				//or step moves with a player to move and target tile
-				
+
 				//Be sure to update the roundNum/moveNum JLabels. 
 
 				board.requestFocusInWindow();
@@ -1524,7 +1515,7 @@ public class QuoridorView extends JFrame{
 					roundNumber--;
 				}
 				//Update move number and round number
-				
+
 				int index = moveNumber*2 - (roundNumber == 1 ? 1:0) - 1;
 				if(index < 0)  {
 					stepBackwards.setEnabled(false);
@@ -1543,26 +1534,26 @@ public class QuoridorView extends JFrame{
 				moveNum.setText("Move: " + moveNumber);
 				roundNum.setText("Round: " + roundNumber);
 				if(newMove != null) {
-					
+
 					if(newMove instanceof WallMove) {
-						
-						
+
+
 						if(p2Turn.isSelected()) {
-							
+
 							p1Walls.setText("Walls: " + (++p1WallsIn));
 							p2Turn.setSelected(false);
 							p1Turn.setSelected(true);
-							
+
 						} else if(p1Turn.isSelected()) {
-							
+
 							p2Walls.setText("Walls: " + (++p2WallsIn));
 							p2Turn.setSelected(true);
 							p1Turn.setSelected(false);
-							
+
 						}
 
 					} else if(newMove instanceof StepMove) {
-						
+
 						if(p2Turn.isSelected()) {
 							p2Turn.setSelected(false);
 							p1Turn.setSelected(true);
@@ -1583,58 +1574,53 @@ public class QuoridorView extends JFrame{
 						}
 					}
 				}
-				
+
 				refresh();
 				board.requestFocusInWindow();
-				
+
 				refresh();
 			}
 		});
 		jumpForward.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				
+
 				//Implement Jump Forward. To add walls to the board, you can just update the position. 
 				//All the moves are listed in the current games Moves
 				//and were set to either WallMoves with a target Tile+direction
 				//or step moves with a player to move and target tile
-				
+
 				//Legit basically step forward but with last index every time.
 				//You should probably also set jump/step forward to false here, and enable backwards buttons
-				
+
 				//Be sure to update the roundNum/moveNum JLabels. 
 				board.requestFocusInWindow();
-				
-				// The easy/dumb way - basically click stepForwards until it's disabled
-//				while (stepForward.isEnabled()) {
-//					stepForward.doClick();
-//				}
-				
+
 				stepForward.doClick();  // step forward 1 time to avoid issues (error when jumping backwards then forward)
-				
+
 				int moveNumber = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
 				int roundNumber = Integer.parseInt(roundNum.getText().replace("Round: ", ""));
 				int p1WallsIn = Integer.parseInt(p1Walls.getText().replace("Walls: ", ""));
 				int p2WallsIn = Integer.parseInt(p2Walls.getText().replace("Walls: ", ""));
-				
-				
+
+
 				int index = moveNumber*2 - (roundNumber == 1 ? 1:0);
 				while (QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size() - 1 >= index) {  // reached end
-					
+
 					QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
 					Move newMove = QuoridorApplication.getQuoridor().getCurrentGame().getMove(index-1);
-					
+
 					// Update walls in stock for each player
 					if (newMove instanceof WallMove) {
-						
+
 						if (roundNumber == 1) {	 // player 1 turn
-								p1WallsIn--;
-							
+							p1WallsIn--;
+
 						} else if (roundNumber == 2) {  // player 2 turn
-								p2WallsIn--;
+							p2WallsIn--;
 						}
 					}
-					
+
 					// Update Round number & Move number
 					if (roundNumber == 1) {
 						roundNumber++;
@@ -1642,83 +1628,83 @@ public class QuoridorView extends JFrame{
 						moveNumber++;
 						roundNumber = 1;
 					}
-					
+
 					index = moveNumber*2 - (roundNumber == 1 ? 1:0);  // update index
 				}
-				
+
 				moveNum.setText("Move: " + moveNumber);
 				roundNum.setText("Round: " + roundNumber);
 				p1Walls.setText("Walls: " + p1WallsIn);
 				p2Walls.setText("Walls: " + p2WallsIn);
-				
+
 				// Player 1 Turn
 				if (roundNumber == 1) {
 					p1Turn.setSelected(false);
 					p2Turn.setSelected(true);
-					
-				// Player 2 Turn
+
+					// Player 2 Turn
 				} else if (roundNumber == 2) {
 					p1Turn.setSelected(true);
 					p2Turn.setSelected(false);
 				}
-				
+
 				stepForward.setEnabled(false);
 				jumpForward.setEnabled(false);
 				stepBackwards.setEnabled(true);
 				jumpBackwards.setEnabled(true);
-				
+
 				refresh();
 			}
 		});
 		jumpBackwards.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				
+
 				//Implement Jump Backwards. 
 				//See Jump Forwards for info. 
-				
+
 				//Be sure to update the roundNum/moveNum JLabels. 
 
 				board.requestFocusInWindow();
-				
+
 				int moveNumber = 1;
 				int roundNumber = 1;
 				int p1WallsIn = 10;
 				int p2WallsIn = 10;
-			
+
 				//Update move number and round number
-				
+
 				int index = 0;
-				
+
 				stepBackwards.setEnabled(false);
 				jumpBackwards.setEnabled(false);
-				
+
 				stepForward.setEnabled(true);
 				jumpForward.setEnabled(true);
-				
+
 				QuoridorApplication.getQuoridor().getCurrentGame().setCurrentPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPosition(index));
 				System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
-				
+
 				moveNum.setText("Move: " + moveNumber);
 				roundNum.setText("Round: " + roundNumber);
 				p1Walls.setText("Walls: " + p1WallsIn);
 				p2Walls.setText("Walls: " + p2WallsIn);
 				p1Turn.setSelected(true);
 				p2Turn.setSelected(false);
-				
+
 				refresh();
 				board.requestFocusInWindow();
-				
+
 				// TODO: find a better way
 				while (stepBackwards.isEnabled()) {
 					stepBackwards.doClick();
 				}
-				
+
 				stepForward.setEnabled(true);
 				jumpForward.setEnabled(true);
 				stepBackwards.setEnabled(false);
 				jumpBackwards.setEnabled(false);
-				
+
 				refresh();
 			}
 		});
@@ -1733,27 +1719,27 @@ public class QuoridorView extends JFrame{
 					notifyInvalid("Cannot continue a finished game");
 					return;
 				}
-				
-				
+
+
 				//This seconds stuff hopefully shouldn't do anything
 				//Psssshhhhhh innefficiency? Did you mean to say practicality?
 				whiteSeconds = 60*10;
 				blackSeconds = 60*10;
 				p1Time.setText("Time: "+10+" m " + 0 +" s ");
 				p2Time.setText("Time: "+10+" m " + 0 +" s ");
-				
+
 				QuoridorController.setTotaltime(10, 0);
-				
+
 				initGame();
-				
+
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
 						.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
-							p2Turn.setSelected(true);
-							p1Turn.setSelected(false);
-						}
-				
+					p2Turn.setSelected(true);
+					p1Turn.setSelected(false);
+				}
+
 				//Add the moves up to this point on the board
-				
+
 				int moveNumber = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
 				int roundNumber = Integer.parseInt(roundNum.getText().replace("Round: ", ""));
 				//int moveNumber = moveNumber + (roundNumber-1)*2; // 0-1 -> 0. 1-1 -> 1
@@ -1763,25 +1749,25 @@ public class QuoridorView extends JFrame{
 					if(m.getMoveNumber() > moveNumber)  break;
 					if(m.getMoveNumber() == moveNumber && m.getRoundNumber() > roundNumber) break;
 					//3:2 break if 4:1  3:1 break if 3:2
-					
+
 					if(m instanceof WallMove) {
 						WallMove w = (WallMove) m;
 						JPanel newWall = new JPanel();
 						int row = w.getTargetTile().getRow();
-				    	int col = w.getTargetTile().getColumn();
-					    refresh(); 
-					    if(w.getWallDirection() == Direction.Vertical) {
-					    	
-					    	newWall.setSize(5, 75);
-					    	newWall.setLocation( 
-								     board.getX() - 5 + col*40, 
-								     board.getY() + row * 40 - 40);
-					      } else {
-					    	  newWall.setSize(75, 5);
-					    	  newWall.setLocation( 
-								        board.getX() + col*40 - 40, 
-								        board.getY() - 5 + row * 40);
-					      }
+						int col = w.getTargetTile().getColumn();
+						refresh(); 
+						if(w.getWallDirection() == Direction.Vertical) {
+
+							newWall.setSize(5, 75);
+							newWall.setLocation( 
+									board.getX() - 5 + col*40, 
+									board.getY() + row * 40 - 40);
+						} else {
+							newWall.setSize(75, 5);
+							newWall.setLocation( 
+									board.getX() + col*40 - 40, 
+									board.getY() - 5 + row * 40);
+						}
 						newWall.setBackground(Color.BLACK);
 						getContentPane().add(newWall);
 					} else {
@@ -1792,21 +1778,21 @@ public class QuoridorView extends JFrame{
 							QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().setTile(m.getTargetTile());
 						}
 					}
-					
+
 				}
 				//Add remaining moves back in stock
 				QuoridorController.addReplayWallsBack(moveNumber, roundNumber);
-				
+
 
 				p1Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
 				p2Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size());
-				
-				
+
+
 				board.requestFocusInWindow();
 				refresh();
 			}
 		});
-		
+
 		exitButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1816,13 +1802,13 @@ public class QuoridorView extends JFrame{
 				refresh();
 			}
 		});
-		
-		
-		
 
-		
-		
-		
+
+
+
+
+
+
 		//These are some things I'll need (component, layout, board)
 		//I have a method- switchPlayerButton - that will switch the p1Turn/p2Turn
 		p1Turn.setEnabled(false);
@@ -1842,17 +1828,17 @@ public class QuoridorView extends JFrame{
 				g.setStroke(new BasicStroke(2));
 				for(int i = 0; i < 81; i++) {
 					if(outlineTile[i] ) {
-						
-						
+
+
 						g.fillRect((i % 9)*width,
 								(i/9)*height,
 								width - 5, height - 5);
-						
-						
+
+
 						g.setColor(new Color(0, 255, 0));
 						g.drawRect((i % 9)*width,
-									(i/9)*height,
-									width - 5, height - 5);
+								(i/9)*height,
+								width - 5, height - 5);
 						g.setColor(new Color(201, 156, 84));
 					} else {
 						g.fillRect((i % 9)*width,
@@ -1861,7 +1847,7 @@ public class QuoridorView extends JFrame{
 					}
 				}
 				g.setStroke(new BasicStroke(1));
-				
+
 				PlayerPosition whitePos;
 				PlayerPosition blackPos;
 				if(QuoridorApplication.getQuoridor().getCurrentGame() != null) {
@@ -1874,20 +1860,20 @@ public class QuoridorView extends JFrame{
 				if(whitePos != null) {
 					g.setColor(new Color(255, 255, 255));
 					g.fillOval( whitePos.getTile().getColumn() * 40 - 35, 
-								whitePos.getTile().getRow() * 40 - 35, 
-								25, 25);
+							whitePos.getTile().getRow() * 40 - 35, 
+							25, 25);
 				}
 				if(blackPos != null) {
 					g.setColor(new Color(0, 0, 0));
 					g.fillOval( blackPos.getTile().getColumn() * 40 - 35, 
-								blackPos.getTile().getRow() * 40 - 35, 
-								25, 25);
-					
+							blackPos.getTile().getRow() * 40 - 35, 
+							25, 25);
+
 				}
 				int MoveNum = Integer.parseInt(moveNum.getText().replace("Move: ", ""));
 				int RoundNum = Integer.parseInt(roundNum.getText().replace("Round: ", ""));
 				int index = MoveNum*2 - (RoundNum == 1 ? 1:0) - 1;
-				
+
 				for(int i = 0; i < index; i++) {
 					WallMove w;
 					if(QuoridorApplication.getQuoridor().getCurrentGame().getMove(i) instanceof WallMove) {
@@ -1904,179 +1890,178 @@ public class QuoridorView extends JFrame{
 					}
 				}
 				
-				
 			}
 		};
-		
+
 		board.setPreferredSize(new Dimension(40*9, 40*9));
 		board.setFocusable(true);
-		
+
 
 		//Defining action listeners- updates screen with components after each
 		board.addKeyListener(new KeyListener() {
-					public void keyTyped(KeyEvent e) {}
-					public void keyPressed(KeyEvent e) {}
-					public void keyReleased(KeyEvent e) {
-						if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-							//
-						} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
-							jumpForward.doClick();
-						} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
-							jumpBackwards.doClick();
-						} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
-							stepForward.doClick();
-						} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
-							stepBackwards.doClick();
-						}	
-					}
-				});	
-		
+			public void keyTyped(KeyEvent e) {}
+			public void keyPressed(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					//
+				} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W) {
+					jumpForward.doClick();
+				} else if (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S) {
+					jumpBackwards.doClick();
+				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D) {
+					stepForward.doClick();
+				} else if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A) {
+					stepBackwards.doClick();
+				}	
+			}
+		});	
+
 		board.requestFocusInWindow();
-		
+
 		p1Turn.setBackground(new Color(191, 222, 217, 255));
 		p2Turn.setBackground(new Color(191, 222, 217, 255));
 		//Just throwing everything in layout in an organized way
 		gameLayout.setAutoCreateGaps(true);
 		gameLayout.setAutoCreateContainerGaps(true);
-		
+
 		GroupLayout.Group horizontal = gameLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-												 .addGroup(gameLayout.createSequentialGroup()
-																	.addComponent(moveNum)
-																	.addComponent(roundNum))
-												 .addGroup(gameLayout.createSequentialGroup()
-														 			 .addComponent(p2Name)
-														 			 .addComponent(p2Walls))
-												 .addGroup(gameLayout.createSequentialGroup()
-														 			 .addComponent(black) 
-														 			 .addComponent(p2Turn))
-												 .addComponent(board)
-												 .addComponent(notification)
-												 .addGroup(gameLayout.createSequentialGroup()
-											 			 			 .addComponent(p1Name) 
-											 			 			 .addComponent(p1Walls))
-												 .addGroup(gameLayout.createSequentialGroup()
-														 			 .addComponent(white) 
-														 			 .addComponent(p1Turn))
-												 .addGroup(gameLayout.createSequentialGroup()
-														 			 .addComponent(jumpBackwards)
-														 			.addComponent(stepBackwards)
-														 			.addComponent(stepForward)
-														 			.addComponent(jumpForward))
-												 .addGroup(gameLayout.createSequentialGroup()			
-											 						 .addComponent(exitButton)
-											 						 .addComponent(continueButton))
-												 .addComponent(explanation);
-		
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(moveNum)
+						.addComponent(roundNum))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(p2Name)
+						.addComponent(p2Walls))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(black) 
+						.addComponent(p2Turn))
+				.addComponent(board)
+				.addComponent(notification)
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(p1Name) 
+						.addComponent(p1Walls))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(white) 
+						.addComponent(p1Turn))
+				.addGroup(gameLayout.createSequentialGroup()
+						.addComponent(jumpBackwards)
+						.addComponent(stepBackwards)
+						.addComponent(stepForward)
+						.addComponent(jumpForward))
+				.addGroup(gameLayout.createSequentialGroup()			
+						.addComponent(exitButton)
+						.addComponent(continueButton))
+				.addComponent(explanation);
+
 		GroupLayout.Group vertical = gameLayout.createSequentialGroup()
-												.addGroup(gameLayout.createParallelGroup()
-																	.addComponent(moveNum)
-																	.addComponent(roundNum))
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(p2Name) 
-				 													.addComponent(p2Walls))
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(black) 
-				 													.addComponent(p2Turn))
-				 								.addComponent(board)
-				 								.addComponent(notification)
-				 								.addGroup(gameLayout.createParallelGroup()
-				 													.addComponent(p1Name) 
-				 													.addComponent(p1Walls))
-				 								.addGroup(gameLayout.createParallelGroup()
-											 			 			.addComponent(white) 
-											 			 			.addComponent(p1Turn))
-				 								.addGroup(gameLayout.createParallelGroup()
-											 			 			.addComponent(jumpBackwards)
-											 			 			.addComponent(stepBackwards)
-											 			 			.addComponent(stepForward)
-											 			 			.addComponent(jumpForward))
-				 								.addGroup(gameLayout.createParallelGroup()			
-				 													.addComponent(exitButton)
-				 													.addComponent(continueButton))
-												.addComponent(explanation);
-		
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(moveNum)
+						.addComponent(roundNum))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(p2Name) 
+						.addComponent(p2Walls))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(black) 
+						.addComponent(p2Turn))
+				.addComponent(board)
+				.addComponent(notification)
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(p1Name) 
+						.addComponent(p1Walls))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(white) 
+						.addComponent(p1Turn))
+				.addGroup(gameLayout.createParallelGroup()
+						.addComponent(jumpBackwards)
+						.addComponent(stepBackwards)
+						.addComponent(stepForward)
+						.addComponent(jumpForward))
+				.addGroup(gameLayout.createParallelGroup()			
+						.addComponent(exitButton)
+						.addComponent(continueButton))
+				.addComponent(explanation);
+
 		gameLayout.setHorizontalGroup(horizontal);
 		gameLayout.setVerticalGroup(vertical);
-		
+
 		getContentPane().setLayout(gameLayout);
 		pack();
 	}
-	
+
 	class MouseEventListener implements MouseInputListener{
 		Point origin;
 		JPanel wall;
 		public MouseEventListener(JPanel wall) {
 			this.wall=wall;
-			
+
 			origin = new Point(board.getX(), board.getY());
 		}
-		 @Override
-		    public void mouseClicked(MouseEvent e) {}
-		 
-		    /**
-		    * è„—å½•è„™éˆ¥âˆ¶å†£ï¿½æ¯­å�®æµŽå…£çŠ†å…Ÿè¶�å�®æ³µå…Ÿî€¢å�®æ‡Šå�®ç–µå†¿æ‹·è„™éˆ¥æ¯­å…£çŠ†å�®æ³µå�®å¾—å†£ï¿½ç�»å�®å¾—å…Ÿï¿½
-		    */
-		    @Override
-		    public void mousePressed(MouseEvent e) {
-		      origin.x = e.getX(); 
-		      origin.y = e.getY();
-		      
-		    }
-		 
-		    @Override
-		    public void mouseReleased(MouseEvent e) {}
-		    @Override
-		    public void mouseEntered(MouseEvent e) {
-		    	this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-		    }    
-		    @Override
-		    public void mouseExited(MouseEvent e) {
-		    	this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		    }
-		 
-		    @Override
-		    public void mouseDragged(MouseEvent e) {
-		      board.requestFocus();
-		      Point p = this.wall.getLocation();
-		      int relX, relY;
-		      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-		    	  relX = p.x + (e.getX() - origin.x) - board.getX() - 15;
-			      relY = p.y + (e.getY() - origin.y) - board.getY()  + 15;
-		      } else {
-		    	  relX = p.x + (e.getX() - origin.x) - board.getX() + 15;
-			      relY = p.y + (e.getY() - origin.y) - board.getY() - 15;
-		      }
-		      
-		      if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
-		    		  == GameStatus.Running &&
-		    		  QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
-		    	  int row = relY / 40 + 1;
-		    	  int col = relX / 40 + 1;
-		    	  if(row < 1 || row > 9) return;
-		    	  if(col < 1 || col > 9) return;
-		    	  if(!QuoridorController.moveWall(QuoridorController.findTile(row, col))) {
-		    		  return;
-		    	  }
-		    	  row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
-		    	  col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
-			      refresh(); 
-			      if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
-			    	  this.wall.setLocation( 
-						        board.getX() - 5 + col*40, 
-						        board.getY() + row * 40 - 40);
-			      } else {
-			    	  this.wall.setLocation( 
-						        board.getX() + col*40 - 40, 
-						        board.getY() - 5 + row * 40);
-			      }
-			     
-		      }
-		    }
-		 
-		    @Override
-		    public void mouseMoved(MouseEvent e) { }
-		     
-		  }
+		@Override
+		public void mouseClicked(MouseEvent e) {}
+
+		/**
+		 * è„—å½•è„™éˆ¥âˆ¶å†£ï¿½æ¯­å�®æµŽå…£çŠ†å…Ÿè¶�å�®æ³µå…Ÿî€¢å�®æ‡Šå�®ç–µå†¿æ‹·è„™éˆ¥æ¯­å…£çŠ†å�®æ³µå�®å¾—å†£ï¿½ç�»å�®å¾—å…Ÿï¿½
+		 */
+		@Override
+		public void mousePressed(MouseEvent e) {
+			origin.x = e.getX(); 
+			origin.y = e.getY();
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {}
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+		}    
+		@Override
+		public void mouseExited(MouseEvent e) {
+			this.wall.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			board.requestFocus();
+			Point p = this.wall.getLocation();
+			int relX, relY;
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+				relX = p.x + (e.getX() - origin.x) - board.getX() - 15;
+				relY = p.y + (e.getY() - origin.y) - board.getY()  + 15;
+			} else {
+				relX = p.x + (e.getX() - origin.x) - board.getX() + 15;
+				relY = p.y + (e.getY() - origin.y) - board.getY() - 15;
+			}
+
+			if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus()
+					== GameStatus.Running &&
+					QuoridorApplication.getQuoridor().getCurrentGame().hasWallMoveCandidate()) {
+				int row = relY / 40 + 1;
+				int col = relX / 40 + 1;
+				if(row < 1 || row > 9) return;
+				if(col < 1 || col > 9) return;
+				if(!QuoridorController.moveWall(QuoridorController.findTile(row, col))) {
+					return;
+				}
+				row = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow();
+				col = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn();
+				refresh(); 
+				if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Vertical) {
+					this.wall.setLocation( 
+							board.getX() - 5 + col*40, 
+							board.getY() + row * 40 - 40);
+				} else {
+					this.wall.setLocation( 
+							board.getX() + col*40 - 40, 
+							board.getY() - 5 + row * 40);
+				}
+
+			}
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) { }
+
+	}
 
 	//Not implemented, but eventually was where I was planning on doing the timer stuff.
 	//I just don't know how
@@ -2085,7 +2070,7 @@ public class QuoridorView extends JFrame{
 			whiteSeconds--;
 			p1Time.setText("Time: " + (whiteSeconds / 60) + " m " + (whiteSeconds % 60) +" s ");
 			if(QuoridorApplication.getQuoridor().hasCurrentGame())
-			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(whiteSeconds * 1000));
+				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(whiteSeconds * 1000));
 		} else {
 			blackSeconds--;
 			p2Time.setText("Time: "+(blackSeconds / 60)+" m " + (blackSeconds % 60) +" s ");
@@ -2094,19 +2079,19 @@ public class QuoridorView extends JFrame{
 		}
 		refresh();
 	}
-	
+
 	//This is just to refresh the screen with any changes to the components
 	public void refresh() {
 		if(board != null) board.repaint();
-		
+
 		SwingUtilities.updateComponentTreeUI(this);
 		pack();
 	}
-	
-	
+
+
 	//Displays red text on the screen with a given message
 	public void notifyInvalid(String message) {
-		
+
 		notification.setText(message);
 		notification.setForeground(Color.RED);
 		notification.setVisible(true);
@@ -2114,14 +2099,14 @@ public class QuoridorView extends JFrame{
 	}
 	//Displays red text on the screen with a given message
 	public void notifyValid(String message) {
-		
+
 		notification.setText(message);
 		notification.setForeground(Color.GREEN);
 		notification.setForeground(new Color(21, 148, 38, 255));
 		notification.setVisible(true);
 		refresh();
 	}
-	
+
 	//Creates a confirmation window. Idk how to pass a method, so this is specific to SaveAction
 	public void confirmSaveAction() {
 
@@ -2130,7 +2115,7 @@ public class QuoridorView extends JFrame{
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
-		
+
 
 		JLabel notification = new JLabel();
 		JButton yesButton = new JButton("Yes");
@@ -2142,27 +2127,27 @@ public class QuoridorView extends JFrame{
 		notification.setText("Saving will override previous save data. Do you wish to continue?");
 		notification.setForeground(Color.red);
 		GroupLayout.Group horiz = layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-										.addGroup(layout.createSequentialGroup()
-														.addComponent(gameNameExplain)
-														.addComponent(gameName)
-											     )
-										.addGroup(layout.createSequentialGroup()
-														.addComponent(saveButton)
-														.addComponent(exitButton)	   
-												 );
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(gameNameExplain)
+						.addComponent(gameName)
+						)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(saveButton)
+						.addComponent(exitButton)	   
+						);
 		GroupLayout.Group vert = layout.createSequentialGroup()
-									   .addGroup(layout.createParallelGroup()
-											   		   .addComponent(gameNameExplain)
-											   		   .addComponent(gameName)
-											    )
-									   .addGroup(layout.createParallelGroup()
-											   		   .addComponent(saveButton)
-											   		   .addComponent(exitButton)	   
-											    );
+				.addGroup(layout.createParallelGroup()
+						.addComponent(gameNameExplain)
+						.addComponent(gameName)
+						)
+				.addGroup(layout.createParallelGroup()
+						.addComponent(saveButton)
+						.addComponent(exitButton)	   
+						);
 		layout.setHorizontalGroup(horiz);
 		layout.setVerticalGroup(vert);
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {saveButton, exitButton});
-		
+
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2175,55 +2160,55 @@ public class QuoridorView extends JFrame{
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
-		
+
 		noButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				confirmFrame.remove(notification);
 				layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-												.addGroup(layout.createSequentialGroup()
-																.addComponent(gameNameExplain)
-																.addComponent(gameName))
-												.addGroup(layout.createSequentialGroup()
-																.addComponent(saveButton)
-																.addComponent(exitButton)));
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(gameNameExplain)
+								.addComponent(gameName))
+						.addGroup(layout.createSequentialGroup()
+								.addComponent(saveButton)
+								.addComponent(exitButton)));
 				layout.setVerticalGroup(layout.createSequentialGroup()
-												.addGroup(layout.createParallelGroup()
-																.addComponent(gameNameExplain)
-																.addComponent(gameName))
-												.addGroup(layout.createParallelGroup()
-																.addComponent(saveButton)
-																.addComponent(exitButton)));
+						.addGroup(layout.createParallelGroup()
+								.addComponent(gameNameExplain)
+								.addComponent(gameName))
+						.addGroup(layout.createParallelGroup()
+								.addComponent(saveButton)
+								.addComponent(exitButton)));
 				SwingUtilities.updateComponentTreeUI(confirmFrame);
 				confirmFrame.pack();
 				File f = new File(fileName);
 				f.setLastModified(1000000000); //TODO: Remove all the f stuff
 			}
 		});
-		
-        confirmFrame.setFocusable(true);
-        
+
+		confirmFrame.setFocusable(true);
+
 		confirmFrame.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {}
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
-				
+
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					saveButton.doClick();
 				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					exitButton.doClick();
 				}}});
-		
+
 		saveButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				String name = gameName.getText();
 				if(name.equals("")) {
 					name = QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId() + ".dat";
-		
+
 				} else if(name.length() <=  4 || 
 						(!name.substring(name.length() - 4, name.length()).equals(".dat") &&
-						!name.substring(name.length() - 4, name.length()).equals(".mov"))) {
+								!name.substring(name.length() - 4, name.length()).equals(".mov"))) {
 					name += ".dat";
 				}
 				fileName = name;
@@ -2232,20 +2217,20 @@ public class QuoridorView extends JFrame{
 					layout.replace(gameNameExplain, notification);
 					layout.replace(saveButton, yesButton);
 					layout.replace(exitButton, noButton);
-					
+
 					layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-														.addComponent(notification)
-														.addGroup(layout.createSequentialGroup()
-																		.addComponent(yesButton)
-																		.addComponent(noButton)));
+							.addComponent(notification)
+							.addGroup(layout.createSequentialGroup()
+									.addComponent(yesButton)
+									.addComponent(noButton)));
 					layout.setVerticalGroup(layout.createSequentialGroup()
-													.addComponent(notification)
-													.addGroup(layout.createParallelGroup()
-																	.addComponent(yesButton)
-																	.addComponent(noButton)));
-					
-					
-					
+							.addComponent(notification)
+							.addGroup(layout.createParallelGroup()
+									.addComponent(yesButton)
+									.addComponent(noButton)));
+
+
+
 					SwingUtilities.updateComponentTreeUI(confirmFrame);
 					confirmFrame.pack();
 				} else {	
@@ -2259,7 +2244,7 @@ public class QuoridorView extends JFrame{
 				}
 			}
 		});
-		
+
 		exitButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2268,21 +2253,21 @@ public class QuoridorView extends JFrame{
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
-		
-		
+
+
 		confirmFrame.getContentPane().setLayout(layout);
 		confirmFrame.pack();
 		confirmFrame.setVisible(true);
-		
+
 	}
 	public void confirmExitAction() {
 		confirmFrame.getContentPane().removeAll();
 		JLabel notification = new JLabel("You have unsaved data. Do you wish to continue?");
 		notification.setForeground(Color.red);
 		JButton yesButton = new JButton("Yes");
-		
+
 		confirmFrame.setFocusable(true);
-        
+
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2304,39 +2289,39 @@ public class QuoridorView extends JFrame{
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
-		
+
 		confirmFrame.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {}
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
-				
+
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					yesButton.doClick();
 				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					noButton.doClick();
 				}}});
-		
+
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-										.addComponent(notification)
-										.addGroup(layout.createSequentialGroup()
-												  .addComponent(yesButton)
-												  .addComponent(noButton)	   
-																	   ));
+				.addComponent(notification)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(yesButton)
+						.addComponent(noButton)	   
+						));
 		layout.setVerticalGroup(layout.createSequentialGroup()
 				.addComponent(notification)
 				.addGroup(layout.createParallelGroup()
-							.addComponent(yesButton)
-							.addComponent(noButton)	   
-							   ));
+						.addComponent(yesButton)
+						.addComponent(noButton)	   
+						));
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
 		confirmFrame.getContentPane().setLayout(layout);
 		confirmFrame.pack();
 		confirmFrame.setVisible(true);
 	}
-	
+
 	public void confirmExistingName() {
 		confirmFrame.getContentPane().removeAll();
 		JLabel notification = new JLabel("The selected user name already exists. Continue?");
@@ -2345,7 +2330,7 @@ public class QuoridorView extends JFrame{
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				
+
 				QuoridorController.startGame();
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setUser(QuoridorController.findUserName(whiteName.getText()));
 				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setUser(QuoridorController.findUserName(blackName.getText()));
@@ -2364,7 +2349,7 @@ public class QuoridorView extends JFrame{
 					p2Time.setText("Time: "+10+" m " + 0 +" s ");
 					QuoridorController.setTotaltime(10, 0);
 				}
-				
+
 				QuoridorController.initializeBoard();
 				initGame();		
 				newGame.removeActionListener(newGame.getActionListeners()[0]);
@@ -2378,59 +2363,59 @@ public class QuoridorView extends JFrame{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
-				
+
 			}
 		});
-		
+
 		confirmFrame.setFocusable(true);
-		
+
 		confirmFrame.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {}
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
-				
+
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					yesButton.doClick();
 				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					noButton.doClick();
 				}}});
-		
+
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-										.addComponent(notification)
-										.addGroup(layout.createSequentialGroup()
-												  .addComponent(yesButton)
-												  .addComponent(noButton)	   
-																	   ));
+				.addComponent(notification)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(yesButton)
+						.addComponent(noButton)	   
+						));
 		layout.setVerticalGroup(layout.createSequentialGroup()
-									  .addComponent(notification)
-									  .addGroup(layout.createParallelGroup()
-											  		  .addComponent(yesButton)
-											  		  .addComponent(noButton)	   
-							   ));
+				.addComponent(notification)
+				.addGroup(layout.createParallelGroup()
+						.addComponent(yesButton)
+						.addComponent(noButton)	   
+						));
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
 		confirmFrame.getContentPane().setLayout(layout);
 		confirmFrame.pack();
 		confirmFrame.setVisible(true);
 	}
-	
-	
+
+
 	public void confirmDeleteFile(String fileName) {
 		confirmFrame.getContentPane().removeAll();
 		JLabel notification = new JLabel("<html><center>Are you sure you wish to delete this file?" +
-										"<br> Deleted Files can not be recovered.</center></html>", SwingConstants.CENTER);
+				"<br> Deleted Files can not be recovered.</center></html>", SwingConstants.CENTER);
 		notification.setForeground(Color.red);
 		JButton yesButton = new JButton("Yes");
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				QuoridorController.deleteFile(fileName);	
-				
+
 				//Ah, that's why. This isn't running after the confirmDelete
 				File dir = new File(System.getProperty("user.dir"));
-				
+
 				File[] saveFiles = dir.listFiles();
 				String name;
 				DefaultListModel<String> l = new DefaultListModel<>();
@@ -2439,117 +2424,117 @@ public class QuoridorView extends JFrame{
 					for(File f : saveFiles) {
 						name = f.getName();
 						if( name.length() > 4 && (name.substring(name.length() - 4, name.length()).equals(".dat") 
-							||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
+								||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
 							l.addElement(f.getName());
 						}
-						
+
 					}
 				}
 				JList<String> fileList = new JList<String>(l);
-				
-				 fileList.addKeyListener(new java.awt.event.KeyListener() {
-						public void keyPressed(java.awt.event.KeyEvent evt) {}
-						public void keyTyped(java.awt.event.KeyEvent evt) {}
-						@Override
-						public void keyReleased(java.awt.event.KeyEvent evt) {
-							if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-									if(QuoridorController.isEnded(fileList.getSelectedValue())) {
-										replayGame.doClick();
-										return;
-									}
-									if(QuoridorController.loadGame(fileList.getSelectedValue())) {
-				
-										File f = new File(fileList.getSelectedValue()); 
-										f.setLastModified(0);
-										
-										p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
-										p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
-										
-										whiteSeconds = 60*10;
-										blackSeconds = 60*10;
-										p1Time.setText("Time: "+10+" m " + 0 +" s ");
-										p2Time.setText("Time: "+10+" m " + 0 +" s ");
-										
-										
-										
-										QuoridorController.setTotaltime(10, 0);
-										
-										initGame();
-										
-										if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
-												.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
-													p2Turn.setSelected(true);
-													p1Turn.setSelected(false);
-												}
-										
-										for(WallMove w : QuoridorController.getWalls()) {
-											
-											JPanel newWall = new JPanel();
-											int row = w.getTargetTile().getRow();
-									    	int col = w.getTargetTile().getColumn();
-										    refresh(); 
-										    if(w.getWallDirection() == Direction.Vertical) {
-										    	
-										    	newWall.setSize(5, 75);
-										    	newWall.setLocation( 
-													     board.getX() - 5 + col*40, 
-													     board.getY() + row * 40 - 40);
-										      } else {
-										    	  newWall.setSize(75, 5);
-										    	  newWall.setLocation( 
-													        board.getX() + col*40 - 40, 
-													        board.getY() - 5 + row * 40);
-										      }
-											newWall.setBackground(Color.BLACK);
-											getContentPane().add(newWall);
-											
-										}
-										board.requestFocusInWindow();
-										fileList.removeKeyListener(fileList.getKeyListeners()[0]);
-									} else {
-										GroupLayout layout = new GroupLayout(getContentPane());
-										getContentPane().setLayout(layout);
-										layout.setAutoCreateGaps(true);
-										layout.setAutoCreateContainerGaps(true);
-										GroupLayout.Group horizontal = layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																			.addComponent(title)
-																			.addComponent(newGame)
-																			.addComponent(loadGame);
-										GroupLayout.Group vertical = layout.createSequentialGroup()
-												  						   .addComponent(title)
-												  						   .addComponent(newGame)
-												  						   .addComponent(loadGame);
-										
-										
-										notifyInvalid("Load File Error- Invalid Position");
-										layout.setHorizontalGroup(layout.createSequentialGroup()
-																		.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-																						.addGroup(horizontal)
-																						.addComponent(notification))
-																		.addComponent(filePane));
-										layout.setVerticalGroup(layout.createParallelGroup()
-																.addGroup(layout.createSequentialGroup()
-																				.addGroup(vertical)
-																				.addComponent(notification))
-																.addComponent(filePane));
 
-										getContentPane().setLayout(layout);
-										pack();
-									}
-				
-									
-								}
-							if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-								confirmDeleteFile(fileList.getSelectedValue());
+				fileList.addKeyListener(new java.awt.event.KeyListener() {
+					public void keyPressed(java.awt.event.KeyEvent evt) {}
+					public void keyTyped(java.awt.event.KeyEvent evt) {}
+					@Override
+					public void keyReleased(java.awt.event.KeyEvent evt) {
+						if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
+							if(QuoridorController.isEnded(fileList.getSelectedValue())) {
+								replayGame.doClick();
+								return;
 							}
+							if(QuoridorController.loadGame(fileList.getSelectedValue())) {
+
+								File f = new File(fileList.getSelectedValue()); 
+								f.setLastModified(0);
+
+								p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
+								p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
+
+								whiteSeconds = 60*10;
+								blackSeconds = 60*10;
+								p1Time.setText("Time: "+10+" m " + 0 +" s ");
+								p2Time.setText("Time: "+10+" m " + 0 +" s ");
+
+
+
+								QuoridorController.setTotaltime(10, 0);
+
+								initGame();
+
+								if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
+										.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
+									p2Turn.setSelected(true);
+									p1Turn.setSelected(false);
+								}
+
+								for(WallMove w : QuoridorController.getWalls()) {
+
+									JPanel newWall = new JPanel();
+									int row = w.getTargetTile().getRow();
+									int col = w.getTargetTile().getColumn();
+									refresh(); 
+									if(w.getWallDirection() == Direction.Vertical) {
+
+										newWall.setSize(5, 75);
+										newWall.setLocation( 
+												board.getX() - 5 + col*40, 
+												board.getY() + row * 40 - 40);
+									} else {
+										newWall.setSize(75, 5);
+										newWall.setLocation( 
+												board.getX() + col*40 - 40, 
+												board.getY() - 5 + row * 40);
+									}
+									newWall.setBackground(Color.BLACK);
+									getContentPane().add(newWall);
+
+								}
+								board.requestFocusInWindow();
+								fileList.removeKeyListener(fileList.getKeyListeners()[0]);
+							} else {
+								GroupLayout layout = new GroupLayout(getContentPane());
+								getContentPane().setLayout(layout);
+								layout.setAutoCreateGaps(true);
+								layout.setAutoCreateContainerGaps(true);
+								GroupLayout.Group horizontal = layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+										.addComponent(title)
+										.addComponent(newGame)
+										.addComponent(loadGame);
+								GroupLayout.Group vertical = layout.createSequentialGroup()
+										.addComponent(title)
+										.addComponent(newGame)
+										.addComponent(loadGame);
+
+
+								notifyInvalid("Load File Error- Invalid Position");
+								layout.setHorizontalGroup(layout.createSequentialGroup()
+										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+												.addGroup(horizontal)
+												.addComponent(notification))
+										.addComponent(filePane));
+								layout.setVerticalGroup(layout.createParallelGroup()
+										.addGroup(layout.createSequentialGroup()
+												.addGroup(vertical)
+												.addComponent(notification))
+										.addComponent(filePane));
+
+								getContentPane().setLayout(layout);
+								pack();
+							}
+
+
 						}
-					});
-				
-				
-				
+						if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+							confirmDeleteFile(fileList.getSelectedValue());
+						}
+					}
+				});
+
+
+
 				filePane.setViewportView(fileList);
 				refresh();
-				
+
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
@@ -2560,48 +2545,48 @@ public class QuoridorView extends JFrame{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
-				
+
 			}
 		});
-		
+
 		confirmFrame.setFocusable(true);
-		
+
 		confirmFrame.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {}
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
-				
+
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 					yesButton.doClick();
 				} else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					noButton.doClick();
 				}}});
-		
+
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-										.addComponent(notification)
-										.addGroup(layout.createSequentialGroup()
-												  .addComponent(yesButton)
-												  .addComponent(noButton)	   
-																	   ));
+				.addComponent(notification)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(yesButton)
+						.addComponent(noButton)	   
+						));
 		layout.setVerticalGroup(layout.createSequentialGroup()
-									  .addComponent(notification)
-									  .addGroup(layout.createParallelGroup()
-											  		  .addComponent(yesButton)
-											  		  .addComponent(noButton)	   
-							   ));
+				.addComponent(notification)
+				.addGroup(layout.createParallelGroup()
+						.addComponent(yesButton)
+						.addComponent(noButton)	   
+						));
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
 		confirmFrame.getContentPane().setLayout(layout);
 		confirmFrame.pack();
 		confirmFrame.setVisible(true);
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	//This will clear the action listers assigned to the various buttons
 	private void clearActionListeners() {
 		//Clear action listeners
@@ -2622,7 +2607,7 @@ public class QuoridorView extends JFrame{
 		if(board.getKeyListeners().length > 0)board.removeKeyListener(board.getKeyListeners()[0]);
 		if(board.getMouseMotionListeners().length > 0)board.removeMouseMotionListener(board.getMouseMotionListeners()[0]);
 	}
-	
+
 	//Just toggling radio buttons
 	public void switchPlayerButton() {
 		Arrays.fill(outlineTile, false);
@@ -2635,26 +2620,26 @@ public class QuoridorView extends JFrame{
 			p2Turn.setSelected(false);
 		}
 		explanation.setText("<html><center>Press 'g' to grab a wall"
-						+  "<br>Or press 'm' to move</center></html>");
+				+  "<br>Or press 'm' to move</center></html>");
 		refresh();
 	}
-	
+
 	public void DropWall() {
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
 			if(QuoridorController.wallIsValid() && QuoridorController.dropWall()) {
-				
+
 				if(wall != null) getContentPane().remove(wall);
 				wall = null;
-				
+
 				switchPlayerButton();
 			} else {
 				notifyInvalid("Invalid Wall Placement");
 			}
-			
+
 		}
 	}
 	public void RotateWall() {
-		
+
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getMoveMode() == MoveMode.WallMove) {
 			QuoridorController.rotateWall();
 			if(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getWallDirection() == Direction.Horizontal) {
@@ -2666,22 +2651,22 @@ public class QuoridorView extends JFrame{
 					wall.setBounds(wall.getX() + 35, wall.getY() - 35, 5, 75);
 				}
 			}
-			
+
 			refresh();
 		}
 	}
 	public void movePlayer(MoveDirection dir) {
 		white.setDir(dir);
 		black.setDir(dir);
-		
-		
-		
+
+
+
 		if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().equals(
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
 			if(white.move()) {
 				switchPlayerButton();
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow() == 1) {
-				
+
 					getResult();
 				}
 			}
@@ -2690,34 +2675,34 @@ public class QuoridorView extends JFrame{
 		} else {
 			if(black.move())  {
 				switchPlayerButton();
-				
+
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile().getRow() == 9) {
-			
+
 					getResult();
 				}
-				
+
 			}
 			else notifyInvalid("Invalid Player Move");
 		}
 		QuoridorApplication.getQuoridor().getCurrentGame().setMoveMode(MoveMode.PlayerMove);
-		
+
 
 	}
 	public void getResult() {
 		confirmFrame.getContentPane().removeAll();
 		if(p1Turn.isSelected()) {
-			 result = new JLabel("Black player wins this game");
-			 QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
-			 
+			result = new JLabel("Black player wins this game");
+			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
+
 		}
 		else { 
-			 result = new JLabel("White player wins this game");
-			 QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+			result = new JLabel("White player wins this game");
+			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
 		}
-		
+
 		QuoridorController.GameIsFinished(this);
 		clearActionListeners();
-		
+
 		result.setForeground(Color.red);
 		JButton yesButton = new JButton("New Game");
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
@@ -2729,7 +2714,7 @@ public class QuoridorView extends JFrame{
 				initLoadScreen();
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
-				
+
 			}
 		});
 		JButton noButton = new JButton("Exit");
@@ -2744,17 +2729,17 @@ public class QuoridorView extends JFrame{
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
 		layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-										.addComponent(result)
-										.addGroup(layout.createSequentialGroup()
-												  .addComponent(yesButton)
-												  .addComponent(noButton)	   
-																	   ));
+				.addComponent(result)
+				.addGroup(layout.createSequentialGroup()
+						.addComponent(yesButton)
+						.addComponent(noButton)	   
+						));
 		layout.setVerticalGroup(layout.createSequentialGroup()
 				.addComponent(result)
 				.addGroup(layout.createParallelGroup()
-							.addComponent(yesButton)
-							.addComponent(noButton)	   
-							   ));
+						.addComponent(yesButton)
+						.addComponent(noButton)	   
+						));
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
 		confirmFrame.getContentPane().setLayout(layout);
 		confirmFrame.pack();
