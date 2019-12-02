@@ -2411,128 +2411,11 @@ public class QuoridorView extends JFrame{
 		yesButton.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				QuoridorController.deleteFile(fileName);	
-
-				//Ah, that's why. This isn't running after the confirmDelete
-				File dir = new File(System.getProperty("user.dir"));
-
-				File[] saveFiles = dir.listFiles();
-				String name;
-				DefaultListModel<String> l = new DefaultListModel<>();
-				l.clear();
-				if(saveFiles != null) {
-					for(File f : saveFiles) {
-						name = f.getName();
-						if( name.length() > 4 && (name.substring(name.length() - 4, name.length()).equals(".dat") 
-								||name.substring(name.length() - 4, name.length()).equals(".mov"))) {
-							l.addElement(f.getName());
-						}
-
-					}
-				}
-				JList<String> fileList = new JList<String>(l);
-
-				fileList.addKeyListener(new java.awt.event.KeyListener() {
-					public void keyPressed(java.awt.event.KeyEvent evt) {}
-					public void keyTyped(java.awt.event.KeyEvent evt) {}
-					@Override
-					public void keyReleased(java.awt.event.KeyEvent evt) {
-						if(evt.getKeyCode() == KeyEvent.VK_ENTER) {
-							if(QuoridorController.isEnded(fileList.getSelectedValue())) {
-								replayGame.doClick();
-								return;
-							}
-							if(QuoridorController.loadGame(fileList.getSelectedValue())) {
-
-								File f = new File(fileList.getSelectedValue()); 
-								f.setLastModified(0);
-
-								p1Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName());
-								p2Name.setText(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName());
-
-								whiteSeconds = 60*10;
-								blackSeconds = 60*10;
-								p1Time.setText("Time: "+10+" m " + 0 +" s ");
-								p2Time.setText("Time: "+10+" m " + 0 +" s ");
-
-
-
-								QuoridorController.setTotaltime(10, 0);
-
-								initGame();
-
-								if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove()
-										.equals(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer())) {
-									p2Turn.setSelected(true);
-									p1Turn.setSelected(false);
-								}
-
-								for(WallMove w : QuoridorController.getWalls()) {
-
-									JPanel newWall = new JPanel();
-									int row = w.getTargetTile().getRow();
-									int col = w.getTargetTile().getColumn();
-									refresh(); 
-									if(w.getWallDirection() == Direction.Vertical) {
-
-										newWall.setSize(5, 75);
-										newWall.setLocation( 
-												board.getX() - 5 + col*40, 
-												board.getY() + row * 40 - 40);
-									} else {
-										newWall.setSize(75, 5);
-										newWall.setLocation( 
-												board.getX() + col*40 - 40, 
-												board.getY() - 5 + row * 40);
-									}
-									newWall.setBackground(Color.BLACK);
-									getContentPane().add(newWall);
-
-								}
-								board.requestFocusInWindow();
-								fileList.removeKeyListener(fileList.getKeyListeners()[0]);
-							} else {
-								GroupLayout layout = new GroupLayout(getContentPane());
-								getContentPane().setLayout(layout);
-								layout.setAutoCreateGaps(true);
-								layout.setAutoCreateContainerGaps(true);
-								GroupLayout.Group horizontal = layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-										.addComponent(title)
-										.addComponent(newGame)
-										.addComponent(loadGame);
-								GroupLayout.Group vertical = layout.createSequentialGroup()
-										.addComponent(title)
-										.addComponent(newGame)
-										.addComponent(loadGame);
-
-
-								notifyInvalid("Load File Error- Invalid Position");
-								layout.setHorizontalGroup(layout.createSequentialGroup()
-										.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-												.addGroup(horizontal)
-												.addComponent(notification))
-										.addComponent(filePane));
-								layout.setVerticalGroup(layout.createParallelGroup()
-										.addGroup(layout.createSequentialGroup()
-												.addGroup(vertical)
-												.addComponent(notification))
-										.addComponent(filePane));
-
-								getContentPane().setLayout(layout);
-								pack();
-							}
-
-
-						}
-						if(evt.getKeyCode() == KeyEvent.VK_DELETE || evt.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-							confirmDeleteFile(fileList.getSelectedValue());
-						}
-					}
-				});
-
-
-
-				filePane.setViewportView(fileList);
+				QuoridorController.deleteFile(fileName);
+				clearActionListeners();
+				getContentPane().removeAll();
+				initLoadScreen();
+				
 				refresh();
 
 				//Exit the frame
@@ -2600,12 +2483,12 @@ public class QuoridorView extends JFrame{
 		if(grabButton.getActionListeners().length > 0)grabButton.removeActionListener(grabButton.getActionListeners()[0]);
 		if(validateButton.getActionListeners().length>0)validateButton.removeActionListener(validateButton.getActionListeners()[0]);
 		if(rotateButton.getActionListeners().length > 0)rotateButton.removeActionListener(rotateButton.getActionListeners()[0]);
-		if(undoButton.getActionListeners().length > 0)undoButton.removeActionListener(undoButton.getActionListeners()[0]);
+		if(undoButton != null && undoButton.getActionListeners().length > 0)undoButton.removeActionListener(undoButton.getActionListeners()[0]);
 		if(continueButton != null && continueButton.getActionListeners().length > 0)continueButton.removeActionListener(continueButton.getActionListeners()[0]);
-		if(board.getMouseListeners().length > 1)board.removeMouseListener(board.getMouseListeners()[1]);
-		if(board.getMouseListeners().length > 0)board.removeMouseListener(board.getMouseListeners()[0]);
-		if(board.getKeyListeners().length > 0)board.removeKeyListener(board.getKeyListeners()[0]);
-		if(board.getMouseMotionListeners().length > 0)board.removeMouseMotionListener(board.getMouseMotionListeners()[0]);
+		if(board != null && board.getMouseListeners().length > 1)board.removeMouseListener(board.getMouseListeners()[1]);
+		if(board != null && board.getMouseListeners().length > 0)board.removeMouseListener(board.getMouseListeners()[0]);
+		if(board != null && board.getKeyListeners().length > 0)board.removeKeyListener(board.getKeyListeners()[0]);
+		if(board != null && board.getMouseMotionListeners().length > 0)board.removeMouseMotionListener(board.getMouseMotionListeners()[0]);
 	}
 
 	//Just toggling radio buttons
@@ -2691,12 +2574,12 @@ public class QuoridorView extends JFrame{
 	public void getResult() {
 		confirmFrame.getContentPane().removeAll();
 		if(p1Turn.isSelected()) {
-			result = new JLabel("Black player wins this game");
+			result = new JLabel("Black player wins the game!");
 			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
 
 		}
 		else { 
-			result = new JLabel("White player wins this game");
+			result = new JLabel("White player wins the game!");
 			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
 		}
 
@@ -2725,6 +2608,36 @@ public class QuoridorView extends JFrame{
 				System.exit(1);
 			}
 		});
+		JButton save = new JButton("Save");
+		save.addActionListener(new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				//Creates window prompting game name and confirming if it overrides
+				if(!QuoridorController.containsFile(fileName)) {
+					//Trying to make it randomish
+					fileName = "Finished"
+							+ QuoridorApplication.getQuoridor().getUsers().get(0).getName()
+							+ QuoridorApplication.getQuoridor().getUsers().get(1).getName()
+							+ ".dat";
+					int i = 0;
+					while(QuoridorController.containsFile(fileName)) {
+						fileName = fileName.replace(".dat", i + ".dat");
+					}
+					
+					QuoridorController.savePosition(fileName);
+					File f = new File(fileName); 
+					f.setLastModified(0);
+				} else {
+					QuoridorController.savePosition(fileName);
+					File f = new File(fileName); 
+					f.setLastModified(0);
+				}
+				notifyValid("Saved successfully");
+
+				refresh();
+				board.requestFocusInWindow();
+			}
+		});
 		GroupLayout layout = new GroupLayout(confirmFrame.getContentPane());
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
@@ -2732,13 +2645,15 @@ public class QuoridorView extends JFrame{
 				.addComponent(result)
 				.addGroup(layout.createSequentialGroup()
 						.addComponent(yesButton)
-						.addComponent(noButton)	   
+						.addComponent(noButton)
+						.addComponent(save)
 						));
 		layout.setVerticalGroup(layout.createSequentialGroup()
 				.addComponent(result)
 				.addGroup(layout.createParallelGroup()
 						.addComponent(yesButton)
-						.addComponent(noButton)	   
+						.addComponent(noButton)	
+						.addComponent(save)
 						));
 		layout.linkSize(SwingConstants.HORIZONTAL, new java.awt.Component[] {yesButton, noButton});
 		confirmFrame.getContentPane().setLayout(layout);
