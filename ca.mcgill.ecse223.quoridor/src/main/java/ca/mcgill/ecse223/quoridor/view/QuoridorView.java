@@ -2361,7 +2361,7 @@ public class QuoridorView extends JFrame{
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
 			}
 		});
-
+		confirmFrame.requestFocusInWindow();
 		confirmFrame.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {}
 			public void keyPressed(KeyEvent e) {}
