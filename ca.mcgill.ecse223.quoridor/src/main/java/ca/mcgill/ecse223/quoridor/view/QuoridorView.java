@@ -2071,11 +2071,13 @@ public class QuoridorView extends JFrame{
 			p1Time.setText("Time: " + (whiteSeconds / 60) + " m " + (whiteSeconds % 60) +" s ");
 			if(QuoridorApplication.getQuoridor().hasCurrentGame())
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(whiteSeconds * 1000));
+			if(whiteSeconds <= 0) getResult(); //End game if so
 		} else {
 			blackSeconds--;
 			p2Time.setText("Time: "+(blackSeconds / 60)+" m " + (blackSeconds % 60) +" s ");
 			if(QuoridorApplication.getQuoridor().hasCurrentGame())
 				QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setRemainingTime(new Time(blackSeconds * 1000));
+			if(blackSeconds <= 0) this.getResult(); //End game if so
 		}
 		refresh();
 	}
@@ -2572,6 +2574,7 @@ public class QuoridorView extends JFrame{
 
 	}
 	public void getResult() {
+		//TODO: Recognize draw
 		confirmFrame.getContentPane().removeAll();
 		if(p1Turn.isSelected()) {
 			result = new JLabel("Black player wins the game!");
