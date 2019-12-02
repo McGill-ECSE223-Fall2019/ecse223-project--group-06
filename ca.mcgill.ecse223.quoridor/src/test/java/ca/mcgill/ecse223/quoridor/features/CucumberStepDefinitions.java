@@ -1980,24 +1980,65 @@ public class CucumberStepDefinitions {
 		
 		@Then("The next move shall be {int}.{int}")
 		public void theNextMoveShallBe(int nmov, int nrnd) {
-		
-			int move = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
-			int round = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
-			
-			Assert.assertEquals(nrnd, round);
-			Assert.assertEquals(nmov, move);
-			
+			if(view.jumpBackwards.getModel().isPressed()) {
+				Assert.assertTrue(nmov == QuoridorApplication.getQuoridor().getCurrentGame().getMove(0).getMoveNumber() 
+						&& nrnd == QuoridorApplication.getQuoridor().getCurrentGame().getMove(0).getRoundNumber());
+			}
+			if(view.jumpForward.getModel().isPressed()) {
+				int end = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
+				int lastMove = QuoridorApplication.getQuoridor().getCurrentGame().getMove(end-1).getMoveNumber();
+				int lastRound = QuoridorApplication.getQuoridor().getCurrentGame().getMove(end-1).getRoundNumber();
+				Assert.assertTrue(nmov == lastMove && nrnd == lastRound);
+			}
+			if(view.stepBackwards.getModel().isPressed()) {
+				int moveNumber = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
+				int roundNumber = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
+				if(moveNumber != 1 && roundNumber != 1) {
+					if(roundNumber == 2) {
+						roundNumber--;
+					}
+					else {
+						roundNumber = 2;
+						moveNumber--;
+					}
+					Assert.assertTrue(nmov == moveNumber && nrnd == roundNumber);
+				}
+			}
+			if(view.stepForward.getModel().isPressed()) {
+				int moveNumber = Integer.parseInt(view.moveNum.getText().replace("Move: ", ""));
+				int roundNumber = Integer.parseInt(view.roundNum.getText().replace("Round: ", ""));
+				
+				int end = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
+				int lastMove = QuoridorApplication.getQuoridor().getCurrentGame().getMove(end-1).getMoveNumber();
+				int lastRound = QuoridorApplication.getQuoridor().getCurrentGame().getMove(end-1).getRoundNumber();
+				
+				if(moveNumber != lastMove && roundNumber != lastRound) {
+					if(roundNumber == 2) {
+						roundNumber = 1;
+						moveNumber++;
+					}
+					else {
+						roundNumber = 2;
+					}
+					
+					Assert.assertTrue(nmov == moveNumber && nrnd == roundNumber);
+				}
+			}
 		}
 		
 		@And("White player's position shall be \\({int},{int})")
 		public void whitePlayerPosition(int wrow, int wcol) {
 			Tile tile = QuoridorController.findTile(wrow, wcol);
+			PlayerPosition position = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer(), tile);
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setWhitePosition(position);
 			Assert.assertTrue(tile == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile());
 		}
 		
 		@And("Black player's position shall be \\({int},{int})")
 		public void blackPlayerPosition(int wrow, int wcol) {
 			Tile tile = QuoridorController.findTile(wrow, wcol);
+			PlayerPosition position = new PlayerPosition(QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer(), tile);
+			QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().setBlackPosition(position);
 			Assert.assertTrue(tile == QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition().getTile());
 		}
 		
@@ -2232,13 +2273,6 @@ public class CucumberStepDefinitions {
 		 * ID#: 260804586
 		 */
 
-		////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		/**
-		 * Feature: Step Backward and Step Forward
-		 * @author Keanu, Natchev
-		 * ID#: 260804586
-		 */
 
 		@When("Step backward is initiated")
 		public void stepBackwardHasBeenInitiated() {
@@ -2247,8 +2281,6 @@ public class CucumberStepDefinitions {
 		
 		@When("Step forward is initiated")
 		public void stepForwardHasBeenInitiated() {
-			//view.replayGame.doClick();
-			//view.step
 			view.stepForward.doClick();
 		}
 
