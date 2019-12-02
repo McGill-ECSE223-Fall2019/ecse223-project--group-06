@@ -732,15 +732,9 @@ public class QuoridorView extends JFrame{
 		getContentPane().removeAll();	
 		setTitle("Quoridor");
 
-
-
-
 		whiteTimer = QuoridorController.runwhiteclock(this);
 		blackTimer = QuoridorController.runblackclock(this);
 
-
-
-		wall = new JPanel();
 		boardMouseListener = new MouseListener() {
 
 			public void mouseEntered(MouseEvent e) {}
@@ -827,28 +821,28 @@ public class QuoridorView extends JFrame{
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				//TODO: Implement Undo
 				board.requestFocusInWindow();
-				
+
 				Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 				List<Move> moves = game.getMoves();
 				if(moves.size() <= 0)  {
 					return;
 				}
-				
-				
+
+
 				GamePosition curPos = game.getCurrentPosition();
-				
-				
+
+
 				Move lastMoveOfPlayer;
 
 				int p1WallsIn = curPos.getWhiteWallsInStock().size();
 				int p2WallsIn = curPos.getBlackWallsInStock().size();
 
 				Move undoMove = game.getMove(moves.size() - 1);
-				
+
 				if(undoMove != null) {
-				
+
 					if(p2Turn.isSelected()) {
-						
+
 						if(undoMove instanceof WallMove) {
 							Wall w = ((WallMove) undoMove).getWallPlaced();
 							game.getCurrentPosition().addWhiteWallsInStock(w);
@@ -867,18 +861,18 @@ public class QuoridorView extends JFrame{
 							}
 							if(!found) game.getCurrentPosition().getWhitePosition().setTile(QuoridorController.findTile(9, 5));
 						}
-						
+
 						p2Turn.setSelected(false);
 						p1Turn.setSelected(true);
 						game.getCurrentPosition().setPlayerToMove(game.getWhitePlayer());
-						
+
 					} else if(p1Turn.isSelected()) {
-						
+
 						if(undoMove instanceof WallMove) {
 							Wall w = ((WallMove) undoMove).getWallPlaced();
 							game.getCurrentPosition().addBlackWallsInStock(w);
 							game.getCurrentPosition().removeBlackWallsOnBoard(w);
-							p2Walls.setText("Walls: " + (p2WallsIn));
+							p2Walls.setText("Walls: " + (++p2WallsIn));
 						} else {
 							boolean found = false;
 							//Here's a q. How to get last white position? Like where they moved from
@@ -891,17 +885,17 @@ public class QuoridorView extends JFrame{
 								}
 							}
 							if(!found) game.getCurrentPosition().getBlackPosition().setTile(QuoridorController.findTile(1, 5));
-							
+
 						}
 						p2Turn.setSelected(true);
 						p1Turn.setSelected(false);
 						game.getCurrentPosition().setPlayerToMove(game.getBlackPlayer());
 					}
 				}
-				
+
 				undoMove.delete();
 				if(game.getMoves().contains(undoMove)) game.removeMove(undoMove);
-				
+
 				refresh();
 				board.requestFocusInWindow();
 			}
@@ -1149,12 +1143,12 @@ public class QuoridorView extends JFrame{
 						w = (WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMove(i);
 						if(w.getWallDirection() == Direction.Horizontal) {	
 							g.fillRect(	(w.getTargetTile().getColumn()-1)*40,
-										w.getTargetTile().getRow()*40 - 5, 
-										75, 5);
+									w.getTargetTile().getRow()*40 - 5, 
+									75, 5);
 						} else {
 							g.fillRect(	w.getTargetTile().getColumn()*40 - 5,
-										(w.getTargetTile().getRow()-1)*40, 
-										5, 75);
+									(w.getTargetTile().getRow()-1)*40, 
+									5, 75);
 						}
 					}
 				}
@@ -1782,7 +1776,7 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 
-				
+
 				//TODO: Fix HDC component null bug- update I HAVE NO CLUE HOW
 				//Figure out why junit tests says explanation has no horizontal group
 				if(QuoridorController.isEnded(fileName)) {
@@ -1950,16 +1944,16 @@ public class QuoridorView extends JFrame{
 						w = (WallMove) QuoridorApplication.getQuoridor().getCurrentGame().getMove(i);
 						if(w.getWallDirection() == Direction.Horizontal) {	
 							g.fillRect(	(w.getTargetTile().getColumn()-1)*40,
-										w.getTargetTile().getRow()*40 - 5, 
-										75, 5);
+									w.getTargetTile().getRow()*40 - 5, 
+									75, 5);
 						} else {
 							g.fillRect(	w.getTargetTile().getColumn()*40 - 5,
-										(w.getTargetTile().getRow()-1)*40, 
-										5, 75);
+									(w.getTargetTile().getRow()-1)*40, 
+									5, 75);
 						}
 					}
 				}
-				
+
 			}
 		};
 
@@ -2487,7 +2481,7 @@ public class QuoridorView extends JFrame{
 				clearActionListeners();
 				getContentPane().removeAll();
 				initLoadScreen();
-				
+
 				refresh();
 
 				//Exit the frame
@@ -2645,14 +2639,14 @@ public class QuoridorView extends JFrame{
 	}
 	public void getResult() {
 		//TODO: Recognize draw
-		
-		
+
+
 		confirmFrame.getContentPane().removeAll();
 		if(p1Turn.isSelected()) {
 			result = new JLabel("Black player wins the game!");
 			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
 			this.getContentPane().setBackground(new Color(0));
-			
+
 		}
 		else { 
 			result = new JLabel("White player wins the game!");
@@ -2699,7 +2693,7 @@ public class QuoridorView extends JFrame{
 					while(QuoridorController.containsFile(fileName)) {
 						fileName = fileName.replace(".dat", i + ".dat");
 					}
-					
+
 					QuoridorController.savePosition(fileName);
 					File f = new File(fileName); 
 					f.setLastModified(0);
