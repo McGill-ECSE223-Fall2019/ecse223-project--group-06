@@ -10,7 +10,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -21,18 +20,15 @@ import java.sql.Time;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.GroupLayout.Group;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -485,7 +481,6 @@ public class QuoridorView extends JFrame{
 		l.addElement("Corridor");
 		l.addElement("Rodirroc");
 		l.addElement("Xx_EpicGamer_xX");
-		//TODO: Make it show actual user names
 
 
 		userList = new JList<String>(l);
@@ -928,7 +923,6 @@ public class QuoridorView extends JFrame{
 							board.getX() - 5 + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getColumn() *40, 
 							board.getY() + QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate().getTargetTile().getRow() * 40 - 40);
 
-					//TODO: See if this works
 					p1Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size());
 					p2Walls.setText("Walls: " +QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackWallsInStock().size());
 
@@ -1424,8 +1418,6 @@ public class QuoridorView extends JFrame{
 
 	//This is the Replay Mode. Emulates board, but none of the fancier mechanics
 	public void initReplay() { 
-		//TODO: Make it just default to white in play here- including switching player buttons
-		//& Changing current position
 
 		p1Walls.setText("Walls: " +10);
 		p2Walls.setText("Walls: " + 10);
@@ -1767,8 +1759,8 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 
-				//TODO: HERE IS A MARKER FOR MY SCROLL BAR
-				//TODO: Fix HDC component null bug
+				
+				//TODO: Fix HDC component null bug- update I HAVE NO CLUE HOW
 				//Figure out why junit tests says explanation has no horizontal group
 				if(QuoridorController.isEnded(fileName)) {
 					notifyInvalid("Cannot continue a finished game");
@@ -2211,7 +2203,7 @@ public class QuoridorView extends JFrame{
 				//Save the game
 				QuoridorController.savePosition(fileName);
 				File f = new File(fileName);
-				f.setLastModified(0); //TODO: Remove all the f stuff
+				f.setLastModified(0); 
 				notifyValid("Saved Successfully");
 				//Exit the frame
 				confirmFrame.dispatchEvent(new WindowEvent(confirmFrame, WindowEvent.WINDOW_CLOSING));
@@ -2239,7 +2231,7 @@ public class QuoridorView extends JFrame{
 				SwingUtilities.updateComponentTreeUI(confirmFrame);
 				confirmFrame.pack();
 				File f = new File(fileName);
-				f.setLastModified(1000000000); //TODO: Remove all the f stuff
+				f.setLastModified(1000000000); 
 			}
 		});
 

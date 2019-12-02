@@ -287,8 +287,8 @@ public class QuoridorController {
 				
 				if(move.charAt(1) == '-') {
 					//TODO: How to communicate the game was ended? We don't!
-					if(move.charAt(0) == '0') QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
-					else if (move.charAt(0) == '1')QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+					if(move.charAt(0) == '0' && move.charAt(2) == '1') QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
+					else if (move.charAt(0) == '1'&& move.charAt(2) == '0')QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
 					else QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.Draw);
 					break;
 				}
