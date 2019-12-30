@@ -667,8 +667,9 @@ public class QuoridorView extends JFrame{
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 
+				
 
-				userList.removeKeyListener(userList.getKeyListeners()[0]);
+				if(userList.getKeyListeners().length > 0) userList.removeKeyListener(userList.getKeyListeners()[0]);
 
 
 				p1Name.setText(whiteName.getText());
@@ -707,6 +708,8 @@ public class QuoridorView extends JFrame{
 				}
 
 				QuoridorController.initializeBoard();
+				p1Walls.setText("Walls: " + 10);
+				p2Walls.setText("Walls: " + 10);
 				initGame();
 				newGame.removeActionListener(newGame.getActionListeners()[0]);
 			}
@@ -722,6 +725,9 @@ public class QuoridorView extends JFrame{
 	public void initGame() { 
 		explanation.setText("<html><center>Press 'g' to grab a wall"
 				+  "<br>Or press 'm' to move</center></html>");
+		
+		
+		
 		white = new PawnBehavior(MoveDirection.North);
 		black = new PawnBehavior(MoveDirection.North);
 		white.setCurrentGame(QuoridorApplication.getQuoridor().getCurrentGame());
@@ -2611,6 +2617,7 @@ public class QuoridorView extends JFrame{
 				QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer())) {
 			if(white.move()) {
 				switchPlayerButton();
+				
 				if(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition().getTile().getRow() == 1) {
 					getResult(false);
 				}
@@ -2644,8 +2651,6 @@ public class QuoridorView extends JFrame{
 
 	}
 	public void getResult(boolean drawn) {
-		//TODO: Recognize draw
-
 
 		confirmFrame.getContentPane().removeAll();
 		if(drawn) {
@@ -2655,10 +2660,8 @@ public class QuoridorView extends JFrame{
 		else if(p1Turn.isSelected()) {
 			result = new JLabel("Black player wins the game!");
 			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.BlackWon);
-			this.getContentPane().setBackground(new Color(0));
-
-		}
-		else { 
+			//this.getContentPane().setBackground(new Color(0));
+		} else { 
 			result = new JLabel("White player wins the game!");
 			QuoridorApplication.getQuoridor().getCurrentGame().setGameStatus(GameStatus.WhiteWon);
 		}
@@ -2696,19 +2699,21 @@ public class QuoridorView extends JFrame{
 				if(!QuoridorController.containsFile(fileName)) {
 					//Trying to make it randomish
 					fileName = "Finished"
-							+ QuoridorApplication.getQuoridor().getUsers().get(0).getName()
-							+ QuoridorApplication.getQuoridor().getUsers().get(1).getName()
+							+ QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getUser().getName()
+							+ QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getUser().getName()
 							+ ".dat";
 					int i = 0;
 					while(QuoridorController.containsFile(fileName)) {
 						fileName = fileName.replace(".dat", i + ".dat");
+						i++;
 					}
 
-					QuoridorController.savePosition(fileName);
+					System.out.println("Worked? " + QuoridorController.savePosition(fileName));
 					File f = new File(fileName); 
 					f.setLastModified(0);
+					System.out.println("Saved finished game: " + fileName);
 				} else {
-					QuoridorController.savePosition(fileName);
+					System.out.println("Worked? " + QuoridorController.savePosition(fileName));
 					File f = new File(fileName); 
 					f.setLastModified(0);
 				}

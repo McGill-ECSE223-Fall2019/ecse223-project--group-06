@@ -1401,7 +1401,10 @@ public class QuoridorController {
 		}
 		//TODO: Make this only happen if it's a win/loss situation
 		if(isEnded(filepath)) moveNumber -=2;
+		
 		int realMoveNum = QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size();
+		System.out.println("Expected Move Number: " + moveNumber); 
+		System.out.println("Real Move Number: " + realMoveNum);
 		if(realMoveNum == moveNumber) {
 			//This is to combat the "File is up to date but not modified('updated')"
 			//Essentially I'm setting last mod to 0 when we update, or a high number when we don't
